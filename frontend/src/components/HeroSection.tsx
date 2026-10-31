@@ -33,7 +33,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         {/* Centered Main Title (Balanced & Proportional) */}
         <div className="max-w-4xl mx-auto space-y-6">
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-[var(--text-primary)] leading-[1.12]">
-            Autonomous Server Defense with <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400">Mathematical Proof</span>.
+            Autonomous Server Defense with{" "}
+            <span className="redaction-35-regular-italic font-normal italic tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400">
+              Mathematical Proof
+            </span>
+            .
           </h1>
 
           <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed max-w-2xl mx-auto font-normal">
