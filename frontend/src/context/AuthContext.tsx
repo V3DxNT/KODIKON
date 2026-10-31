@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { Role } from "@/types/soc";
 import { AuthUser, authenticateAdmin, authenticateStaff } from "@/lib/auth-adapter";
 
@@ -32,25 +32,24 @@ const AuthContext = createContext<AuthContextType>({
 
 const SESSION_KEY = "project_x_session_user";
 
-function getInitialUser(): AuthUser | null {
-  if (typeof window !== "undefined") {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
     try {
       const stored = localStorage.getItem(SESSION_KEY) || sessionStorage.getItem(SESSION_KEY);
       if (stored) {
-        return JSON.parse(stored) as AuthUser;
+        setUser(JSON.parse(stored) as AuthUser);
       }
     } catch {}
-  }
-  return null;
-}
+    setIsLoaded(true);
+  }, []);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<AuthUser | null>(getInitialUser);
-
-  const role: Role | null = user?.role || null;
-  const isAuthenticated = !!user;
-  const isAdmin = user?.role === "admin";
-  const isStaff = user?.role === "employee";
+  const role: Role | null = isLoaded ? user?.role || null : null;
+  const isAuthenticated = isLoaded && !!user;
+  const isAdmin = isLoaded && user?.role === "admin";
+  const isStaff = isLoaded && user?.role === "employee";
 
   const loginAsAdmin = async (
     identifier: string,
