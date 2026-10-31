@@ -45,37 +45,37 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md metallic-surface rounded-2xl p-8 border border-white/15 shadow-2xl space-y-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
+      <div className="relative w-full max-w-md bg-[var(--bg-surface)] rounded-3xl p-6 sm:p-8 border border-[var(--border-card)] shadow-2xl space-y-6">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-6 right-6 rounded-md p-1.5 text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+          className="absolute top-6 right-6 rounded-full p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors cursor-pointer"
         >
           <X className="h-4 w-4" />
         </button>
 
         {/* Modal Header */}
         <div className="flex items-center space-x-3.5">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.05] border border-white/15 text-slate-200">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-500">
             <Lock className="h-5 w-5" />
           </div>
           <div>
-            <div className="text-[11px] font-mono uppercase tracking-widest text-slate-400">
+            <div className="text-[11px] font-mono uppercase tracking-widest text-cyan-600 dark:text-cyan-400 font-bold">
               ELEVATED PRIVILEGES
             </div>
-            <h3 className="text-lg font-medium text-white">
+            <h3 className="text-lg font-bold text-[var(--text-primary)]">
               Security Administrator Login
             </h3>
           </div>
         </div>
 
-        <p className="text-xs text-slate-400 leading-relaxed">
-          Access to firewall enforcement (<code>sudo ufw deny</code>) and MITRE adversary verification requires authenticated administrative clearance.
+        <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+          Access to firewall enforcement (<code className="font-mono text-rose-500">sudo ufw deny</code>) and MITRE adversary verification requires authenticated administrative clearance.
         </p>
 
         {error && (
-          <div className="rounded-lg bg-rose-500/10 p-3 border border-rose-500/20 text-xs text-rose-300 flex items-center space-x-2">
+          <div className="rounded-xl bg-rose-500/10 p-3 border border-rose-500/30 text-xs text-rose-500 flex items-center space-x-2">
             <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{error}</span>
           </div>
@@ -83,12 +83,12 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-mono text-slate-300 flex items-center justify-between">
+            <label className="text-xs font-mono font-bold text-[var(--text-primary)] flex items-center justify-between">
               <span>ADMINISTRATOR IDENTITY</span>
               <button
                 type="button"
                 onClick={handleFillDemo}
-                className="text-[10px] text-slate-400 hover:text-white underline cursor-pointer"
+                className="text-[10px] text-cyan-600 dark:text-cyan-400 hover:underline cursor-pointer"
               >
                 Auto-Fill Demo
               </button>
@@ -97,32 +97,32 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full rounded-lg bg-black/60 px-3.5 py-2.5 text-xs font-mono text-white border border-white/10 focus:border-white/30 focus:outline-none"
+              className="w-full rounded-xl bg-[var(--bg-input)] px-4 py-2.5 text-xs font-mono text-[var(--text-primary)] border border-[var(--border-input)] focus:ring-2 focus:ring-cyan-500/40 focus:outline-none"
               placeholder="admin@secops.local"
               required
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-mono text-slate-300">
+            <label className="text-xs font-mono font-bold text-[var(--text-primary)]">
               SECURITY PASSKEY
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg bg-black/60 px-3.5 py-2.5 text-xs font-mono text-white border border-white/10 focus:border-white/30 focus:outline-none"
+              className="w-full rounded-xl bg-[var(--bg-input)] px-4 py-2.5 text-xs font-mono text-[var(--text-primary)] border border-[var(--border-input)] focus:ring-2 focus:ring-cyan-500/40 focus:outline-none"
               placeholder="••••••••"
               required
             />
           </div>
 
           <div className="pt-2 flex items-center justify-between">
-            <span className="text-[11px] font-mono text-slate-500">Demo Key: admin123</span>
+            <span className="text-[11px] font-mono text-[var(--text-muted)]">Demo Key: admin123</span>
             <button
               type="submit"
               disabled={isAuthenticating}
-              className="btn-metallic-primary rounded-lg px-5 py-2.5 text-xs font-semibold flex items-center space-x-2 cursor-pointer disabled:opacity-50"
+              className="btn-metallic-primary rounded-full px-5 py-2.5 text-xs font-semibold flex items-center space-x-2 cursor-pointer disabled:opacity-50"
             >
               <span>{isAuthenticating ? "Verifying..." : "Authenticate"}</span>
               <ArrowRight className="h-3.5 w-3.5" />

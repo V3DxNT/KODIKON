@@ -5,13 +5,11 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { 
   User, 
-  Shield, 
   Lock, 
   ArrowRight, 
   AlertCircle, 
   Eye, 
   EyeOff, 
-  CheckCircle2, 
   Info,
   ArrowLeft
 } from "lucide-react";
@@ -188,7 +186,7 @@ function StaffLoginForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full btn-metallic-primary rounded-lg py-3 text-xs font-semibold flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50"
+            className="w-full btn-metallic-primary rounded-full py-3 text-xs font-semibold flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50"
           >
             <span>{isSubmitting ? "Verifying Clearance..." : "Authorize Staff Session"}</span>
             <ArrowRight className="h-3.5 w-3.5" />

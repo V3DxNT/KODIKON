@@ -1,221 +1,211 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import { Glass } from "./Glass";
-import { Shield, Radio, Activity, Terminal, Crosshair, Lock, AlertTriangle } from "lucide-react";
+import React, { useState } from "react";
+import { Radio, Terminal } from "lucide-react";
+
+interface NodeData {
+  id: string;
+  name: string;
+  ip: string;
+  role: string;
+  status: "secure" | "compromised" | "quarantined" | "verifying";
+  details: string;
+  badge: string;
+  metrics: { label: string; value: string }[];
+}
+
+const NODES: NodeData[] = [
+  {
+    id: "attacker",
+    name: "Adversary Machine",
+    ip: "192.168.56.20",
+    role: "Caldera Server & Sandcat",
+    status: "quarantined",
+    details: "Automated adversary emulator testing SSH brute-force (T1110) & backdoor accounts (T1136).",
+    badge: "ISOLATED VIA UFW",
+    metrics: [
+      { label: "ATTACK VECTOR", value: "MITRE T1110" },
+      { label: "PORT QUARANTINED", value: "22/TCP (SSH)" },
+      { label: "VERIFICATION", value: "EXIT CODE 1" },
+    ],
+  },
+  {
+    id: "gateway",
+    name: "SOC Host Controller",
+    ip: "192.168.56.1",
+    role: "FastAPI Daemon & Engine",
+    status: "secure",
+    details: "Ingests raw auth.log via Log Shipper, runs R1-R3 correlation, and prompts human authorization.",
+    badge: "SOC CORE ACTIVE",
+    metrics: [
+      { label: "CORRELATION", value: "R1 · R2 · R3" },
+      { label: "GATEWAY LATENCY", value: "< 1.2ms" },
+      { label: "HUMAN GATE", value: "DUAL CUSTODY" },
+    ],
+  },
+  {
+    id: "victim",
+    name: "Victim Ubuntu Server",
+    ip: "192.168.56.10",
+    role: "Production Target",
+    status: "secure",
+    details: "Linux kernel target with auditd, sshd, and UFW firewall policy managed by Project X.",
+    badge: "CONTAINED & PROTECTED",
+    metrics: [
+      { label: "UFW STATUS", value: "ACTIVE (DROP)" },
+      { label: "LOG SHIPPER", value: "AUDITD RUNNING" },
+      { label: "DATA LOSS", value: "0 BYTES" },
+    ],
+  },
+];
+
+const LOG_FEED = [
+  { time: "17:42:01", msg: "sshd[4109]: Failed password for root from 192.168.56.20 port 48212", tag: "T1110" },
+  { time: "17:42:04", msg: "rule_engine: R-01 Brute Force threshold tripped (8 attempts / 30s)", tag: "CORRELATION" },
+  { time: "17:42:09", msg: "human_gate: Admin authorized containment block on IP 192.168.56.20", tag: "GATE-OK" },
+  { time: "17:42:12", msg: "caldera_verifier: Re-ran adversary profile -> Connection Refused (Proof SEALED)", tag: "PROOF-VERIFIED" },
+];
 
 export function CyberRadarLens() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const lensRef = useRef<HTMLDivElement | null>(null);
-  const [activeVector, setActiveVector] = useState<string>("T1110 (SSH Brute Force)");
-  const [isHovered, setIsHovered] = useState<boolean>(false);
-
-  useEffect(() => {
-    const area = containerRef.current;
-    const lens = lensRef.current;
-    if (!area || !lens) return;
-
-    const state = { x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0 };
-    let dragging = false;
-    let interacted = false;
-    let raf = 0;
-    let last = 0;
-    let t0 = 0;
-
-    const reducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    const initPos = () => {
-      const rect = area.getBoundingClientRect();
-      state.tx = rect.width * 0.5;
-      state.ty = rect.height * 0.5;
-      if (!state.x) {
-        state.x = state.tx;
-        state.y = state.ty;
-      }
-    };
-
-    initPos();
-
-    const loop = (now: number) => {
-      raf = 0;
-      const dt = Math.min(0.032, last ? (now - last) / 1000 : 0.016);
-      last = now;
-      const rect = area.getBoundingClientRect();
-
-      if (!interacted && !reducedMotion) {
-        t0 += dt;
-        state.tx = rect.width * (0.5 + 0.32 * Math.sin(t0 * 0.7));
-        state.ty = rect.height * (0.5 + 0.22 * Math.cos(t0 * 1.1));
-      }
-
-      const k = 380;
-      const c = 32;
-      state.vx += (k * (state.tx - state.x) - c * state.vx) * dt;
-      state.vy += (k * (state.ty - state.y) - c * state.vy) * dt;
-      state.x += state.vx * dt;
-      state.y += state.vy * dt;
-
-      const speed = Math.min(1, Math.hypot(state.vx, state.vy) / 1500);
-      const ang = Math.atan2(state.vy, state.vx);
-
-      lens.style.transform = `translate3d(${(state.x - lens.offsetWidth / 2).toFixed(1)}px, ${(state.y - lens.offsetHeight / 2).toFixed(1)}px, 0) rotate(${ang}rad) scale(${1 + speed * 0.1}, ${1 - speed * 0.06}) rotate(${-ang}rad)`;
-
-      raf = requestAnimationFrame(loop);
-    };
-
-    raf = requestAnimationFrame(loop);
-
-    const onPointerMove = (e: PointerEvent) => {
-      const rect = area.getBoundingClientRect();
-      const clientX = e.clientX;
-      const clientY = e.clientY;
-      if (
-        clientX >= rect.left &&
-        clientX <= rect.right &&
-        clientY >= rect.top &&
-        clientY <= rect.bottom
-      ) {
-        interacted = true;
-        state.tx = clientX - rect.left;
-        state.ty = clientY - rect.top;
-      }
-    };
-
-    const onPointerDown = () => {
-      dragging = true;
-      interacted = true;
-    };
-
-    const onPointerUp = () => {
-      dragging = false;
-    };
-
-    window.addEventListener("pointermove", onPointerMove, { passive: true });
-    area.addEventListener("pointerdown", onPointerDown);
-    window.addEventListener("pointerup", onPointerUp);
-    window.addEventListener("resize", initPos);
-
-    return () => {
-      if (raf) cancelAnimationFrame(raf);
-      window.removeEventListener("pointermove", onPointerMove);
-      area.removeEventListener("pointerdown", onPointerDown);
-      window.removeEventListener("pointerup", onPointerUp);
-      window.removeEventListener("resize", initPos);
-    };
-  }, []);
+  const [selectedNodeId, setSelectedNodeId] = useState<string>("attacker");
+  const selectedNode = NODES.find((n) => n.id === selectedNodeId) || NODES[0];
 
   return (
-    <div
-      ref={containerRef}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="relative w-full h-[480px] md:h-[540px] rounded-3xl overflow-hidden select-none border border-white/10 shadow-2xl bg-gradient-to-b from-[#0a0d14]/90 via-[#07090e]/95 to-[#050609]"
-    >
-      {/* 3D Cyber Grid & Ambient Particles */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(14,165,233,0.15),rgba(255,255,255,0))]" />
+    <div className="relative w-full rounded-3xl overflow-hidden select-none border border-[var(--border-card)] shadow-2xl bg-[var(--bg-card)] transition-colors">
+      {/* Subtle Ambient Grid Background (Clean 2D Vector) */}
+      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/[0.04] via-transparent to-indigo-500/[0.04] pointer-events-none" />
       <div
-        className="absolute inset-0 opacity-[0.14] pointer-events-none"
+        className="absolute inset-0 opacity-[0.08] dark:opacity-[0.14] pointer-events-none"
         style={{
           backgroundImage:
-            "linear-gradient(to right, rgba(255, 255, 255, 0.15) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 1px, transparent 1px)",
-          backgroundSize: "36px 36px",
+            "linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
         }}
       />
 
-      {/* Target Infrastructure Underneath (Refracted by Liquid Lens) */}
-      <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-10 pointer-events-none">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-cyan-400">
-            <Radio className="w-3.5 h-3.5 animate-pulse text-cyan-400" />
-            <span>AUTONOMOUS TELEMETRY CORE</span>
+      <div className="relative z-10 p-5 sm:p-7 space-y-6">
+        {/* Top Header Strip */}
+        <div className="flex items-center justify-between pb-4 border-b border-[var(--border-hairline)]">
+          <div className="flex items-center space-x-2.5">
+            <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span className="text-xs font-mono font-semibold tracking-wider text-[var(--text-primary)] uppercase">
+              PERIMETER TELEMETRY MATRIX
+            </span>
           </div>
-          <div className="flex items-center gap-2 font-mono text-[11px] text-zinc-500">
-            <span>PATROL FREQ: 2500ms</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+
+          <div className="flex items-center space-x-2 text-[11px] font-mono text-[var(--text-muted)]">
+            <Radio className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="hidden sm:inline">SAMPLE RATE: 2.5s</span>
+            <span className="text-[var(--text-muted)]">&bull;</span>
+            <span className="text-emerald-400 font-medium">UFW VERIFIED</span>
           </div>
         </div>
 
-        {/* Tactical Nodes Matrix */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 my-auto">
-          <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-sm">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-mono text-zinc-400">VICTIM VM</span>
-              <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+        {/* 2D Network Node Cards (3 Machines) */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {NODES.map((node) => {
+            const isSelected = node.id === selectedNodeId;
+            return (
+              <button
+                key={node.id}
+                onClick={() => setSelectedNodeId(node.id)}
+                className={`text-left p-3.5 rounded-2xl transition-all cursor-pointer border ${
+                  isSelected
+                    ? "bg-[var(--bg-elevated)] border-cyan-400/50 shadow-md ring-1 ring-cyan-400/30"
+                    : "bg-[var(--bg-surface)] border-[var(--border-card)] hover:border-cyan-400/30"
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--text-muted)]">
+                    {node.role.split(" ")[0]}
+                  </span>
+                  <span
+                    className={`h-2 w-2 rounded-full ${
+                      node.status === "quarantined"
+                        ? "bg-rose-500 animate-pulse"
+                        : "bg-emerald-400"
+                    }`}
+                  />
+                </div>
+                <div className="text-xs font-bold font-mono text-[var(--text-primary)] truncate">
+                  {node.ip}
+                </div>
+                <div className="text-[11px] text-[var(--text-secondary)] font-sans truncate mt-0.5">
+                  {node.name}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Selected Node Deep-Dive Panel (Clean 2D Cybersecurity Telemetry) */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-card)] space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <div className="flex items-center space-x-2">
+                <span className="text-xs font-mono font-bold text-[var(--text-primary)]">
+                  {selectedNode.name}
+                </span>
+                <span className="text-xs font-mono text-cyan-400">({selectedNode.ip})</span>
+              </div>
+              <p className="text-xs text-[var(--text-secondary)] mt-1 leading-relaxed">
+                {selectedNode.details}
+              </p>
             </div>
-            <div className="text-base font-bold text-white font-mono">192.168.1.105</div>
-            <div className="text-[11px] text-rose-400 font-mono mt-1 flex items-center gap-1">
-              <AlertTriangle className="w-3 h-3" /> 18 Auth Failures/min
-            </div>
+
+            <span className="shrink-0 self-start sm:self-center px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
+              {selectedNode.badge}
+            </span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-sm">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-mono text-zinc-400">CORRELATION</span>
-              <span className="w-2 h-2 rounded-full bg-amber-400" />
-            </div>
-            <div className="text-base font-bold text-white font-mono">MITRE T1110</div>
-            <div className="text-[11px] text-amber-300 font-mono mt-1">Rule: R-01 Brute Force</div>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-sm">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-mono text-zinc-400">SOC ENGINE</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            </div>
-            <div className="text-base font-bold text-white font-mono">CONTAINED</div>
-            <div className="text-[11px] text-emerald-400 font-mono mt-1">UFW Rule Pending</div>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-sm">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-mono text-zinc-400">CALDERA PROOF</span>
-              <span className="w-2 h-2 rounded-full bg-cyan-400" />
-            </div>
-            <div className="text-base font-bold text-white font-mono">VERIFIED</div>
-            <div className="text-[11px] text-cyan-300 font-mono mt-1">Exit Code: 1 (Blocked)</div>
+          {/* 3 Real Technical Metric Tiles */}
+          <div className="grid grid-cols-3 gap-2.5 pt-1">
+            {selectedNode.metrics.map((m) => (
+              <div
+                key={m.label}
+                className="p-2.5 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-hairline)]"
+              >
+                <div className="text-[9px] font-mono text-[var(--text-muted)] uppercase tracking-wider truncate">
+                  {m.label}
+                </div>
+                <div className="text-xs font-mono font-bold text-[var(--text-primary)] truncate mt-1">
+                  {m.value}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
         {/* Live Attack Feed Banner */}
-        <div className="flex items-center justify-between py-2.5 px-4 rounded-xl bg-black/40 border border-white/5 text-[11px] font-mono text-zinc-400">
-          <div className="flex items-center gap-2">
-            <Terminal className="w-3.5 h-3.5 text-zinc-500" />
-            <span>sshd[4109]: Failed password for root from 192.168.1.200 port 48212 ssh2</span>
+        <div className="p-3 rounded-xl bg-[var(--bg-terminal)] border border-[var(--border-hairline)] space-y-2">
+          <div className="flex items-center justify-between text-[10px] font-mono text-[var(--text-muted)]">
+            <span className="flex items-center space-x-1.5">
+              <Terminal className="w-3 h-3 text-cyan-400" />
+              <span>LIVE JOURNALD / AUTH LOG INGESTION</span>
+            </span>
+            <span className="text-emerald-400 font-semibold">100% CAPTURED</span>
           </div>
-          <span className="text-zinc-600 hidden sm:inline">SHA-256: 062e27c...</span>
+
+          <div className="space-y-1 font-mono text-[11px]">
+            {LOG_FEED.slice(0, 3).map((log, idx) => (
+              <div
+                key={idx}
+                className="flex items-center justify-between py-0.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors truncate gap-2"
+              >
+                <div className="flex items-center space-x-2 truncate">
+                  <span className="text-[var(--text-muted)] text-[10px]">{log.time}</span>
+                  <span className="truncate">{log.msg}</span>
+                </div>
+                <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold bg-white/5 border border-white/10 text-cyan-300">
+                  {log.tag}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-
-      {/* DRAGGABLE / PATROL SPRING LIQUID GLASS LENS */}
-      <Glass
-        glassRef={lensRef}
-        radius={120}
-        bezel={24}
-        strength={56}
-        className="absolute top-0 left-0 w-56 h-56 rounded-full cursor-grab active:cursor-grabbing pointer-events-auto shadow-2xl flex flex-col items-center justify-center p-4 border border-cyan-400/30"
-        style={{
-          boxShadow:
-            "0 20px 50px -10px rgba(6, 182, 212, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.8), inset 0 -1px 2px rgba(0, 0, 0, 0.6)",
-        }}
-      >
-        <div className="relative z-10 flex flex-col items-center text-center pointer-events-none">
-          <div className="w-10 h-10 rounded-full bg-cyan-500/10 border border-cyan-400/40 flex items-center justify-center text-cyan-400 mb-1.5 shadow-[0_0_15px_rgba(6,182,212,0.4)]">
-            <Crosshair className="w-5 h-5 animate-spin" style={{ animationDuration: "12s" }} />
-          </div>
-          <span className="text-[10px] font-mono font-semibold text-cyan-200 tracking-wider">
-            OPTIC REFRACTION LENS
-          </span>
-          <span className="text-[9px] font-mono text-zinc-300/80 mt-0.5">
-            {isHovered ? "Drag to scan nodes" : "Patrol active"}
-          </span>
-          <div className="mt-2 flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-cyan-950/60 border border-cyan-400/30 text-[9px] font-mono text-cyan-300">
-            <Activity className="w-2.5 h-2.5 text-cyan-400" />
-            <span>DISPERSION: 56px</span>
-          </div>
-        </div>
-      </Glass>
     </div>
   );
 }
+
+export const CyberPerimeterMatrix = CyberRadarLens;

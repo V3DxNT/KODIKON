@@ -5,7 +5,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://127.0.0.1:8000";
 
 // In-memory state for mock fallback so actions update state realistically
 let inMemoryIncidents: IncidentDetail[] = JSON.parse(JSON.stringify(mockData.incidents));
-let inMemoryAudit: AuditLog[] = JSON.parse(JSON.stringify(mockData.audit));
+const inMemoryAudit: AuditLog[] = JSON.parse(JSON.stringify(mockData.audit));
 
 export async function fetchIncidents(): Promise<IncidentSummary[]> {
   try {

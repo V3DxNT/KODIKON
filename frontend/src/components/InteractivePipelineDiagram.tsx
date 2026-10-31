@@ -1,18 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { 
-  Terminal, 
-  Layers, 
-  FileCode, 
-  CheckCircle2, 
-  Lock, 
-  Flame, 
-  ArrowRight,
-  ShieldCheck,
-  Activity,
-  Server
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export const InteractivePipelineDiagram: React.FC = () => {
   const [selectedStage, setSelectedStage] = useState<number>(0);
@@ -77,21 +66,21 @@ export const InteractivePipelineDiagram: React.FC = () => {
   const current = stages[selectedStage];
 
   return (
-    <div className="metallic-surface rounded-2xl p-6 sm:p-10 space-y-8 border border-white/[0.08]">
+    <div className="metallic-surface rounded-2xl p-6 sm:p-10 space-y-8 border-2 border-slate-300 dark:border-white/[0.08] shadow-lg">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 hairline-b gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-300 dark:border-white/10 gap-3">
         <div>
-          <div className="text-[11px] font-mono uppercase tracking-widest text-slate-400">
+          <div className="text-xs font-mono uppercase tracking-widest text-cyan-800 dark:text-cyan-400 font-black">
             VISUAL WORKFLOW PIPELINE
           </div>
-          <h3 className="text-xl sm:text-2xl font-medium text-white mt-1">
+          <h3 className="text-2xl sm:text-3xl font-black text-black dark:text-white mt-1.5 tracking-tight">
             The Autonomous 10-Step Execution Loop
           </h3>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-sm text-slate-800 dark:text-slate-300 font-semibold mt-1">
             Click any stage below to inspect the data payload and technical execution.
           </p>
         </div>
-        <div className="text-xs font-mono text-slate-400 px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/5 shrink-0">
+        <div className="text-xs font-mono font-bold text-black dark:text-slate-300 px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-white/[0.02] border-2 border-slate-300 dark:border-white/10 shrink-0">
           9 Custom Steps + 1 Caldera Re-Run
         </div>
       </div>
@@ -106,26 +95,26 @@ export const InteractivePipelineDiagram: React.FC = () => {
             <button
               key={stg.id}
               onClick={() => setSelectedStage(stg.id)}
-              className={`p-4 rounded-xl text-left transition-all border cursor-pointer flex flex-col justify-between space-y-3 ${
+              className={`p-4 rounded-xl text-left transition-all border-2 cursor-pointer flex flex-col justify-between space-y-3 ${
                 isSelected
                   ? isProof
-                    ? "metallic-surface border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.2)] bg-emerald-950/20"
-                    : "metallic-surface border-white/30 shadow-md bg-white/[0.06]"
-                  : "metallic-card border-white/[0.06] hover:border-white/15"
+                    ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 shadow-md"
+                    : "bg-white dark:bg-white/[0.08] border-slate-900 dark:border-white/40 shadow-md"
+                  : "bg-slate-50 dark:bg-[#0c0e14] border-slate-300 dark:border-white/[0.06] hover:border-slate-400 dark:hover:border-white/20"
               }`}
             >
               <div>
-                <span className={`text-[9px] font-mono uppercase font-bold tracking-wider ${
-                  isProof ? "text-emerald-400" : isSelected ? "text-slate-200" : "text-slate-500"
+                <span className={`text-[9px] font-mono uppercase font-black tracking-wider ${
+                  isProof ? "text-emerald-800 dark:text-emerald-400" : isSelected ? "text-black dark:text-white" : "text-slate-700 dark:text-slate-400"
                 }`}>
                   {stg.badge}
                 </span>
-                <div className="text-xs font-semibold text-white mt-1.5 leading-snug">
+                <div className="text-xs font-bold text-black dark:text-white mt-1.5 leading-snug">
                   {stg.title}
                 </div>
               </div>
 
-              <div className="text-[10px] font-mono text-slate-500 flex items-center space-x-1">
+              <div className="text-[10px] font-mono text-slate-700 dark:text-slate-400 font-bold flex items-center space-x-1">
                 <span>Inspect</span>
                 <ArrowRight className="h-2.5 w-2.5" />
               </div>
@@ -135,30 +124,30 @@ export const InteractivePipelineDiagram: React.FC = () => {
       </div>
 
       {/* Detailed Technical Payload Viewer */}
-      <div className="metallic-card rounded-xl p-6 sm:p-8 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 hairline-b gap-2">
+      <div className="rounded-2xl p-6 sm:p-8 space-y-4 bg-slate-50 dark:bg-[#0c0e14] border-2 border-slate-300 dark:border-white/10 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-300 dark:border-white/10 gap-2">
           <div className="flex items-center space-x-2">
-            <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+            <span className="text-xs font-mono font-black text-black dark:text-white uppercase tracking-wider">
               {current.title}
             </span>
-            <span className="text-slate-500 text-xs">&bull;</span>
-            <span className="text-xs font-mono text-slate-400">{current.actor}</span>
+            <span className="text-slate-400 text-xs">&bull;</span>
+            <span className="text-xs font-mono font-bold text-slate-800 dark:text-slate-300">{current.actor}</span>
           </div>
-          <span className="text-[11px] font-mono text-slate-300 px-2 py-0.5 rounded bg-white/[0.04] border border-white/5">
+          <span className="text-xs font-mono font-black text-black dark:text-slate-200 px-2.5 py-1 rounded bg-slate-200 dark:bg-white/[0.06] border border-slate-400 dark:border-white/10">
             {current.technique}
           </span>
         </div>
 
-        <p className="text-xs text-slate-300 leading-relaxed max-w-3xl">
+        <p className="text-sm text-slate-950 dark:text-slate-200 font-medium leading-relaxed max-w-3xl">
           {current.description}
         </p>
 
-        {/* Code Snippet Box */}
-        <div className="rounded-lg bg-black/80 p-4 font-mono text-xs text-slate-300 border border-white/5 space-y-1">
-          <div className="text-[10px] text-slate-500 uppercase tracking-widest pb-1 border-b border-white/5">
+        {/* Code Snippet Box (Terminal keeps authentic dark background) */}
+        <div className="preserve-dark rounded-xl bg-[#08090d] p-4 font-mono text-xs text-emerald-400 border border-slate-700 dark:border-white/10 space-y-1">
+          <div className="text-[10px] text-slate-400 uppercase tracking-widest pb-1 border-b border-white/10 font-bold">
             EXECUTION PAYLOAD / TELEMETRY INTERFACE
           </div>
-          <div className="pt-2 text-slate-200">{current.codePreview}</div>
+          <div className="pt-2 text-emerald-300 font-semibold">{current.codePreview}</div>
         </div>
       </div>
     </div>
