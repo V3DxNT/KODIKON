@@ -19,7 +19,7 @@ export default function AuditPage() {
       }
     };
     loadLogs();
-    const interval = setInterval(loadLogs, 10000);
+    const interval = setInterval(loadLogs, 2500);
     return () => clearInterval(interval);
   }, []);
 
