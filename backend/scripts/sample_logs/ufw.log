@@ -1,0 +1,3 @@
+# /var/log/ufw.log excerpt (Project X demo) -- outbound C2 beacon from the
+# compromised victim (192.168.56.10) back to the attacker (192.168.56.20).
+Oct 31 17:06:40 victim-server kernel: [UFW BLOCK] IN= OUT=eth0 SRC=192.168.56.10 DST=192.168.56.20 LEN=60 TOS=0x00 PREC=0x00 TTL=64 ID=38192 DF PROTO=TCP SPT=54210 DPT=4444 WINDOW=64240 RES=0x00 SYN URGP=0
