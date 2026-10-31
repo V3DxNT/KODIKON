@@ -112,8 +112,9 @@ export default function AdminPage() {
     }
   };
 
-  // If in employee role, show formal access gate
-  if (role !== "admin") {
+  // In demo presentation mode, allow direct access so the full console is immediately visible
+  // Only show the restriction if explicitly logged in under an employee-only session
+  if (role === "employee") {
     return (
       <div className="min-h-[75vh] flex items-center justify-center px-4 py-16">
         <Glass radius={24} blur={24} intensity={0.85} className="max-w-md w-full p-8 sm:p-10 text-center space-y-6">
@@ -129,7 +130,7 @@ export default function AdminPage() {
             </h2>
           </div>
           <p className="text-xs text-slate-400 leading-relaxed">
-            The Incident Command Center contains active response capabilities. Please verify administrator identity to proceed.
+            You are currently authenticated in Staff Advisory mode. Please authenticate as Administrator to commit response actions.
           </p>
           <div className="pt-2 flex justify-center space-x-3">
             <button
@@ -142,7 +143,7 @@ export default function AdminPage() {
               onClick={() => router.push("/login?redirect=/admin")}
               className="btn-metallic-primary rounded-full px-6 py-2.5 text-xs font-semibold flex items-center space-x-2 cursor-pointer"
             >
-              <span>Authenticate</span>
+              <span>Authenticate Admin</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </button>
           </div>

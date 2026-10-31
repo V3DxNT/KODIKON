@@ -1,0 +1,16 @@
+# /var/log/auth.log excerpt (Project X demo) -- SSH brute force -> success -> backdoor user
+# Attacker 192.168.56.20 against victim-server. Lines that aren't security-relevant
+# (systemd, pam, sudo, cron) are realistic noise and are ignored by the replayer.
+Oct 31 17:04:55 victim-server systemd[1]: Started Session 42 of user victim.
+Oct 31 17:05:01 victim-server sshd[4102]: Failed password for invalid user root from 192.168.56.20 port 49150 ssh2
+Oct 31 17:05:01 victim-server sshd[4102]: Connection closed by invalid user root 192.168.56.20 port 49150 [preauth]
+Oct 31 17:05:03 victim-server sshd[4105]: Failed password for invalid user admin from 192.168.56.20 port 49152 ssh2
+Oct 31 17:05:05 victim-server sshd[4108]: Failed password for invalid user ubuntu from 192.168.56.20 port 49154 ssh2
+Oct 31 17:05:07 victim-server sshd[4111]: Failed password for invalid user oracle from 192.168.56.20 port 49156 ssh2
+Oct 31 17:05:09 victim-server sshd[4114]: Failed password for victim from 192.168.56.20 port 49158 ssh2
+Oct 31 17:05:12 victim-server sshd[4117]: Accepted password for victim from 192.168.56.20 port 49160 ssh2
+Oct 31 17:05:12 victim-server sshd[4117]: pam_unix(sshd:session): session opened for user victim by (uid=0)
+Oct 31 17:05:40 victim-server sudo:   victim : TTY=pts/0 ; PWD=/home/victim ; USER=root ; COMMAND=/usr/sbin/useradd -m -s /bin/bash backdoor
+Oct 31 17:06:02 victim-server useradd[4201]: new user: name=backdoor, UID=1002, GID=1002, home=/home/backdoor, shell=/bin/bash
+Oct 31 17:06:03 victim-server passwd[4205]: password for 'backdoor' changed by 'root'
+Oct 31 17:06:10 victim-server CRON[4210]: pam_unix(cron:session): session opened for user root by (uid=0)

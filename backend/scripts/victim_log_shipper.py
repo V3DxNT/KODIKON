@@ -125,11 +125,29 @@ def main():
     parser.add_argument("--file", default="/var/log/auth.log", help="Path to auth.log")
     parser.add_argument("--attacker-ip", default="192.168.56.20", help="Default attacker IP for correlated actions")
     parser.add_argument("--test-simulate", action="store_true", help="Send mock attack events immediately to test connectivity")
+    parser.add_argument("--replay-file", default=None, help="Path to raw auth.log file to replay into backend line-by-line")
+    parser.add_argument("--delay", type=float, default=0.4, help="Delay in seconds between shipped events (default: 0.4s)")
     args = parser.parse_args()
 
     print(f"=== Project X Victim Log Shipper ===")
     print(f"Target SOC Backend: {args.backend}")
-    print(f"Log Target:         {args.file}")
+    print(f"Log Target:         {args.replay_file or args.file}")
+
+    if args.replay_file:
+        if not os.path.exists(args.replay_file):
+            print(f"[!] Replay file not found: {args.replay_file}")
+            sys.exit(1)
+        print(f"[*] Replaying raw log file: {args.replay_file} (delay={args.delay}s)...")
+        shipped = 0
+        with open(args.replay_file, "r", encoding="utf-8", errors="replace") as f:
+            for line in f:
+                event = parse_line(line, default_ip=args.attacker_ip)
+                if event:
+                    ship_event(args.backend, event)
+                    shipped += 1
+                    time.sleep(args.delay)
+        print(f"[✓] Replay finished: successfully shipped {shipped} normalized events to {args.backend}/events!")
+        return
 
     if args.test_simulate:
         print("[*] Running simulated attack injection test...")
@@ -145,7 +163,7 @@ def main():
         ]
         for ev in mock_events:
             ship_event(args.backend, ev)
-            time.sleep(0.5)
+            time.sleep(args.delay)
         print("[✓] Simulation completed!")
         return
 

@@ -1,0 +1,8 @@
+Oct 31 18:40:10 victim-server sshd[4101]: Failed password for invalid user root from 192.168.56.20 port 49152 ssh2
+Oct 31 18:40:12 victim-server sshd[4104]: Failed password for invalid user admin from 192.168.56.20 port 49154 ssh2
+Oct 31 18:40:14 victim-server sshd[4108]: Failed password for invalid user ubuntu from 192.168.56.20 port 49156 ssh2
+Oct 31 18:40:16 victim-server sshd[4112]: Failed password for invalid user test from 192.168.56.20 port 49158 ssh2
+Oct 31 18:40:18 victim-server sshd[4115]: Failed password for invalid user service from 192.168.56.20 port 49160 ssh2
+Oct 31 18:40:22 victim-server sshd[4120]: Accepted password for admin from 192.168.56.20 port 49162 ssh2
+Oct 31 18:40:28 victim-server useradd[4130]: new user: name=backdoor, UID=1002, GID=1002, home=/home/backdoor, shell=/bin/bash
+Oct 31 18:40:35 victim-server kernel: [UFW BLOCK] IN= OUT=eth0 SRC=192.168.56.10 DST=192.168.56.20 LEN=60 TOS=0x00 PREC=0x00 TTL=64 ID=54321 DF PROTO=TCP SPT=49200 DPT=4444 WINDOW=64240 RES=0x00 SYN URGP=0

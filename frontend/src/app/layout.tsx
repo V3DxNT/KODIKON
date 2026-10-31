@@ -4,7 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { NavigationWrapper } from "@/components/NavigationWrapper";
-import { Footer } from "@/components/Footer";
+import { FooterWrapper } from "@/components/FooterWrapper";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -73,7 +73,7 @@ export default function RootLayout({
           <AuthProvider>
             <NavigationWrapper />
             <main className="flex-1 relative z-10">{children}</main>
-            <Footer />
+            <FooterWrapper />
           </AuthProvider>
         </ThemeProvider>
       </body>
