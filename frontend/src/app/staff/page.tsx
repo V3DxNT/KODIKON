@@ -1,19 +1,17 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { EmployeeView } from "@/components/EmployeeView";
 import { fetchIncidents, fetchIncident, blockIncident } from "@/lib/api";
 import { IncidentDetail } from "@/types/soc";
 import { useAuth } from "@/context/AuthContext";
-import mockData from "@/mocks/incident.json";
-import { Lock, ArrowRight, UserCheck, Shield } from "lucide-react";
+import { Lock, ArrowRight } from "lucide-react";
 import { Glass } from "@/components/Glass";
 
 export default function StaffPage() {
   const router = useRouter();
-  const { role, user, isStaff, isAdmin, logout } = useAuth();
+  const { user, isStaff, isAdmin, logout } = useAuth();
   const [incidents, setIncidents] = useState<IncidentDetail[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -41,8 +39,9 @@ export default function StaffPage() {
         })
       );
       setIncidents(details);
-    } catch {
-      setIncidents(mockData.incidents as unknown as IncidentDetail[]);
+    } catch (err) {
+      console.warn("Failed to load staff incidents:", err);
+      setIncidents([]);
     }
   };
 

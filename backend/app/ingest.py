@@ -1,5 +1,6 @@
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session
+from sqlmodel import Session, select
 from app.db import get_session
 from app.models import Event
 from app.schemas import EventIn, EventOut
@@ -38,3 +39,9 @@ def ingest_event(event_in: EventIn, session: Session = Depends(get_session)):
     correlate_event(session, event)
 
     return event
+
+@router.get("", response_model=List[EventOut])
+def list_events(limit: int = 200, session: Session = Depends(get_session)):
+    """Fetch recent raw events streamed from the victim VM log shipper."""
+    return session.exec(select(Event).order_by(Event.ts.desc()).limit(limit)).all()
+

@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import {
-  Play,
   Network,
   Target,
   MessageSquare,
@@ -20,17 +19,16 @@ import {
   Database,
   Check,
   X,
+  ShieldCheck,
 } from "lucide-react";
 import { SentinelForgeLogo } from "./SentinelForgeLogo";
 
 interface HeroSectionProps {
-  onTriggerReplay: () => void;
-  isReplaying: boolean;
+  onLaunchConsole: () => void;
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
-  onTriggerReplay,
-  isReplaying,
+  onLaunchConsole,
 }) => {
   const [mockApproved, setMockApproved] = useState(false);
 
@@ -60,12 +58,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             {/* CTA Buttons */}
             <div className="flex flex-wrap items-center gap-3.5 pt-1">
               <button
-                onClick={onTriggerReplay}
-                disabled={isReplaying}
-                className="btn-metallic-primary h-11 px-5 rounded-lg text-xs font-semibold flex items-center space-x-2 cursor-pointer disabled:opacity-50 transition-all shadow-[0_1px_2px_rgba(15,23,42,0.08),inset_0_1px_0_rgba(255,255,255,0.16)]"
+                onClick={onLaunchConsole}
+                className="btn-metallic-primary h-11 px-5 rounded-lg text-xs font-semibold flex items-center space-x-2 cursor-pointer transition-all shadow-[0_1px_2px_rgba(15,23,42,0.08),inset_0_1px_0_rgba(255,255,255,0.16)]"
               >
-                <Play className={`h-3.5 w-3.5 text-blue-400 fill-blue-400 ${isReplaying ? "animate-spin" : ""}`} />
-                <span>{isReplaying ? "Simulating Attack..." : "Simulate Inbound Threat"}</span>
+                <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                <span>Launch Threat Console</span>
               </button>
               <a
                 href="#pipeline"

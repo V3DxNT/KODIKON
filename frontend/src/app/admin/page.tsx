@@ -9,20 +9,18 @@ import {
   fetchIncident, 
   approveIncident, 
   blockIncident, 
-  fetchAuditLogs, 
-  triggerReplaySimulation 
+  fetchAuditLogs 
 } from "@/lib/api";
 import { IncidentDetail, AuditLog } from "@/types/soc";
 import { useAuth } from "@/context/AuthContext";
-import mockData from "@/mocks/incident.json";
-import { Lock, ArrowRight, SlidersHorizontal, LayoutDashboard } from "lucide-react";
+import { Lock, ArrowRight, SlidersHorizontal, LayoutDashboard, RefreshCw } from "lucide-react";
 
 export default function AdminPage() {
   const router = useRouter();
   const { role } = useAuth();
   const [incidents, setIncidents] = useState<IncidentDetail[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
-  const [isReplaying, setIsReplaying] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"threat_hunting" | "extended_console">("threat_hunting");
 
@@ -53,9 +51,10 @@ export default function AdminPage() {
 
       const audits = await fetchAuditLogs();
       setAuditLogs(audits);
-    } catch {
-      setIncidents(mockData.incidents as unknown as IncidentDetail[]);
-      setAuditLogs(mockData.audit as unknown as AuditLog[]);
+    } catch (err) {
+      console.warn("Failed to query live daemon data:", err);
+      setIncidents([]);
+      setAuditLogs([]);
     }
   };
 
@@ -91,7 +90,7 @@ export default function AdminPage() {
   const handleBlock = async (id: number) => {
     try {
       const res = await blockIncident(id, "admin");
-      showToast(res.detail || `Firewall block applied & Caldera confirmed!`);
+      showToast(res.detail || `Firewall block applied on VM & Caldera confirmed!`);
       await loadData();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to execute block";
@@ -100,16 +99,13 @@ export default function AdminPage() {
     }
   };
 
-  const handleTriggerReplay = async () => {
-    setIsReplaying(true);
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
     try {
-      await triggerReplaySimulation();
-      showToast("Attack sequence ingested into daemon!");
       await loadData();
-    } catch {
-      showToast("Simulation trigger failed");
+      showToast("Live telemetry refreshed from SOC daemon");
     } finally {
-      setIsReplaying(false);
+      setIsRefreshing(false);
     }
   };
 
@@ -164,7 +160,7 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* View Switcher Top Bar for seamlessly switching to advanced console if desired */}
+      {/* View Switcher Top Bar */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-4 flex items-center justify-between">
         <div className="flex items-center space-x-2 text-xs text-slate-500 font-medium">
           <span>Admin Portal</span>
@@ -175,6 +171,16 @@ export default function AdminPage() {
         </div>
 
         <div className="flex items-center space-x-2">
+          <button
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            className="h-8 px-3 rounded-lg border border-slate-200/90 bg-white hover:bg-slate-50 text-xs font-medium text-slate-700 shadow-[0_1px_2px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-all cursor-pointer flex items-center space-x-1.5 disabled:opacity-50"
+            title="Refresh telemetry from backend"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 text-blue-600 ${isRefreshing ? "animate-spin" : ""}`} />
+            <span className="hidden sm:inline">Refresh Data</span>
+          </button>
+
           <button
             onClick={() => setViewMode(viewMode === "threat_hunting" ? "extended_console" : "threat_hunting")}
             className="h-8 px-3 rounded-lg border border-slate-200/90 bg-white hover:bg-slate-50 hover:border-slate-300 text-xs font-medium text-slate-700 shadow-[0_1px_2px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-all cursor-pointer flex items-center space-x-1.5"
@@ -203,8 +209,7 @@ export default function AdminPage() {
           auditLogs={auditLogs}
           onApprove={handleApprove}
           onBlock={handleBlock}
-          onTriggerReplay={handleTriggerReplay}
-          isReplaying={isReplaying}
+          onRefresh={handleRefresh}
         />
       ) : (
         <div className="max-w-[1440px] mx-auto p-3 sm:p-6">
@@ -214,8 +219,7 @@ export default function AdminPage() {
               auditLogs={auditLogs}
               onApprove={handleApprove}
               onBlock={handleBlock}
-              onTriggerReplay={handleTriggerReplay}
-              isReplaying={isReplaying}
+              onRefresh={handleRefresh}
             />
           </div>
         </div>

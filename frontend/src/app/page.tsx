@@ -1,25 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 import { HeroSection } from "@/components/HeroSection";
 import { InteractivePipelineDiagram } from "@/components/InteractivePipelineDiagram";
 import { NetworkTopologyDiagram } from "@/components/NetworkTopologyDiagram";
 import { ArrowRight, ShieldCheck, UserCheck } from "lucide-react";
-import { triggerReplaySimulation } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { Role } from "@/types/soc";
 
 export default function HomePage() {
   const router = useRouter();
   const { role } = useAuth();
-  const [isReplaying, setIsReplaying] = useState(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 4000);
-  };
 
   const handleEnterPortal = (targetRole: Role) => {
     if (targetRole === "admin") {
@@ -37,34 +29,12 @@ export default function HomePage() {
     }
   };
 
-  const handleTriggerReplay = async () => {
-    setIsReplaying(true);
-    try {
-      await triggerReplaySimulation();
-      showToast("Attack sequence ingested into daemon!");
-      setTimeout(() => {
-        router.push("/attacks");
-      }, 1000);
-    } catch {
-      showToast("Simulation trigger failed");
-    } finally {
-      setIsReplaying(false);
-    }
-  };
-
   return (
     <div className="pb-32">
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-2.5 rounded-lg metallic-surface px-5 py-3 text-xs font-mono text-slate-200 border border-white/15 shadow-xl animate-in slide-in-from-bottom-3">
-          <span className="h-1.5 w-1.5 rounded-full bg-slate-300 animate-pulse"></span>
-          <span>{toastMessage}</span>
-        </div>
-      )}
 
       {/* 1. Hero Overview (Immediate visual punch) */}
       <HeroSection
-        onTriggerReplay={handleTriggerReplay}
-        isReplaying={isReplaying}
+        onLaunchConsole={() => handleEnterPortal("admin")}
       />
 
       <div className="mx-auto max-w-7xl px-6 sm:px-8 mt-12 sm:mt-16 space-y-24">

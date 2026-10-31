@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { AuditLedgerView } from "@/components/AuditLedgerView";
 import { fetchAuditLogs } from "@/lib/api";
 import { AuditLog } from "@/types/soc";
-import mockData from "@/mocks/incident.json";
 
 export default function AuditPage() {
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
@@ -14,8 +13,9 @@ export default function AuditPage() {
       try {
         const logs = await fetchAuditLogs();
         setAuditLogs(logs);
-      } catch {
-        setAuditLogs(mockData.audit as unknown as AuditLog[]);
+      } catch (err) {
+        console.warn("Failed to load audit logs:", err);
+        setAuditLogs([]);
       }
     };
     loadLogs();

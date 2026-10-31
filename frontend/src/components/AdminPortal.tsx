@@ -22,7 +22,6 @@ import {
   CheckCircle2,
   XCircle,
   Info,
-  Play,
   Check,
   Minus,
   Download,
@@ -39,15 +38,13 @@ import { ProofModal } from "./ProofModal";
 import { SentinelForgeLogo } from "./SentinelForgeLogo";
 import { ThreatHuntingDashboard } from "./ThreatHuntingDashboard";
 import { useAuth } from "@/context/AuthContext";
-import { Glass } from "./Glass";
 
 interface AdminPortalProps {
   incidents: IncidentDetail[];
   auditLogs: AuditLog[];
   onApprove: (id: number) => Promise<void>;
   onBlock: (id: number) => Promise<void>;
-  onTriggerReplay: () => Promise<void>;
-  isReplaying: boolean;
+  onRefresh?: () => Promise<void>;
 }
 
 type TabType =
@@ -68,8 +65,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   auditLogs,
   onApprove,
   onBlock,
-  onTriggerReplay,
-  isReplaying,
+  onRefresh,
 }) => {
   const router = useRouter();
   const { logout } = useAuth();
@@ -95,7 +91,6 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const [openRowActionId, setOpenRowActionId] = useState<number | null>(null);
 
   // Response execution state
-  const [isApproving, setIsApproving] = useState(false);
   const [isBlocking, setIsBlocking] = useState(false);
   const [isRetestingCaldera, setIsRetestingCaldera] = useState(false);
 
@@ -186,10 +181,10 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   }, [incidents, severityFilter, statusFilter, incidentSearch, sortOrder]);
 
   // Derived metrics for Dashboard
-  const openIncidentsCount = incidents.filter((i) => i.status === "new").length || 3;
-  const criticalIncidentsCount = incidents.filter((i) => i.severity === "high").length || 2;
-  const resolvedIncidentsCount = incidents.filter((i) => i.status === "verified" || i.status === "blocked").length || 24;
-  const monitoredAssetsCount = 18;
+  const openIncidentsCount = incidents.filter((i) => i.status === "new").length;
+  const criticalIncidentsCount = incidents.filter((i) => i.severity === "high").length;
+  const resolvedIncidentsCount = incidents.filter((i) => i.status === "verified" || i.status === "blocked").length;
+  const monitoredAssetsCount = 2; // Ubuntu Server (192.168.56.10) & Attacker VM (192.168.56.20)
 
   // Handlers for Response Actions
   const handleBlockClick = async () => {
@@ -198,16 +193,20 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
     try {
       await onBlock(currentIncident.id);
       showToast(`Firewall rule committed. MITRE Caldera verification proof successful!`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Firewall block failed";
+      showToast(msg);
     } finally {
       setIsBlocking(false);
     }
   };
 
   const handleRetestCaldera = async () => {
+    if (!currentIncident) return;
     setIsRetestingCaldera(true);
     try {
-      await onTriggerReplay();
-      showToast("Adversary re-test initiated. Proving traffic containment.");
+      if (onRefresh) await onRefresh();
+      showToast("Adversary re-test telemetry refreshed. Proving traffic containment.");
     } finally {
       setIsRetestingCaldera(false);
     }
@@ -452,16 +451,17 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
           {/* Right Header Badges & User Profile */}
           <div className="flex items-center space-x-4">
-            {/* Quick Simulation Trigger */}
-            <button
-              onClick={onTriggerReplay}
-              disabled={isReplaying}
-              title="Inject demo attack sequence into daemon"
-              className="hidden sm:flex items-center space-x-2 btn-metallic-secondary h-8 px-3 rounded-lg text-xs font-medium cursor-pointer disabled:opacity-50"
-            >
-              <Play className={`h-3 w-3 text-blue-600 ${isReplaying ? "animate-spin" : ""}`} />
-              <span>{isReplaying ? "Replaying..." : "Simulate Threat"}</span>
-            </button>
+            {/* Telemetry Refresh */}
+            {onRefresh && (
+              <button
+                onClick={onRefresh}
+                title="Refresh live telemetry from daemon"
+                className="hidden sm:flex items-center space-x-2 btn-metallic-secondary h-8 px-3 rounded-lg text-xs font-medium cursor-pointer"
+              >
+                <RefreshCw className="h-3 w-3 text-blue-600" />
+                <span>Refresh Telemetry</span>
+              </button>
+            )}
 
             {/* Notification Bell */}
             <div className="relative">
@@ -471,7 +471,9 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                 aria-label="View notifications"
               >
                 <Bell className="h-4.5 w-4.5" />
-                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-[var(--bg-surface)]"></span>
+                {incidents.some((i) => i.status === "new") && (
+                  <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-[var(--bg-surface)]"></span>
+                )}
               </button>
 
               {notificationOpen && (
@@ -479,26 +481,37 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   <div className="flex items-center justify-between pb-2 border-b border-white/10">
                     <span className="font-semibold text-white">Security Alerts</span>
                     <span className="text-[10px] font-mono text-rose-400 font-bold bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-500/20">
-                      2 Unresolved
+                      {incidents.filter((i) => i.status === "new").length} Unresolved
                     </span>
                   </div>
-                  <div className="space-y-2">
-                    <div
-                      onClick={() => {
-                        setSelectedIncidentId(101);
-                        setActiveTab("response");
-                        setNotificationOpen(false);
-                      }}
-                      className="p-2.5 rounded-xl hover:bg-white/[0.05] cursor-pointer space-y-1 transition-colors border border-transparent hover:border-white/10"
-                    >
-                      <div className="font-medium text-slate-200 flex items-center justify-between">
-                        <span>SSH Brute Force</span>
-                        <span className="text-[10px] font-mono text-rose-400">Critical</span>
+                  <div className="space-y-2 max-h-56 overflow-y-auto">
+                    {incidents.filter((i) => i.status === "new").length > 0 ? (
+                      incidents
+                        .filter((i) => i.status === "new")
+                        .map((inc) => (
+                          <div
+                            key={inc.id}
+                            onClick={() => {
+                              setSelectedIncidentId(inc.id);
+                              setActiveTab("response");
+                              setNotificationOpen(false);
+                            }}
+                            className="p-2.5 rounded-xl hover:bg-white/[0.05] cursor-pointer space-y-1 transition-colors border border-transparent hover:border-white/10"
+                          >
+                            <div className="font-medium text-slate-200 flex items-center justify-between">
+                              <span>Incident #{inc.id}</span>
+                              <span className="text-[10px] font-mono text-rose-400 uppercase">{inc.severity}</span>
+                            </div>
+                            <p className="text-[11px] text-[var(--text-secondary)] leading-tight truncate">
+                              {inc.summary || `Attacker ${inc.source_ip} detected`}
+                            </p>
+                          </div>
+                        ))
+                    ) : (
+                      <div className="p-3 text-center text-slate-400 text-xs font-mono">
+                        No pending threat alerts.
                       </div>
-                      <p className="text-[11px] text-[var(--text-secondary)] leading-tight">
-                        5 failed attempts from 192.168.56.20 &bull; Requires containment
-                      </p>
-                    </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -565,8 +578,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
               auditLogs={auditLogs}
               onApprove={onApprove}
               onBlock={onBlock}
-              onTriggerReplay={onTriggerReplay}
-              isReplaying={isReplaying}
+              onRefresh={onRefresh}
             />
           </div>
         )}
