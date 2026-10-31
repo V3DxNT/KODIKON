@@ -1,0 +1,142 @@
+{
+  "incidents": [
+    {
+      "id": 101,
+      "created_at": "2026-10-31T11:45:00Z",
+      "status": "new",
+      "severity": "high",
+      "source_ip": "192.168.56.20",
+      "rule_hits": ["R1", "R2", "R3"],
+      "summary": "CRITICAL ATTACK DETECTED: An external actor from 192.168.56.20 conducted an automated SSH brute-force attack until gaining entry, created an unauthorized backdoor administrative account ('backdoor'), and established an unauthorized outbound command & control channel. Immediate network-level firewall isolation is strongly advised.",
+      "events": [
+        {
+          "id": 1,
+          "ts": "2026-10-31T11:40:12Z",
+          "source_ip": "192.168.56.20",
+          "user": "root",
+          "host": "victim-vm",
+          "event_type": "ssh_fail",
+          "raw_line": "Oct 31 11:40:12 victim-vm sshd[4102]: Failed password for invalid user root from 192.168.56.20 port 49152 ssh2"
+        },
+        {
+          "id": 2,
+          "ts": "2026-10-31T11:40:14Z",
+          "source_ip": "192.168.56.20",
+          "user": "admin",
+          "host": "victim-vm",
+          "event_type": "ssh_fail",
+          "raw_line": "Oct 31 11:40:14 victim-vm sshd[4105]: Failed password for admin from 192.168.56.20 port 49154 ssh2"
+        },
+        {
+          "id": 3,
+          "ts": "2026-10-31T11:40:16Z",
+          "source_ip": "192.168.56.20",
+          "user": "ubuntu",
+          "host": "victim-vm",
+          "event_type": "ssh_fail",
+          "raw_line": "Oct 31 11:40:16 victim-vm sshd[4109]: Failed password for invalid user ubuntu from 192.168.56.20 port 49156 ssh2"
+        },
+        {
+          "id": 4,
+          "ts": "2026-10-31T11:40:18Z",
+          "source_ip": "192.168.56.20",
+          "user": "test",
+          "host": "victim-vm",
+          "event_type": "ssh_fail",
+          "raw_line": "Oct 31 11:40:18 victim-vm sshd[4112]: Failed password for invalid user test from 192.168.56.20 port 49158 ssh2"
+        },
+        {
+          "id": 5,
+          "ts": "2026-10-31T11:40:20Z",
+          "source_ip": "192.168.56.20",
+          "user": "service",
+          "host": "victim-vm",
+          "event_type": "ssh_fail",
+          "raw_line": "Oct 31 11:40:20 victim-vm sshd[4116]: Failed password for invalid user service from 192.168.56.20 port 49160 ssh2"
+        },
+        {
+          "id": 6,
+          "ts": "2026-10-31T11:40:25Z",
+          "source_ip": "192.168.56.20",
+          "user": "admin",
+          "host": "victim-vm",
+          "event_type": "ssh_success",
+          "raw_line": "Oct 31 11:40:25 victim-vm sshd[4120]: Accepted password for admin from 192.168.56.20 port 49164 ssh2"
+        },
+        {
+          "id": 7,
+          "ts": "2026-10-31T11:41:02Z",
+          "source_ip": "192.168.56.20",
+          "user": "admin",
+          "host": "victim-vm",
+          "event_type": "user_add",
+          "raw_line": "type=USER_ADD msg=audit(1730374862.102:498): pid=4145 uid=0 auid=1000 ses=2 op=add_user acct=\"backdoor\" exe=\"/usr/sbin/useradd\" res=success"
+        },
+        {
+          "id": 8,
+          "ts": "2026-10-31T11:42:15Z",
+          "source_ip": "192.168.56.20",
+          "user": "admin",
+          "host": "victim-vm",
+          "event_type": "egress",
+          "raw_line": "[UFW AUDIT EGRESS] IN= OUT=eth0 SRC=192.168.56.10 DST=192.168.56.20 LEN=60 TOS=0x00 PREC=0x00 TTL=64 ID=38192 DF PROTO=TCP SPT=54210 DPT=4444 WINDOW=64240 SYN"
+        }
+      ]
+    },
+    {
+      "id": 100,
+      "created_at": "2026-10-30T18:20:00Z",
+      "status": "verified",
+      "severity": "medium",
+      "source_ip": "10.0.0.84",
+      "rule_hits": ["R1"],
+      "summary": "MEDIUM incident from 10.0.0.84. Brute force login pattern detected and verified neutralized via automated firewall containment.",
+      "events": [
+        {
+          "id": 91,
+          "ts": "2026-10-30T18:15:10Z",
+          "source_ip": "10.0.0.84",
+          "user": "root",
+          "host": "victim-vm",
+          "event_type": "ssh_fail",
+          "raw_line": "Oct 30 18:15:10 victim-vm sshd[3801]: Failed password for root from 10.0.0.84 port 38291 ssh2"
+        },
+        {
+          "id": 92,
+          "ts": "2026-10-30T18:16:30Z",
+          "source_ip": "10.0.0.84",
+          "user": "admin",
+          "host": "victim-vm",
+          "event_type": "ssh_success",
+          "raw_line": "Oct 30 18:16:30 victim-vm sshd[3805]: Accepted password for admin from 10.0.0.84 port 38294 ssh2"
+        }
+      ]
+    }
+  ],
+  "audit": [
+    {
+      "id": 1,
+      "ts": "2026-10-30T18:22:00Z",
+      "actor_role": "admin",
+      "action": "approve",
+      "target": "100",
+      "result": "ok"
+    },
+    {
+      "id": 2,
+      "ts": "2026-10-30T18:22:05Z",
+      "actor_role": "admin",
+      "action": "block",
+      "target": "10.0.0.84",
+      "result": "ok"
+    },
+    {
+      "id": 3,
+      "ts": "2026-10-30T18:22:20Z",
+      "actor_role": "admin",
+      "action": "verify",
+      "target": "10.0.0.84",
+      "result": "confirmed"
+    }
+  ]
+}
