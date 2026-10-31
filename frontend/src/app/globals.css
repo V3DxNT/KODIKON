@@ -1,114 +1,401 @@
 @import "tailwindcss";
 
 @layer base {
-  :root {
+  /* =========================================================================
+     PROJECT X DESIGN SYSTEM — CORE SEMANTIC TOKENS
+     Dark mode is the authentic cybersecurity baseline.
+     Light mode provides a crisp, complementary titanium-slate counterpart.
+     ========================================================================= */
+
+  :root,
+  .dark,
+  [data-theme="dark"] {
     --bg-base: #08090d;
-    --bg-surface: #0e1117;
+    --bg-surface: #0c0e14;
+    --bg-card: #0f121a;
+    --bg-card-hover: #121622;
     --bg-elevated: #141822;
-    --border-subtle: rgba(255, 255, 255, 0.06);
-    --border-metallic: rgba(255, 255, 255, 0.12);
+    --bg-header: rgba(8, 9, 13, 0.9);
+    --bg-footer: #050609;
+    --bg-input: rgba(0, 0, 0, 0.6);
+    --bg-terminal: #050608;
+
+    --border-subtle: rgba(255, 255, 255, 0.07);
+    --border-card: rgba(255, 255, 255, 0.1);
+    --border-card-top: rgba(255, 255, 255, 0.14);
+    --border-card-hover: rgba(255, 255, 255, 0.22);
+    --border-input: rgba(255, 255, 255, 0.1);
+    --border-hairline: rgba(255, 255, 255, 0.07);
+
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
     --text-muted: #64748b;
+    --text-contrast: #ffffff;
+
+    --shadow-metallic: inset 0 1px 0 0 rgba(255, 255, 255, 0.07), 0 8px 32px -8px rgba(0, 0, 0, 0.6);
+    --shadow-card: inset 0 1px 0 0 rgba(255, 255, 255, 0.05), 0 2px 8px -2px rgba(0, 0, 0, 0.4);
+    --shadow-card-hover: 0 8px 24px -4px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+
+    --btn-primary-bg: linear-gradient(180deg, #ffffff 0%, #d4d4d8 100%);
+    --btn-primary-text: #090a0f;
+    --btn-primary-border: rgba(255, 255, 255, 0.3);
+    --btn-primary-hover-bg: linear-gradient(180deg, #f4f4f5 0%, #e4e4e7 100%);
+    --btn-primary-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+
+    --btn-secondary-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%), #141722;
+    --btn-secondary-text: #e2e8f0;
+    --btn-secondary-border: rgba(255, 255, 255, 0.1);
+    --btn-secondary-hover-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.03) 100%), #171b28;
+
+    --btn-danger-bg: linear-gradient(180deg, rgba(225, 29, 72, 0.15) 0%, rgba(159, 18, 57, 0.15) 100%), #150a0e;
+    --btn-danger-text: #fda4af;
+    --btn-danger-border: rgba(244, 63, 94, 0.3);
+    --btn-danger-hover-bg: linear-gradient(180deg, rgba(225, 29, 72, 0.25) 0%, rgba(159, 18, 57, 0.2) 100%), #1c0c13;
+
+    --badge-neutral-bg: rgba(255, 255, 255, 0.04);
+    --badge-neutral-border: rgba(255, 255, 255, 0.08);
+    --badge-neutral-text: #94a3b8;
+
+    --pill-bg: rgba(255, 255, 255, 0.03);
+    --pill-border: rgba(255, 255, 255, 0.08);
+    --pill-active-bg: rgba(255, 255, 255, 0.12);
+    --pill-active-text: #ffffff;
+    --pill-muted-text: #94a3b8;
+  }
+
+  /* Light Theme (Complementary Titanium Slate) */
+  .light,
+  [data-theme="light"] {
+    --bg-base: #f8fafc;
+    --bg-surface: #ffffff;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f1f5f9;
+    --bg-elevated: #f1f5f9;
+    --bg-header: rgba(248, 250, 252, 0.92);
+    --bg-footer: #f1f5f9;
+    --bg-input: #ffffff;
+    --bg-terminal: #0f141f;
+
+    --border-subtle: rgba(15, 23, 42, 0.08);
+    --border-card: rgba(15, 23, 42, 0.1);
+    --border-card-top: rgba(15, 23, 42, 0.14);
+    --border-card-hover: rgba(15, 23, 42, 0.22);
+    --border-input: rgba(15, 23, 42, 0.18);
+    --border-hairline: rgba(15, 23, 42, 0.08);
+
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --text-contrast: #020617;
+
+    --shadow-metallic: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+    --shadow-card: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.03);
+    --shadow-card-hover: 0 10px 24px -4px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
+
+    --btn-primary-bg: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+    --btn-primary-text: #ffffff;
+    --btn-primary-border: #0f172a;
+    --btn-primary-hover-bg: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+    --btn-primary-shadow: 0 1px 3px rgba(15, 23, 42, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+    --btn-secondary-bg: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    --btn-secondary-text: #0f172a;
+    --btn-secondary-border: rgba(15, 23, 42, 0.14);
+    --btn-secondary-hover-bg: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+
+    --btn-danger-bg: #fff1f2;
+    --btn-danger-text: #e11d48;
+    --btn-danger-border: #fecdd3;
+    --btn-danger-hover-bg: #ffe4e6;
+
+    --badge-neutral-bg: rgba(15, 23, 42, 0.05);
+    --badge-neutral-border: rgba(15, 23, 42, 0.1);
+    --badge-neutral-text: #475569;
+
+    --pill-bg: rgba(15, 23, 42, 0.04);
+    --pill-border: rgba(15, 23, 42, 0.1);
+    --pill-active-bg: #ffffff;
+    --pill-active-text: #0f172a;
+    --pill-muted-text: #64748b;
+  }
+
+  html {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
   }
 
   body {
     background-color: var(--bg-base);
     color: var(--text-primary);
+    font-family: var(--font-sans), Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum";
     letter-spacing: -0.011em;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+
+  code, kbd, samp, pre {
+    font-family: var(--font-mono), "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-feature-settings: "tnum";
   }
 }
 
-/* Metallic Glass Surface Styling */
+/* =========================================================================
+   SURFACE STYLING & SHADOW ARCHITECTURE
+   ========================================================================= */
+
 .metallic-surface {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0.008) 100%), #0c0e14;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.07), 0 8px 32px -8px rgba(0, 0, 0, 0.5);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-metallic);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dark .metallic-surface, [data-theme="dark"] .metallic-surface {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0.008) 100%), #0c0e14;
 }
 
 .metallic-card {
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-card-top);
+  border-left: 1px solid var(--border-card);
+  border-right: 1px solid var(--border-card);
+  border-bottom: 1px solid var(--border-hairline);
+  box-shadow: var(--shadow-card);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark .metallic-card, [data-theme="dark"] .metallic-card {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0%, rgba(255, 255, 255, 0.005) 100%), #0f121a;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  border-left: 1px solid rgba(255, 255, 255, 0.06);
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  border-bottom-color: rgba(0, 0, 0, 0.4);
 }
 
 .metallic-card-hover {
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .metallic-card-hover:hover {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.01) 100%), #121622;
-  border-top-color: rgba(255, 255, 255, 0.2);
+  background: var(--bg-card-hover);
+  border-top-color: var(--border-card-hover);
+  box-shadow: var(--shadow-card-hover);
   transform: translateY(-1px);
 }
 
-/* Metallic Buttons */
+.dark .metallic-card-hover:hover, [data-theme="dark"] .metallic-card-hover:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.01) 100%), #121622;
+}
+
+/* =========================================================================
+   BUTTON SYSTEMS & MICRO-INTERACTIONS
+   ========================================================================= */
+
 .btn-metallic-primary {
-  background: linear-gradient(180deg, #ffffff 0%, #d4d4d8 100%);
-  color: #090a0f;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text) !important;
+  border: 1px solid var(--btn-primary-border);
+  box-shadow: var(--btn-primary-shadow);
   transition: all 0.15s ease;
 }
 .btn-metallic-primary:hover {
-  background: linear-gradient(180deg, #f4f4f5 0%, #e4e4e7 100%);
-  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  background: var(--btn-primary-hover-bg);
+  transform: translateY(-0.5px);
+}
+.btn-metallic-primary:active {
+  transform: scale(0.985);
 }
 
 .btn-metallic-secondary {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%), #141722;
-  color: #e2e8f0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+  border: 1px solid var(--btn-secondary-border);
   transition: all 0.15s ease;
 }
 .btn-metallic-secondary:hover {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.03) 100%), #171b28;
-  border-color: rgba(255, 255, 255, 0.18);
-  color: #ffffff;
+  background: var(--btn-secondary-hover-bg);
+  transform: translateY(-0.5px);
+}
+.btn-metallic-secondary:active {
+  transform: scale(0.985);
 }
 
 .btn-metallic-danger {
-  background: linear-gradient(180deg, rgba(225, 29, 72, 0.15) 0%, rgba(159, 18, 57, 0.15) 100%), #150a0e;
-  color: #fda4af;
-  border: 1px solid rgba(244, 63, 94, 0.3);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  background: var(--btn-danger-bg);
+  color: var(--btn-danger-text);
+  border: 1px solid var(--btn-danger-border);
   transition: all 0.15s ease;
 }
 .btn-metallic-danger:hover {
-  background: linear-gradient(180deg, rgba(225, 29, 72, 0.25) 0%, rgba(159, 18, 57, 0.2) 100%), #1c0c13;
-  border-color: rgba(244, 63, 94, 0.5);
-  color: #ffe4e6;
+  background: var(--btn-danger-hover-bg);
+  transform: translateY(-0.5px);
+}
+.btn-metallic-danger:active {
+  transform: scale(0.985);
 }
 
-/* Formal Hairlines */
+/* Theme selector pill styling */
+.border-subtle {
+  border-color: var(--pill-border);
+}
+.bg-surface-subtle {
+  background-color: var(--pill-bg);
+}
+.bg-active-pill {
+  background-color: var(--pill-active-bg);
+}
+.text-active-pill-text {
+  color: var(--pill-active-text);
+}
+.text-muted-pill {
+  color: var(--pill-muted-text);
+}
+
+/* Hairlines */
 .hairline-b {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid var(--border-hairline);
 }
 .hairline-t {
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 1px solid var(--border-hairline);
 }
 .hairline-r {
-  border-right: 1px solid rgba(255, 255, 255, 0.07);
+  border-right: 1px solid var(--border-hairline);
 }
 
-/* Minimal Custom Scrollbar */
+/* Micro-interaction Glow Hover */
+.glow-hover {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glow-hover:hover {
+  transform: translateY(-1px);
+}
+
+/* Accessibility Focus Ring Tokens */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-base), 0 0 0 4px rgba(100, 116, 139, 0.5);
+}
+
+/* =========================================================================
+   LIGHT THEME ELEMENT MAPPER
+   Preserves dark mode 100%, and maps text/borders smoothly in light mode.
+   ========================================================================= */
+
+.light h1, [data-theme="light"] h1,
+.light h2, [data-theme="light"] h2,
+.light h3, [data-theme="light"] h3,
+.light h4, [data-theme="light"] h4,
+.light h5, [data-theme="light"] h5,
+.light h6, [data-theme="light"] h6 {
+  color: var(--text-contrast) !important;
+}
+
+.light .text-white:not([data-preserve-color]):not(.preserve-dark *):not(.btn-metallic-primary *):not([class*="bg-black"] *):not([class*="bg-rose-950"] *):not([class*="bg-emerald-950"] *):not([class*="bg-amber-950"] *),
+[data-theme="light"] .text-white:not([data-preserve-color]):not(.preserve-dark *):not(.btn-metallic-primary *):not([class*="bg-black"] *):not([class*="bg-rose-950"] *):not([class*="bg-emerald-950"] *):not([class*="bg-amber-950"] *) {
+  color: #0f172a !important;
+}
+
+.light .text-slate-100:not([data-preserve-color]):not(.preserve-dark *):not(.btn-metallic-primary *),
+[data-theme="light"] .text-slate-100:not([data-preserve-color]):not(.preserve-dark *):not(.btn-metallic-primary *) {
+  color: #0f172a !important;
+}
+
+.light .text-slate-200:not([data-preserve-color]):not(.preserve-dark *):not(.btn-metallic-primary *),
+[data-theme="light"] .text-slate-200:not([data-preserve-color]):not(.preserve-dark *):not(.btn-metallic-primary *) {
+  color: #1e293b !important;
+}
+
+.light .text-slate-300:not([data-preserve-color]):not(.preserve-dark *):not(.btn-metallic-primary *),
+[data-theme="light"] .text-slate-300:not([data-preserve-color]):not(.preserve-dark *):not(.btn-metallic-primary *) {
+  color: #334155 !important;
+}
+
+.light .text-slate-400:not([data-preserve-color]):not(.preserve-dark *):not([class*="bg-black"] *),
+[data-theme="light"] .text-slate-400:not([data-preserve-color]):not(.preserve-dark *):not([class*="bg-black"] *) {
+  color: #475569 !important;
+}
+
+.light .text-slate-500:not([data-preserve-color]):not(.preserve-dark *):not([class*="bg-black"] *),
+[data-theme="light"] .text-slate-500:not([data-preserve-color]):not(.preserve-dark *):not([class*="bg-black"] *) {
+  color: #64748b !important;
+}
+
+.light [class*="border-white/"]:not([data-preserve-border]):not(.preserve-dark *):not([class*="bg-black"] *),
+[data-theme="light"] [class*="border-white/"]:not([data-preserve-border]):not(.preserve-dark *):not([class*="bg-black"] *) {
+  border-color: rgba(15, 23, 42, 0.1) !important;
+}
+
+.light [class*="bg-white/"]:not(.btn-metallic-primary):not([data-preserve-bg]):not(.preserve-dark *):not([class*="bg-black"] *),
+[data-theme="light"] [class*="bg-white/"]:not(.btn-metallic-primary):not([data-preserve-bg]):not(.preserve-dark *):not([class*="bg-black"] *) {
+  background-color: rgba(15, 23, 42, 0.04) !important;
+}
+
+/* Light mode badges */
+.light [class*="bg-rose-950"], [data-theme="light"] [class*="bg-rose-950"] {
+  background-color: #ffe4e6 !important;
+  color: #b91c1c !important;
+  border-color: #fecdd3 !important;
+}
+.light [class*="bg-emerald-950"], [data-theme="light"] [class*="bg-emerald-950"] {
+  background-color: #ecfdf5 !important;
+  color: #047857 !important;
+  border-color: #a7f3d0 !important;
+}
+.light [class*="bg-amber-950"], [data-theme="light"] [class*="bg-amber-950"] {
+  background-color: #fffbeb !important;
+  color: #b45309 !important;
+  border-color: #fde68a !important;
+}
+
+/* SVG diagrams in light mode */
+.light svg line, [data-theme="light"] svg line {
+  stroke: rgba(15, 23, 42, 0.18) !important;
+}
+
+/* Form inputs in light mode */
+.light input:not([type="checkbox"]):not([type="radio"]),
+[data-theme="light"] input:not([type="checkbox"]):not([type="radio"]),
+.light textarea,
+[data-theme="light"] textarea,
+.light select,
+[data-theme="light"] select {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: rgba(15, 23, 42, 0.18) !important;
+}
+.light input::placeholder,
+[data-theme="light"] input::placeholder,
+.light textarea::placeholder,
+[data-theme="light"] textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Modal backdrops in light mode */
+.light .fixed.bg-black\/85,
+[data-theme="light"] .fixed.bg-black\/85 {
+  background-color: rgba(15, 23, 42, 0.6) !important;
+}
+
+/* Authenticated hacker terminals preserve dark */
+.preserve-dark {
+  background-color: #08090d !important;
+  color: #e2e8f0 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+.preserve-dark * {
+  color: inherit;
+}
+
+/* Scrollbars */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #08090d;
+  background: var(--bg-base);
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e2433;
-  border-radius: 2px;
+  background: var(--border-card-hover);
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2a3348;
+  background: var(--text-muted);
 }

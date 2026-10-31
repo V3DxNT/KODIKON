@@ -1,55 +1,113 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState } from "react";
 import { Role } from "@/types/soc";
+import { AuthUser, authenticateAdmin, authenticateStaff } from "@/lib/auth-adapter";
 
 interface AuthContextType {
-  role: Role;
-  user: string | null;
-  isAuthenticatedAdmin: boolean;
-  loginAsAdmin: (username: string, pass: string) => boolean;
+  role: Role | null;
+  user: AuthUser | null;
+  isAuthenticated: boolean;
+  isAdmin: boolean;
+  isStaff: boolean;
+  loginAsAdmin: (identifier: string, pass: string, rememberMe?: boolean) => Promise<{ success: boolean; error?: string }>;
+  loginAsStaff: (identifier: string, pass: string, rememberMe?: boolean) => Promise<{ success: boolean; error?: string }>;
+  logout: () => void;
   logoutToStaff: () => void;
+  isAuthenticatedAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
-  role: "employee",
+  role: null,
   user: null,
-  isAuthenticatedAdmin: false,
-  loginAsAdmin: () => false,
+  isAuthenticated: false,
+  isAdmin: false,
+  isStaff: false,
+  loginAsAdmin: async () => ({ success: false }),
+  loginAsStaff: async () => ({ success: false }),
+  logout: () => {},
   logoutToStaff: () => {},
+  isAuthenticatedAdmin: false,
 });
 
+const SESSION_KEY = "project_x_session_user";
+
+function getInitialUser(): AuthUser | null {
+  if (typeof window !== "undefined") {
+    try {
+      const stored = localStorage.getItem(SESSION_KEY) || sessionStorage.getItem(SESSION_KEY);
+      if (stored) {
+        return JSON.parse(stored) as AuthUser;
+      }
+    } catch {}
+  }
+  return null;
+}
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [role, setRole] = useState<Role>("employee");
-  const [user, setUser] = useState<string | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(getInitialUser);
 
-  useEffect(() => {
-    // Hydrate from localStorage if available
-    const savedRole = localStorage.getItem("project_x_role") as Role;
-    const savedUser = localStorage.getItem("project_x_user");
-    if (savedRole === "admin") {
-      setRole("admin");
-      setUser(savedUser || "admin@secops.local");
-    }
-  }, []);
+  const role: Role | null = user?.role || null;
+  const isAuthenticated = !!user;
+  const isAdmin = user?.role === "admin";
+  const isStaff = user?.role === "employee";
 
-  const loginAsAdmin = (username: string, pass: string): boolean => {
-    if (pass.trim() === "admin123" || username.includes("admin")) {
-      const adminUser = username || "admin@secops.local";
-      setRole("admin");
-      setUser(adminUser);
-      localStorage.setItem("project_x_role", "admin");
-      localStorage.setItem("project_x_user", adminUser);
-      return true;
+  const loginAsAdmin = async (
+    identifier: string,
+    pass: string,
+    rememberMe = true
+  ): Promise<{ success: boolean; error?: string }> => {
+    const res = await authenticateAdmin(identifier, pass);
+    if (res.success && res.user) {
+      setUser(res.user);
+      try {
+        const payload = JSON.stringify(res.user);
+        if (rememberMe) {
+          localStorage.setItem(SESSION_KEY, payload);
+          sessionStorage.removeItem(SESSION_KEY);
+        } else {
+          sessionStorage.setItem(SESSION_KEY, payload);
+          localStorage.removeItem(SESSION_KEY);
+        }
+      } catch {}
+      return { success: true };
     }
-    return false;
+    return { success: false, error: res.error || "Authentication failed." };
+  };
+
+  const loginAsStaff = async (
+    identifier: string,
+    pass: string,
+    rememberMe = true
+  ): Promise<{ success: boolean; error?: string }> => {
+    const res = await authenticateStaff(identifier, pass);
+    if (res.success && res.user) {
+      setUser(res.user);
+      try {
+        const payload = JSON.stringify(res.user);
+        if (rememberMe) {
+          localStorage.setItem(SESSION_KEY, payload);
+          sessionStorage.removeItem(SESSION_KEY);
+        } else {
+          sessionStorage.setItem(SESSION_KEY, payload);
+          localStorage.removeItem(SESSION_KEY);
+        }
+      } catch {}
+      return { success: true };
+    }
+    return { success: false, error: res.error || "Authentication failed." };
+  };
+
+  const logout = () => {
+    setUser(null);
+    try {
+      localStorage.removeItem(SESSION_KEY);
+      sessionStorage.removeItem(SESSION_KEY);
+    } catch {}
   };
 
   const logoutToStaff = () => {
-    setRole("employee");
-    setUser(null);
-    localStorage.removeItem("project_x_role");
-    localStorage.removeItem("project_x_user");
+    logout();
   };
 
   return (
@@ -57,9 +115,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         role,
         user,
-        isAuthenticatedAdmin: role === "admin",
+        isAuthenticated,
+        isAdmin,
+        isStaff,
         loginAsAdmin,
+        loginAsStaff,
+        logout,
         logoutToStaff,
+        isAuthenticatedAdmin: isAdmin,
       }}
     >
       {children}

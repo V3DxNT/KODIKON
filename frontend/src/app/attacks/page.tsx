@@ -182,7 +182,7 @@ export default function AttacksPage() {
           <span className="text-[11px] font-mono text-slate-500">TTY: /dev/pts/1</span>
         </div>
 
-        <div className="rounded-lg bg-black/90 p-4 font-mono text-xs text-slate-300 h-64 overflow-y-auto space-y-1 border border-white/5">
+        <div className="preserve-dark rounded-lg bg-black/90 p-4 font-mono text-xs text-slate-300 h-64 overflow-y-auto space-y-1 border border-white/5">
           {terminalLogs.map((line, idx) => (
             <div key={idx} className="leading-relaxed">
               {line}

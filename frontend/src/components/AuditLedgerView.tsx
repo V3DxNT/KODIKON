@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Download, ShieldCheck } from "lucide-react";
 import { AuditLog } from "@/types/soc";
 
 interface AuditLedgerViewProps {
@@ -9,21 +9,42 @@ interface AuditLedgerViewProps {
 }
 
 export const AuditLedgerView: React.FC<AuditLedgerViewProps> = ({ logs }) => {
+  const handleExportJSON = () => {
+    const jsonStr = JSON.stringify(logs, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ProjectX_AuditLedger_${new Date().toISOString().split("T")[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="mx-auto max-w-6xl px-6 py-12 sm:px-8 space-y-8">
       {/* Header */}
-      <div className="pb-8 hairline-b">
-        <div className="flex items-center space-x-2 text-xs font-mono text-slate-400">
-          <span className="uppercase tracking-widest text-slate-300">COMPLIANCE LEDGER</span>
-          <span>&bull;</span>
-          <span>Immutable System Audit</span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-8 hairline-b gap-4">
+        <div>
+          <div className="flex items-center space-x-2 text-xs font-mono text-slate-400">
+            <span className="uppercase tracking-widest text-slate-300">COMPLIANCE LEDGER</span>
+            <span>&bull;</span>
+            <span>Immutable System Audit</span>
+          </div>
+          <h2 className="mt-3 text-3xl font-medium tracking-tight text-white">
+            Cryptographic Audit & Governance Trail
+          </h2>
+          <p className="text-sm text-slate-400 mt-2 max-w-2xl leading-relaxed">
+            Permanent non-repudiation log recording every administrative approval, firewall rule modification, and Caldera verification re-test.
+          </p>
         </div>
-        <h2 className="mt-3 text-3xl font-medium tracking-tight text-white">
-          Cryptographic Audit & Governance Trail
-        </h2>
-        <p className="text-sm text-slate-400 mt-2 max-w-2xl leading-relaxed">
-          Permanent non-repudiation log recording every administrative approval, firewall rule modification, and Caldera verification re-test.
-        </p>
+
+        <button
+          onClick={handleExportJSON}
+          className="btn-metallic-secondary flex items-center space-x-2 rounded-lg px-4 py-2.5 text-xs font-medium cursor-pointer shrink-0"
+        >
+          <Download className="h-3.5 w-3.5 text-slate-400" />
+          <span>Export Audit Trail (JSON)</span>
+        </button>
       </div>
 
       {/* Ledger Table */}

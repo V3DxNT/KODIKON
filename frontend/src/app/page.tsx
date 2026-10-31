@@ -36,7 +36,11 @@ export default function HomePage() {
         }
       }
     } else {
-      router.push("/staff");
+      if (role === "employee" || role === "admin") {
+        router.push("/staff");
+      } else {
+        router.push("/staff/login?redirect=/staff");
+      }
     }
   };
 

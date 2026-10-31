@@ -1,16 +1,18 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { EmployeeView } from "@/components/EmployeeView";
 import { fetchIncidents, fetchIncident, blockIncident } from "@/lib/api";
 import { IncidentDetail } from "@/types/soc";
 import { useAuth } from "@/context/AuthContext";
 import mockData from "@/mocks/incident.json";
+import { Lock, ArrowRight, UserCheck, Shield } from "lucide-react";
 
 export default function StaffPage() {
   const router = useRouter();
-  const { role } = useAuth();
+  const { role, user, isStaff, isAdmin, logout } = useAuth();
   const [incidents, setIncidents] = useState<IncidentDetail[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -44,23 +46,76 @@ export default function StaffPage() {
   };
 
   useEffect(() => {
-    loadData();
-    const interval = setInterval(loadData, 2500);
-    return () => clearInterval(interval);
+    let active = true;
+    const run = async () => {
+      if (active) {
+        await loadData();
+      }
+    };
+    void run();
+    const interval = setInterval(() => {
+      void run();
+    }, 2500);
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
   }, []);
 
   const handleAttemptBlock = async (id: number) => {
     try {
       await blockIncident(id, "employee");
-    } catch (err: any) {
-      showToast(err.message || "HTTP 403: Admin privilege required");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        showToast(err.message || "HTTP 403: Admin privilege required");
+      }
     }
   };
+
+  // If unauthenticated guest (role === null), show formal staff clearance gate
+  if (!isStaff && !isAdmin) {
+    return (
+      <div className="min-h-[75vh] flex items-center justify-center px-4 py-16">
+        <div className="max-w-md w-full metallic-surface rounded-2xl p-8 sm:p-10 border border-card text-center space-y-6">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-white/[0.04] border border-white/10 text-slate-300">
+            <Lock className="h-6 w-6" />
+          </div>
+          <div>
+            <div className="text-[11px] font-mono uppercase tracking-widest text-slate-400">
+              PROTECTED PERSONNEL FEED
+            </div>
+            <h2 className="text-xl font-medium text-white mt-1">
+              Staff Authentication Required
+            </h2>
+          </div>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            Internal security bulletins and operational advisories are restricted to verified staff members. 
+            Please sign in to access your organization security feed.
+          </p>
+          <div className="pt-2 flex justify-center space-x-3">
+            <button
+              onClick={() => router.push("/")}
+              className="btn-metallic-secondary rounded-lg px-4 py-2.5 text-xs font-medium cursor-pointer"
+            >
+              Return Home
+            </button>
+            <button
+              onClick={() => router.push("/staff/login?redirect=/staff")}
+              className="btn-metallic-primary rounded-lg px-5 py-2.5 text-xs font-semibold flex items-center space-x-2 cursor-pointer"
+            >
+              <span>Staff Login</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-2.5 rounded-lg metallic-surface px-5 py-3 text-xs font-mono text-slate-200 border border-white/15 shadow-xl animate-in slide-in-from-bottom-3">
+        <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-2.5 rounded-lg metallic-surface px-5 py-3 text-xs font-mono text-slate-200 border border-card shadow-xl animate-in slide-in-from-bottom-3">
           <span className="h-1.5 w-1.5 rounded-full bg-slate-300 animate-pulse"></span>
           <span>{toastMessage}</span>
         </div>
@@ -70,6 +125,11 @@ export default function StaffPage() {
         incidents={incidents}
         onAttemptBlock={handleAttemptBlock}
         onSwitchToAdmin={() => router.push("/login?redirect=/admin")}
+        onLogout={() => {
+          logout();
+          router.push("/");
+        }}
+        staffUser={user}
       />
     </div>
   );

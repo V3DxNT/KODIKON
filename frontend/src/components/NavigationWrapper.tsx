@@ -8,7 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 export const NavigationWrapper: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const { role, logoutToStaff } = useAuth();
+  const { role, logout } = useAuth();
   const [isBackendConnected, setIsBackendConnected] = useState(false);
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export const NavigationWrapper: React.FC = () => {
   }, []);
 
   let activeTab = "overview";
-  if (pathname === "/staff") activeTab = "staff";
+  if (pathname === "/staff" || pathname === "/staff/login") activeTab = "staff";
   else if (pathname.startsWith("/admin")) activeTab = "admin";
   else if (pathname === "/attacks") activeTab = "attacks";
   else if (pathname === "/audit") activeTab = "audit";
@@ -38,7 +38,11 @@ export const NavigationWrapper: React.FC = () => {
         router.push("/");
         break;
       case "staff":
-        router.push("/staff");
+        if (role === "employee" || role === "admin") {
+          router.push("/staff");
+        } else {
+          router.push("/staff/login?redirect=/staff");
+        }
         break;
       case "admin":
         if (role === "admin") {
@@ -58,23 +62,18 @@ export const NavigationWrapper: React.FC = () => {
     }
   };
 
-  const handleRoleChange = (newRole: "employee" | "admin") => {
-    if (newRole === "admin") {
-      router.push("/login?redirect=/admin");
-    } else {
-      logoutToStaff();
-      router.push("/staff");
-    }
+  const handleLogout = () => {
+    logout();
+    router.push("/");
   };
 
   return (
     <RoleNavbar
       currentRole={role}
-      onRoleChange={handleRoleChange}
+      onLogout={handleLogout}
       activeTab={activeTab}
       onTabChange={handleTabChange}
       isBackendConnected={isBackendConnected}
-      onRequestAdminLogin={() => router.push("/login?redirect=/admin")}
     />
   );
 };

@@ -58,9 +58,20 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    loadData();
-    const interval = setInterval(loadData, 2500);
-    return () => clearInterval(interval);
+    let active = true;
+    const run = async () => {
+      if (active) {
+        await loadData();
+      }
+    };
+    void run();
+    const interval = setInterval(() => {
+      void run();
+    }, 2500);
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
   }, []);
 
   const handleApprove = async (id: number) => {
@@ -68,8 +79,9 @@ export default function AdminPage() {
       const res = await approveIncident(id, "admin");
       showToast(res.detail || `Incident #${id} authorized by Admin`);
       await loadData();
-    } catch (err: any) {
-      showToast(err.message || "Failed to approve incident");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to approve incident";
+      showToast(msg);
       throw err;
     }
   };
@@ -79,8 +91,9 @@ export default function AdminPage() {
       const res = await blockIncident(id, "admin");
       showToast(res.detail || `Firewall block applied & Caldera confirmed!`);
       await loadData();
-    } catch (err: any) {
-      showToast(err.message || "Failed to execute block");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to execute block";
+      showToast(msg);
       throw err;
     }
   };
