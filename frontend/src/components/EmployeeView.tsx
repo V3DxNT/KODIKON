@@ -133,10 +133,10 @@ export const EmployeeView: React.FC<EmployeeViewProps> = ({
           {onLogout && (
             <button
               onClick={onLogout}
-              className="btn-metallic-secondary flex items-center space-x-1.5 rounded-full px-3.5 py-2 text-xs font-mono cursor-pointer"
+              className="btn-metallic-secondary h-8 px-3 rounded-lg flex items-center space-x-1.5 text-xs font-medium cursor-pointer"
               title="Log out of staff session"
             >
-              <LogOut className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+              <LogOut className="h-3.5 w-3.5 text-slate-500" />
               <span>Log Out</span>
             </button>
           )}
@@ -153,7 +153,7 @@ export const EmployeeView: React.FC<EmployeeViewProps> = ({
         <div className="flex items-center space-x-2.5">
           <button
             onClick={() => setReportModalOpen(true)}
-            className="btn-metallic-secondary flex items-center space-x-1.5 px-3.5 py-1.5 text-xs rounded-full cursor-pointer"
+            className="btn-metallic-secondary h-8 px-3 rounded-lg flex items-center space-x-1.5 text-xs font-medium cursor-pointer"
           >
             <Flag className="h-3 w-3 text-amber-500" />
             <span>Report Suspicious Event</span>
@@ -161,9 +161,9 @@ export const EmployeeView: React.FC<EmployeeViewProps> = ({
 
           <button
             onClick={handleDownloadAdvisory}
-            className="btn-metallic-secondary flex items-center space-x-1.5 px-3.5 py-1.5 text-xs rounded-full cursor-pointer"
+            className="btn-metallic-secondary h-8 px-3 rounded-lg flex items-center space-x-1.5 text-xs font-medium cursor-pointer"
           >
-            <Download className="h-3 w-3 text-[var(--text-muted)]" />
+            <Download className="h-3 w-3 text-slate-500" />
             <span>Export Advisory (.txt)</span>
           </button>
         </div>
@@ -244,33 +244,33 @@ export const EmployeeView: React.FC<EmployeeViewProps> = ({
               {!acknowledged ? (
                 <button
                   onClick={handleAcknowledge}
-                  className="btn-metallic-secondary rounded-full px-5 py-2.5 text-xs font-semibold cursor-pointer"
+                  className="btn-metallic-secondary h-9 px-4 rounded-lg text-xs font-medium cursor-pointer"
                 >
                   Acknowledge Briefing
                 </button>
               ) : (
                 <button
                   disabled
-                  className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-5 py-2.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center space-x-1.5 cursor-default"
+                  className="h-9 px-4 rounded-lg bg-emerald-50 border border-emerald-200 text-xs font-medium text-emerald-800 flex items-center space-x-1.5 cursor-default shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
                 >
-                  <CheckCircle className="h-3.5 w-3.5" />
+                  <CheckCircle className="h-3.5 w-3.5 text-emerald-600" />
                   <span>Briefing Acknowledged</span>
                 </button>
               )}
 
               <button
                 onClick={() => handleActionClick(activeIncident.id)}
-                className="btn-metallic-danger rounded-full px-5 py-2.5 text-xs font-semibold cursor-pointer"
+                className="btn-metallic-danger h-9 px-4 rounded-lg text-xs font-medium cursor-pointer"
               >
                 Execute Firewall Block
               </button>
 
               <button
                 onClick={onSwitchToAdmin}
-                className="btn-metallic-primary rounded-full px-5 py-2.5 text-xs font-semibold flex items-center space-x-1.5 cursor-pointer"
+                className="btn-metallic-primary h-9 px-4 rounded-lg text-xs font-medium flex items-center space-x-1.5 cursor-pointer"
               >
                 <span>Switch to Admin View</span>
-                <ArrowRight className="h-3.5 w-3.5" />
+                <ArrowRight className="h-3.5 w-3.5 opacity-60" />
               </button>
             </div>
           </div>
@@ -305,7 +305,7 @@ export const EmployeeView: React.FC<EmployeeViewProps> = ({
             <div className="mt-6 flex items-center justify-end space-x-3 pt-2">
               <button
                 onClick={() => setDeniedModalOpen(false)}
-                className="btn-metallic-secondary rounded-full px-4 py-2 text-xs font-semibold cursor-pointer"
+                className="btn-metallic-secondary h-9 px-4 rounded-lg text-xs font-medium cursor-pointer"
               >
                 Dismiss
               </button>
@@ -314,7 +314,7 @@ export const EmployeeView: React.FC<EmployeeViewProps> = ({
                   setDeniedModalOpen(false);
                   onSwitchToAdmin();
                 }}
-                className="btn-metallic-primary rounded-full px-4 py-2 text-xs font-semibold cursor-pointer"
+                className="btn-metallic-primary h-9 px-4 rounded-lg text-xs font-medium cursor-pointer"
               >
                 Authenticate Admin
               </button>
@@ -329,7 +329,7 @@ export const EmployeeView: React.FC<EmployeeViewProps> = ({
           <div className="w-full max-w-md p-6 sm:p-8 space-y-5 relative rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-card)] shadow-2xl">
             <button
               onClick={() => setReportModalOpen(false)}
-              className="absolute top-6 right-6 text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 rounded-full cursor-pointer"
+              className="absolute top-6 right-6 text-slate-400 hover:text-slate-800 hover:bg-slate-100 p-1.5 rounded-lg cursor-pointer transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
@@ -382,13 +382,13 @@ export const EmployeeView: React.FC<EmployeeViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setReportModalOpen(false)}
-                    className="btn-metallic-secondary rounded-full px-4 py-2 text-xs font-semibold cursor-pointer"
+                    className="btn-metallic-secondary h-9 px-4 rounded-lg text-xs font-medium cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="btn-metallic-primary rounded-full px-4 py-2 text-xs font-semibold flex items-center space-x-1.5 cursor-pointer"
+                    className="btn-metallic-primary h-9 px-4 rounded-lg text-xs font-medium flex items-center space-x-1.5 cursor-pointer"
                   >
                     <Send className="h-3 w-3" />
                     <span>Submit Report</span>

@@ -42,9 +42,9 @@ export const AuditLedgerView: React.FC<AuditLedgerViewProps> = ({ logs }) => {
 
         <button
           onClick={handleExportJSON}
-          className="btn-metallic-secondary flex items-center space-x-2 rounded-full px-5 py-2.5 text-xs font-semibold cursor-pointer shrink-0 shadow-sm"
+          className="btn-metallic-secondary h-9 px-4 rounded-lg flex items-center space-x-2 text-xs font-medium cursor-pointer shrink-0"
         >
-          <Download className="h-3.5 w-3.5 text-cyan-500" />
+          <Download className="h-3.5 w-3.5 text-slate-500" />
           <span>Export Audit Trail (JSON)</span>
         </button>
       </div>

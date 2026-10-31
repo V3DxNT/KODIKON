@@ -92,7 +92,7 @@ export default function AttacksPage() {
         <button
           onClick={handleRunFullChain}
           disabled={isExecuting}
-          className="btn-metallic-danger flex items-center space-x-2 rounded-full px-5 py-3 text-xs font-semibold cursor-pointer disabled:opacity-50 shrink-0 shadow-sm"
+          className="btn-metallic-danger h-10 px-4 rounded-lg flex items-center space-x-2 text-xs font-medium cursor-pointer disabled:opacity-50 shrink-0"
         >
           <Play className={`h-3.5 w-3.5 ${isExecuting ? "animate-spin" : ""}`} />
           <span>{isExecuting ? "Executing Sequence..." : "Run Full 3-Act Attack"}</span>

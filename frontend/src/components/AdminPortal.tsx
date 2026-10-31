@@ -37,6 +37,7 @@ import { IncidentDetail, AuditLog } from "@/types/soc";
 import { EventGraphTimeline } from "./EventGraphTimeline";
 import { ProofModal } from "./ProofModal";
 import { SentinelForgeLogo } from "./SentinelForgeLogo";
+import { ThreatHuntingDashboard } from "./ThreatHuntingDashboard";
 import { useAuth } from "@/context/AuthContext";
 import { Glass } from "./Glass";
 
@@ -456,9 +457,9 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
               onClick={onTriggerReplay}
               disabled={isReplaying}
               title="Inject demo attack sequence into daemon"
-              className="hidden sm:flex items-center space-x-2 btn-metallic-secondary px-3.5 py-1.5 rounded-full text-xs font-mono cursor-pointer disabled:opacity-50"
+              className="hidden sm:flex items-center space-x-2 btn-metallic-secondary h-8 px-3 rounded-lg text-xs font-medium cursor-pointer disabled:opacity-50"
             >
-              <Play className={`h-3 w-3 text-cyan-400 ${isReplaying ? "animate-spin" : ""}`} />
+              <Play className={`h-3 w-3 text-blue-600 ${isReplaying ? "animate-spin" : ""}`} />
               <span>{isReplaying ? "Replaying..." : "Simulate Threat"}</span>
             </button>
 
@@ -554,9 +555,23 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
         </header>
 
         {/* ─────────────────────────────────────────────────────────────
-            TAB 1: DASHBOARD (Security Overview)
+        {/* ─────────────────────────────────────────────────────────────
+            TAB 1: DASHBOARD (Threat Hunting - Wazuh / Apple Light Mode)
            ───────────────────────────────────────────────────────────── */}
         {activeTab === "dashboard" && (
+          <div className="p-2 sm:p-6 animate-in fade-in duration-200">
+            <ThreatHuntingDashboard
+              incidents={incidents}
+              auditLogs={auditLogs}
+              onApprove={onApprove}
+              onBlock={onBlock}
+              onTriggerReplay={onTriggerReplay}
+              isReplaying={isReplaying}
+            />
+          </div>
+        )}
+
+        {false && activeTab === "dashboard" && (
           <div className="p-8 max-w-7xl space-y-8 animate-in fade-in duration-200">
             {/* Title & Time Range Filter */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -737,7 +752,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
                 <button
                   onClick={() => setActiveTab("detections")}
-                  className="w-full btn-metallic-secondary py-2 rounded-xl text-xs font-mono transition-colors"
+                  className="w-full btn-metallic-secondary h-9 px-3.5 rounded-lg text-xs font-medium transition-all"
                 >
                   Configure Detection Rules &rarr;
                 </button>
@@ -1281,7 +1296,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                 <button
                   onClick={handleBlockClick}
                   disabled={isBlocking || currentIncident?.status === "verified"}
-                  className="flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-lg shadow-emerald-600/30 border border-emerald-400/40 transition-all cursor-pointer disabled:opacity-50"
+                  className="h-9 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-medium shadow-[0_1px_2px_rgba(5,150,105,0.2),inset_0_1px_0_rgba(255,255,255,0.2)] border border-emerald-700 transition-all cursor-pointer disabled:opacity-50 flex items-center space-x-2"
                 >
                   <Check className="h-4 w-4" />
                   <span>
@@ -1295,7 +1310,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
                 <button
                   onClick={() => showToast("Incident marked for manual review.")}
-                  className="btn-metallic-danger px-5 py-2.5 rounded-xl text-xs font-semibold cursor-pointer"
+                  className="h-9 px-4 rounded-lg border border-slate-200 bg-white hover:bg-rose-50 hover:border-rose-200 hover:text-rose-600 text-slate-700 text-xs font-medium shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all cursor-pointer"
                 >
                   Reject
                 </button>
@@ -1381,7 +1396,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                 <button
                   onClick={handleRetestCaldera}
                   disabled={isRetestingCaldera}
-                  className="px-4 py-2 rounded-xl btn-metallic-secondary text-xs font-mono text-cyan-300 hover:text-white shrink-0 cursor-pointer disabled:opacity-50"
+                  className="h-8 px-3 rounded-lg btn-metallic-secondary text-xs font-medium shrink-0 cursor-pointer disabled:opacity-50"
                 >
                   {isRetestingCaldera ? "Re-testing..." : "Re-test with Caldera"}
                 </button>
@@ -1483,7 +1498,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
             <div className="flex justify-end pt-2">
               <button
                 onClick={() => showToast("Detection rule configurations saved.")}
-                className="btn-metallic-primary px-6 py-2.5 rounded-xl text-xs font-semibold cursor-pointer"
+                className="h-9 px-4 rounded-lg btn-metallic-primary text-xs font-medium cursor-pointer"
               >
                 Save Configurations
               </button>
@@ -1508,9 +1523,9 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
               <button
                 onClick={handleExportAudit}
-                className="btn-metallic-secondary flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-mono cursor-pointer"
+                className="h-9 px-3.5 rounded-lg btn-metallic-secondary flex items-center space-x-2 text-xs font-medium cursor-pointer"
               >
-                <Download className="h-3.5 w-3.5 text-cyan-400" />
+                <Download className="h-3.5 w-3.5 text-slate-500" />
                 <span>Export Audit CSV</span>
               </button>
             </div>
@@ -1719,7 +1734,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
                 <button
                   type="submit"
-                  className="w-full sm:w-auto btn-metallic-primary px-6 py-2 rounded-xl text-xs font-semibold cursor-pointer shrink-0"
+                  className="w-full sm:w-auto h-9 px-4 rounded-lg btn-metallic-primary text-xs font-medium cursor-pointer shrink-0"
                 >
                   Add user
                 </button>
@@ -1885,13 +1900,13 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => showToast("Preferences and organisation settings saved.")}
-                className="btn-metallic-primary px-6 py-2.5 rounded-xl text-xs font-semibold cursor-pointer"
+                className="h-9 px-4 rounded-lg btn-metallic-primary text-xs font-medium cursor-pointer"
               >
                 Save changes
               </button>
               <button
                 onClick={() => showToast("Changes discarded.")}
-                className="btn-metallic-secondary px-6 py-2.5 rounded-xl text-xs font-mono cursor-pointer"
+                className="h-9 px-4 rounded-lg btn-metallic-secondary text-xs font-medium cursor-pointer"
               >
                 Discard
               </button>
@@ -2012,9 +2027,9 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
               <button
                 onClick={() => showToast("Stream refreshed")}
-                className="btn-metallic-secondary flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-mono cursor-pointer"
+                className="h-8 px-3 rounded-lg btn-metallic-secondary flex items-center space-x-1.5 text-xs font-medium cursor-pointer"
               >
-                <RefreshCw className="h-3.5 w-3.5" />
+                <RefreshCw className="h-3.5 w-3.5 text-slate-500" />
                 <span>Refresh</span>
               </button>
             </div>
@@ -2080,7 +2095,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                 </div>
                 <button
                   onClick={() => showToast("Executive report exported.")}
-                  className="btn-metallic-primary flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer"
+                  className="h-8 px-3.5 rounded-lg btn-metallic-primary flex items-center space-x-2 text-xs font-medium cursor-pointer"
                 >
                   <Download className="h-3.5 w-3.5" />
                   <span>Download Report</span>

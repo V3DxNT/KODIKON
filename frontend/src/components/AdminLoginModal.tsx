@@ -51,7 +51,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-6 right-6 rounded-full p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors cursor-pointer"
+          className="absolute top-6 right-6 rounded-lg p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
         >
           <X className="h-4 w-4" />
         </button>
@@ -60,34 +60,34 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
         <div className="flex items-center space-x-3.5">
           <SentinelForgeLogo variant="symbol" size="md" />
           <div>
-            <div className="text-[11px] font-mono uppercase tracking-widest text-cyan-600 dark:text-cyan-400 font-bold">
-              SENTINEL FORGE &bull; ELEVATED PRIVILEGES
+            <div className="text-xs font-mono uppercase tracking-widest text-blue-600 font-semibold">
+              SENTINEL FORGE • ELEVATED PRIVILEGES
             </div>
-            <h3 className="text-lg font-bold text-[var(--text-primary)]">
+            <h3 className="text-lg font-bold text-slate-900 mt-0.5">
               Security Administrator Login
             </h3>
           </div>
         </div>
 
-        <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-          Access to firewall enforcement (<code className="font-mono text-rose-500">sudo ufw deny</code>) and MITRE adversary verification requires authenticated administrative clearance.
+        <p className="text-xs text-slate-600 leading-relaxed font-normal">
+          Access to firewall enforcement (<code className="font-mono text-rose-600 font-medium">sudo ufw deny</code>) and MITRE adversary verification requires authenticated administrative clearance.
         </p>
 
         {error && (
-          <div className="rounded-xl bg-rose-500/10 p-3 border border-rose-500/30 text-xs text-rose-500 flex items-center space-x-2">
-            <AlertCircle className="h-4 w-4 shrink-0" />
+          <div className="rounded-lg bg-rose-50 p-3 border border-rose-200 text-xs text-rose-700 flex items-center space-x-2">
+            <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
             <span>{error}</span>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-mono font-bold text-[var(--text-primary)] flex items-center justify-between">
+            <label className="text-xs font-mono font-semibold text-slate-700 flex items-center justify-between">
               <span>ADMINISTRATOR IDENTITY</span>
               <button
                 type="button"
                 onClick={handleFillDemo}
-                className="text-[10px] text-cyan-600 dark:text-cyan-400 hover:underline cursor-pointer"
+                className="text-[11px] text-blue-600 hover:underline cursor-pointer font-medium"
               >
                 Auto-Fill Demo
               </button>
@@ -96,35 +96,35 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full rounded-xl bg-[var(--bg-input)] px-4 py-2.5 text-xs font-mono text-[var(--text-primary)] border border-[var(--border-input)] focus:ring-2 focus:ring-cyan-500/40 focus:outline-none"
+              className="w-full rounded-lg bg-slate-50/70 px-4 py-2.5 text-xs font-mono text-slate-900 border border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
               placeholder="admin@secops.local"
               required
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-mono font-bold text-[var(--text-primary)]">
+            <label className="text-xs font-mono font-semibold text-slate-700">
               SECURITY PASSKEY
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl bg-[var(--bg-input)] px-4 py-2.5 text-xs font-mono text-[var(--text-primary)] border border-[var(--border-input)] focus:ring-2 focus:ring-cyan-500/40 focus:outline-none"
+              className="w-full rounded-lg bg-slate-50/70 px-4 py-2.5 text-xs font-mono text-slate-900 border border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
               placeholder="••••••••"
               required
             />
           </div>
 
           <div className="pt-2 flex items-center justify-between">
-            <span className="text-[11px] font-mono text-[var(--text-muted)]">Demo Key: admin123</span>
+            <span className="text-[11px] font-mono text-slate-500">Demo Key: admin123</span>
             <button
               type="submit"
               disabled={isAuthenticating}
-              className="btn-metallic-primary rounded-full px-5 py-2.5 text-xs font-semibold flex items-center space-x-2 cursor-pointer disabled:opacity-50"
+              className="btn-metallic-primary h-9 px-4 rounded-lg text-xs font-semibold flex items-center space-x-2 cursor-pointer disabled:opacity-50"
             >
               <span>{isAuthenticating ? "Verifying..." : "Authenticate"}</span>
-              <ArrowRight className="h-3.5 w-3.5" />
+              <ArrowRight className="h-3.5 w-3.5 opacity-60" />
             </button>
           </div>
         </form>

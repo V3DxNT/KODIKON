@@ -9,7 +9,7 @@ export const InteractivePipelineDiagram: React.FC = () => {
   const stages = [
     {
       id: 0,
-      badge: "STEP 1 &bull; ATTACK",
+      badge: "STEP 1 • ATTACK",
       title: "Adversary Inbound Attack",
       actor: "Attacker (192.168.56.20)",
       description: "Hydra brute-forces SSH port 22, spawns backdoor user 'backdoor', and makes outbound connection.",
@@ -18,25 +18,25 @@ export const InteractivePipelineDiagram: React.FC = () => {
     },
     {
       id: 1,
-      badge: "STEP 2-3 &bull; INGEST",
+      badge: "STEP 2-3 • INGEST",
       title: "Log Normalization",
-      actor: "Victim (192.168.56.10) &rarr; Controller",
+      actor: "Victim (192.168.56.10) → Controller",
       description: "Raw auth.log & auditd kernel streams are converted into typed Contract #1 JSON schema.",
       technique: "Contract #1 JSON Ingestion",
       codePreview: 'POST /events {"ts":"2026-10-31T11:40Z","source_ip":"192.168.56.20","event_type":"ssh_fail"}',
     },
     {
       id: 2,
-      badge: "STEP 4-5 &bull; CORRELATE",
+      badge: "STEP 4-5 • CORRELATE",
       title: "NetworkX Graph Correlation",
       actor: "FastAPI Engine (192.168.56.1)",
       description: "Aggregates events sharing IP in a 10m window into 1 Incident. Triggers pure rules R1, R2, R3.",
-      technique: "Rule Engine: R1 + R2 + R3 &rarr; HIGH Severity",
-      codePreview: 'G.add_edge(event_1, event_2) # Connected component -> Incident #101',
+      technique: "Rule Engine: R1 + R2 + R3 → HIGH Severity",
+      codePreview: "G.add_edge(event_1, event_2) # Connected component -> Incident #101",
     },
     {
       id: 3,
-      badge: "STEP 6-7 &bull; EXPLAIN & GATE",
+      badge: "STEP 6-7 • EXPLAIN & GATE",
       title: "Plain-English LLM & Approval",
       actor: "LLM + Office Administrator",
       description: "Explains attack in 3 sentences for non-technical staff. Requires authenticated admin 1-click approval.",
@@ -45,42 +45,42 @@ export const InteractivePipelineDiagram: React.FC = () => {
     },
     {
       id: 4,
-      badge: "STEP 8-9 &bull; BLOCK",
+      badge: "STEP 8-9 • BLOCK",
       title: "SSH Firewall Isolation",
-      actor: "Paramiko SSH &rarr; Victim Host",
+      actor: "Paramiko SSH → Victim Host",
       description: "Admin approval executes sudo ufw deny over SSH to immediately drop attacker packets at kernel level.",
-      technique: "Contract #4 &bull; Paramiko Execution",
+      technique: "Contract #4 • Paramiko Execution",
       codePreview: "$ ssh admin@192.168.56.10 'sudo ufw deny from 192.168.56.20'",
     },
     {
       id: 5,
-      badge: "STEP 10 &bull; VERIFY (PAYOFF)",
+      badge: "STEP 10 • VERIFY (PAYOFF)",
       title: "MITRE Caldera Verification",
       actor: "Caldera Server (192.168.56.20)",
       description: "Re-executes the exact adversary profile against port 22. Connection is denied, mathematically proving the block.",
-      technique: "Contract #3 &bull; Non-Repudiation Proof",
-      codePreview: 'POST /api/v2/operations -> Result: CONFIRMED BLOCKED (RC=1)',
+      technique: "Contract #3 • Non-Repudiation Proof",
+      codePreview: "POST /api/v2/operations -> Result: CONFIRMED BLOCKED (RC=1)",
     },
   ];
 
   const current = stages[selectedStage];
 
   return (
-    <div className="metallic-surface rounded-2xl p-6 sm:p-10 space-y-8 border-2 border-slate-300 dark:border-white/[0.08] shadow-lg">
+    <div className="bg-white rounded-3xl p-6 sm:p-10 space-y-8 border border-slate-200/90 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-300 dark:border-white/10 gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-100 gap-4">
         <div>
-          <div className="text-xs font-mono uppercase tracking-widest text-cyan-800 dark:text-cyan-400 font-black">
+          <div className="text-xs font-mono uppercase tracking-widest text-blue-600 font-semibold">
             VISUAL WORKFLOW PIPELINE
           </div>
-          <h3 className="text-2xl sm:text-3xl font-black text-black dark:text-white mt-1.5 tracking-tight">
+          <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1.5 tracking-tight">
             The Autonomous 10-Step Execution Loop
           </h3>
-          <p className="text-sm text-slate-800 dark:text-slate-300 font-semibold mt-1">
+          <p className="text-sm text-slate-500 font-normal mt-1">
             Click any stage below to inspect the data payload and technical execution.
           </p>
         </div>
-        <div className="text-xs font-mono font-bold text-black dark:text-slate-300 px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-white/[0.02] border-2 border-slate-300 dark:border-white/10 shrink-0">
+        <div className="text-xs font-mono font-medium text-slate-600 px-3.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200/80 shrink-0 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
           9 Custom Steps + 1 Caldera Re-Run
         </div>
       </div>
@@ -95,28 +95,44 @@ export const InteractivePipelineDiagram: React.FC = () => {
             <button
               key={stg.id}
               onClick={() => setSelectedStage(stg.id)}
-              className={`p-4 rounded-xl text-left transition-all border-2 cursor-pointer flex flex-col justify-between space-y-3 ${
+              className={`p-4 rounded-xl text-left transition-all border flex flex-col justify-between space-y-3 cursor-pointer ${
                 isSelected
                   ? isProof
-                    ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 shadow-md"
-                    : "bg-white dark:bg-white/[0.08] border-slate-900 dark:border-white/40 shadow-md"
-                  : "bg-slate-50 dark:bg-[#0c0e14] border-slate-300 dark:border-white/[0.06] hover:border-slate-400 dark:hover:border-white/20"
+                    ? "bg-emerald-50/90 border-emerald-500 ring-2 ring-emerald-500/20 shadow-sm"
+                    : "bg-white border-blue-600 ring-2 ring-blue-500/20 shadow-sm"
+                  : isProof
+                  ? "bg-emerald-50/40 border-emerald-200/70 hover:bg-emerald-50/70 hover:border-emerald-300 text-slate-700 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                  : "bg-white hover:bg-slate-50/80 border-slate-200/90 hover:border-slate-300 text-slate-700 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
               }`}
             >
               <div>
-                <span className={`text-[9px] font-mono uppercase font-black tracking-wider ${
-                  isProof ? "text-emerald-800 dark:text-emerald-400" : isSelected ? "text-black dark:text-white" : "text-slate-700 dark:text-slate-400"
-                }`}>
+                <span
+                  className={`text-[10px] font-mono uppercase font-bold tracking-wider ${
+                    isProof
+                      ? "text-emerald-700"
+                      : isSelected
+                      ? "text-blue-600"
+                      : "text-slate-400"
+                  }`}
+                >
                   {stg.badge}
                 </span>
-                <div className="text-xs font-bold text-black dark:text-white mt-1.5 leading-snug">
+                <div className="text-xs font-semibold text-slate-900 mt-1.5 leading-snug">
                   {stg.title}
                 </div>
               </div>
 
-              <div className="text-[10px] font-mono text-slate-700 dark:text-slate-400 font-bold flex items-center space-x-1">
+              <div
+                className={`text-[11px] font-mono font-medium flex items-center space-x-1 ${
+                  isProof
+                    ? "text-emerald-700"
+                    : isSelected
+                    ? "text-blue-600"
+                    : "text-slate-400"
+                }`}
+              >
                 <span>Inspect</span>
-                <ArrowRight className="h-2.5 w-2.5" />
+                <ArrowRight className="h-3 w-3" />
               </div>
             </button>
           );
@@ -124,30 +140,40 @@ export const InteractivePipelineDiagram: React.FC = () => {
       </div>
 
       {/* Detailed Technical Payload Viewer */}
-      <div className="rounded-2xl p-6 sm:p-8 space-y-4 bg-slate-50 dark:bg-[#0c0e14] border-2 border-slate-300 dark:border-white/10 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-300 dark:border-white/10 gap-2">
-          <div className="flex items-center space-x-2">
-            <span className="text-xs font-mono font-black text-black dark:text-white uppercase tracking-wider">
+      <div className="rounded-2xl p-6 sm:p-7 space-y-4 bg-slate-50/80 border border-slate-200/90 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3.5 border-b border-slate-200/70 gap-2">
+          <div className="flex flex-wrap items-center space-x-2">
+            <span className="text-xs font-mono font-bold text-slate-900 uppercase tracking-wider">
               {current.title}
             </span>
-            <span className="text-slate-400 text-xs">&bull;</span>
-            <span className="text-xs font-mono font-bold text-slate-800 dark:text-slate-300">{current.actor}</span>
+            <span className="text-slate-300 text-xs">•</span>
+            <span className="text-xs font-mono text-slate-600 font-medium">{current.actor}</span>
           </div>
-          <span className="text-xs font-mono font-black text-black dark:text-slate-200 px-2.5 py-1 rounded bg-slate-200 dark:bg-white/[0.06] border border-slate-400 dark:border-white/10">
+          <span className="text-[11px] font-mono font-medium text-slate-700 px-2.5 py-1 rounded-md bg-white border border-slate-200 shadow-2xs">
             {current.technique}
           </span>
         </div>
 
-        <p className="text-sm text-slate-950 dark:text-slate-200 font-medium leading-relaxed max-w-3xl">
+        <p className="text-sm text-slate-700 font-normal leading-relaxed max-w-3xl">
           {current.description}
         </p>
 
-        {/* Code Snippet Box (Terminal keeps authentic dark background) */}
-        <div className="preserve-dark rounded-xl bg-[#08090d] p-4 font-mono text-xs text-emerald-400 border border-slate-700 dark:border-white/10 space-y-1">
-          <div className="text-[10px] text-slate-400 uppercase tracking-widest pb-1 border-b border-white/10 font-bold">
-            EXECUTION PAYLOAD / TELEMETRY INTERFACE
+        {/* Code Snippet Box (Sleek macOS Terminal Window matching Apple aesthetics) */}
+        <div className="rounded-xl bg-[#0f172a] text-slate-100 overflow-hidden border border-slate-800 shadow-md">
+          <div className="flex items-center justify-between px-4 py-2.5 bg-[#1e293b]/80 border-b border-slate-800 text-[10px] font-mono">
+            <div className="flex items-center space-x-1.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-rose-500/80"></span>
+              <span className="h-2.5 w-2.5 rounded-full bg-amber-500/80"></span>
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/80"></span>
+              <span className="ml-2 text-slate-400 uppercase tracking-wider font-semibold">
+                EXECUTION PAYLOAD / TELEMETRY INTERFACE
+              </span>
+            </div>
+            <span className="text-slate-500">zsh</span>
           </div>
-          <div className="pt-2 text-emerald-300 font-semibold">{current.codePreview}</div>
+          <div className="p-4 font-mono text-xs text-emerald-400 overflow-x-auto leading-relaxed">
+            {current.codePreview}
+          </div>
         </div>
       </div>
     </div>

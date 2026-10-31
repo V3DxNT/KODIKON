@@ -28,11 +28,11 @@ export const Footer: React.FC = () => {
             </p>
 
             <div className="flex items-center space-x-3 pt-1">
-              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[var(--bg-surface)] border border-[var(--border-card)] text-[11px] font-mono text-[var(--text-muted)]">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-md bg-[var(--bg-surface)] border border-[var(--border-card)] text-[11px] font-mono text-[var(--text-muted)]">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span>DAEMON STATUS: ACTIVE</span>
-                <span className="text-[var(--text-muted)]">&bull;</span>
-                <span className="text-cyan-400">FASTAPI :8000</span>
+                <span className="text-[var(--text-muted)]">•</span>
+                <span className="text-blue-600 font-medium">FASTAPI :8000</span>
               </div>
             </div>
           </div>
@@ -44,17 +44,17 @@ export const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link href="/#loop" className="hover:text-cyan-400 transition-colors">
+                <Link href="/#pipeline" className="hover:text-blue-600 transition-colors">
                   10-Step Execution Loop
                 </Link>
               </li>
               <li>
-                <Link href="/#correlation" className="hover:text-cyan-400 transition-colors">
+                <Link href="/#topology" className="hover:text-blue-600 transition-colors">
                   Correlation Engine (R1-R3)
                 </Link>
               </li>
               <li>
-                <Link href="/#topology" className="hover:text-cyan-400 transition-colors">
+                <Link href="/#topology" className="hover:text-blue-600 transition-colors">
                   3-Machine Host Topology
                 </Link>
               </li>
@@ -74,22 +74,22 @@ export const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link href="/attacks" className="hover:text-cyan-400 transition-colors">
+                <Link href="/attacks" className="hover:text-blue-600 transition-colors">
                   Adversary Attack Lab
                 </Link>
               </li>
               <li>
-                <Link href="/audit" className="hover:text-cyan-400 transition-colors">
+                <Link href="/audit" className="hover:text-blue-600 transition-colors">
                   Cryptographic Audit Ledger
                 </Link>
               </li>
               <li>
-                <Link href="/login?redirect=/admin" className="hover:text-cyan-400 transition-colors">
+                <Link href="/login?redirect=/admin" className="hover:text-blue-600 transition-colors">
                   Security Admin Console
                 </Link>
               </li>
               <li>
-                <Link href="/staff/login?redirect=/staff" className="hover:text-cyan-400 transition-colors">
+                <Link href="/staff/login?redirect=/staff" className="hover:text-blue-600 transition-colors">
                   Staff Advisory Feed
                 </Link>
               </li>
@@ -103,7 +103,7 @@ export const Footer: React.FC = () => {
             </h4>
             <div className="space-y-2 text-xs text-[var(--text-secondary)]">
               <div className="flex items-start space-x-2">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0 mt-0.5" />
                 <span>
                   <strong className="text-[var(--text-primary)]">MITRE Caldera v4.2</strong>
                   <br />
@@ -111,7 +111,7 @@ export const Footer: React.FC = () => {
                 </span>
               </div>
               <div className="flex items-start space-x-2">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0 mt-0.5" />
                 <span>
                   <strong className="text-[var(--text-primary)]">Zero Data Exfiltration</strong>
                   <br />
@@ -119,7 +119,7 @@ export const Footer: React.FC = () => {
                 </span>
               </div>
               <div className="flex items-start space-x-2">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0 mt-0.5" />
                 <span>
                   <strong className="text-[var(--text-primary)]">Dual-Custody Gate</strong>
                   <br />
@@ -136,20 +136,20 @@ export const Footer: React.FC = () => {
             <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-primary)]">
               TACTICAL ALIGNMENT:
             </span>
-            <span className="px-2.5 py-1 rounded-full bg-[var(--bg-surface)] border border-[var(--border-card)] text-[11px]">
-              T1110 &bull; Brute Force
+            <span className="px-2.5 py-1 rounded-md bg-[var(--bg-surface)] border border-[var(--border-card)] text-[11px]">
+              T1110 • Brute Force
             </span>
-            <span className="px-2.5 py-1 rounded-full bg-[var(--bg-surface)] border border-[var(--border-card)] text-[11px]">
-              T1136 &bull; Create Account
+            <span className="px-2.5 py-1 rounded-md bg-[var(--bg-surface)] border border-[var(--border-card)] text-[11px]">
+              T1136 • Create Account
             </span>
-            <span className="px-2.5 py-1 rounded-full bg-[var(--bg-surface)] border border-[var(--border-card)] text-[11px]">
-              T1041 &bull; Exfiltration
+            <span className="px-2.5 py-1 rounded-md bg-[var(--bg-surface)] border border-[var(--border-card)] text-[11px]">
+              T1041 • Exfiltration
             </span>
           </div>
 
           <button
             onClick={scrollToTop}
-            className="btn-metallic-secondary flex items-center space-x-1.5 px-3 py-1.5 text-xs rounded-full cursor-pointer hover:text-[var(--text-primary)]"
+            className="btn-metallic-secondary h-8 px-3 rounded-lg flex items-center space-x-1.5 text-xs font-medium cursor-pointer"
           >
             <span>Back to top</span>
             <ArrowUp className="h-3 w-3" />
@@ -159,11 +159,11 @@ export const Footer: React.FC = () => {
         {/* Bottom Strip: Copyright & System Identity */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[var(--text-muted)]">
           <div>
-            &copy; 2026 SENTINEL FORGE Autonomous SOC. Engineered for High-Assurance Linux Environments.
+            © 2026 SENTINEL FORGE Autonomous SOC. Engineered for High-Assurance Linux Environments.
           </div>
           <div className="flex items-center space-x-4 text-[11px] font-mono">
             <span>Air-Gapped Ready</span>
-            <span>&bull;</span>
+            <span>•</span>
             <span>Apache 2.0 / MITRE Licensed Core</span>
           </div>
         </div>

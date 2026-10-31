@@ -53,23 +53,19 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
-                  var stored = localStorage.getItem('project_x_theme') || 'dark';
-                  var resolved = stored;
-                  if (stored === 'system') {
-                    resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-                  }
+                  localStorage.setItem('project_x_theme', 'light');
                   var root = document.documentElement;
-                  root.classList.remove('dark', 'light');
-                  root.classList.add(resolved);
-                  root.setAttribute('data-theme', resolved);
-                  root.style.colorScheme = resolved;
+                  root.classList.remove('dark');
+                  root.classList.add('light');
+                  root.setAttribute('data-theme', 'light');
+                  root.style.colorScheme = 'light';
                 } catch (e) {}
               })();
             `,
           }}
         />
       </head>
-      <body className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] antialiased flex flex-col font-sans selection:bg-cyan-500/20 relative overflow-x-hidden">
+      <body className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] antialiased flex flex-col font-sans selection:bg-blue-500/20 relative overflow-x-hidden">
         <div aria-hidden="true" className="px-mesh-aurora" />
         <ThemeProvider>
           <AuthProvider>

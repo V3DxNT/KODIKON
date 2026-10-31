@@ -24,7 +24,7 @@ export const ProofModal: React.FC<ProofModalProps> = ({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-6 right-6 rounded-full p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors cursor-pointer"
+          className="absolute top-6 right-6 rounded-lg p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
         >
           <X className="h-4 w-4" />
         </button>
@@ -36,8 +36,8 @@ export const ProofModal: React.FC<ProofModalProps> = ({
           </div>
           <div>
             <div className="flex items-center space-x-2 text-xs font-mono text-[var(--text-muted)]">
-              <span className="uppercase tracking-widest text-emerald-600 dark:text-emerald-400 font-bold">VERIFICATION CONFIRMED</span>
-              <span>&bull;</span>
+              <span className="uppercase tracking-widest text-emerald-700 font-bold">VERIFICATION CONFIRMED</span>
+              <span>•</span>
               <span>Incident #{incidentId}</span>
             </div>
             <h3 className="mt-0.5 text-xl font-bold text-[var(--text-primary)]">
@@ -55,7 +55,7 @@ export const ProofModal: React.FC<ProofModalProps> = ({
         <div className="space-y-2.5 font-mono text-xs">
           <div className="flex items-center justify-between rounded-xl bg-[var(--bg-elevated)] p-3 border border-[var(--border-subtle)]">
             <div className="flex items-center space-x-2.5">
-              <Lock className="h-3.5 w-3.5 text-cyan-500" />
+              <Lock className="h-3.5 w-3.5 text-blue-600" />
               <span className="text-[var(--text-primary)] font-medium">1. SSH Firewall Rule Enacted</span>
             </div>
             <span className="text-[var(--text-muted)] text-[11px]">sudo ufw deny from {attackerIp}</span>
@@ -63,7 +63,7 @@ export const ProofModal: React.FC<ProofModalProps> = ({
 
           <div className="flex items-center justify-between rounded-xl bg-[var(--bg-elevated)] p-3 border border-[var(--border-subtle)]">
             <div className="flex items-center space-x-2.5">
-              <Terminal className="h-3.5 w-3.5 text-cyan-500" />
+              <Terminal className="h-3.5 w-3.5 text-blue-600" />
               <span className="text-[var(--text-primary)] font-medium">2. Caldera API Operation Launched</span>
             </div>
             <span className="text-[var(--text-muted)] text-[11px]">POST /api/v2/operations (T1110)</span>
@@ -79,10 +79,10 @@ export const ProofModal: React.FC<ProofModalProps> = ({
 
           <div className="flex items-center justify-between rounded-xl bg-emerald-500/10 p-3 border border-emerald-500/30">
             <div className="flex items-center space-x-2.5">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-              <span className="font-bold text-emerald-600 dark:text-emerald-400">4. Re-Attack Verification</span>
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+              <span className="font-bold text-emerald-700">4. Re-Attack Verification</span>
             </div>
-            <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-emerald-700 dark:text-emerald-300 font-bold text-[10px] border border-emerald-500/40">
+            <span className="rounded-md bg-emerald-500/20 px-2.5 py-0.5 text-emerald-800 font-bold text-[10px] border border-emerald-500/40">
               CONFIRMED BLOCKED (RC=1)
             </span>
           </div>
@@ -96,9 +96,9 @@ export const ProofModal: React.FC<ProofModalProps> = ({
         <div className="flex justify-end pt-2">
           <button
             onClick={onClose}
-            className="btn-metallic-primary rounded-full px-6 py-2.5 text-xs font-semibold cursor-pointer"
+            className="h-9 px-4 rounded-lg bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white text-xs font-medium shadow-[0_1px_2px_rgba(15,23,42,0.08),inset_0_1px_0_rgba(255,255,255,0.15)] border border-slate-900 active:scale-[0.98] transition-all cursor-pointer"
           >
-            Acknowledge & Close
+            Acknowledge &amp; Close
           </button>
         </div>
       </div>

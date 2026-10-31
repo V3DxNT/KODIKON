@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState } from "react";
 import { Role } from "@/types/soc";
 import { AuthUser, authenticateAdmin, authenticateStaff } from "@/lib/auth-adapter";
 
@@ -32,19 +32,24 @@ const AuthContext = createContext<AuthContextType>({
 
 const SESSION_KEY = "project_x_session_user";
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+function getInitialUser(): AuthUser | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const stored = localStorage.getItem(SESSION_KEY) || sessionStorage.getItem(SESSION_KEY);
+    if (stored) {
+      return JSON.parse(stored) as AuthUser;
+    }
+  } catch {}
+  return null;
+}
 
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(SESSION_KEY) || sessionStorage.getItem(SESSION_KEY);
-      if (stored) {
-        setUser(JSON.parse(stored) as AuthUser);
-      }
-    } catch {}
-    setIsLoaded(true);
-  }, []);
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<AuthUser | null>(getInitialUser);
+  const isLoaded = React.useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   const role: Role | null = isLoaded ? user?.role || null : null;
   const isAuthenticated = isLoaded && !!user;
