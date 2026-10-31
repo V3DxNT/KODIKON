@@ -34,7 +34,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
         onClose();
       } else {
         setIsAuthenticating(false);
-        setError("Invalid security credentials. Use demo password 'admin123'.");
+        setError("Invalid security credentials. Check your administrator credentials.");
       }
     }, 600);
   };
@@ -116,8 +116,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
             />
           </div>
 
-          <div className="pt-2 flex items-center justify-between">
-            <span className="text-[11px] font-mono text-slate-500">Demo Key: admin123</span>
+          <div className="pt-2 flex items-center justify-end">
             <button
               type="submit"
               disabled={isAuthenticating}

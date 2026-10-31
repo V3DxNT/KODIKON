@@ -31,7 +31,7 @@ export const HomeLoginSection: React.FC = () => {
       if (res.success) {
         router.push("/admin");
       } else {
-        setError(res.error || "Invalid administrator credentials. Demo key is 'admin123'.");
+        setError(res.error || "Invalid administrator credentials.");
       }
     } catch {
       setError("An unexpected error occurred during admin authentication.");
@@ -50,7 +50,7 @@ export const HomeLoginSection: React.FC = () => {
       if (res.success) {
         router.push("/staff");
       } else {
-        setError(res.error || "Invalid staff credentials. Demo key is 'staff123'.");
+        setError(res.error || "Invalid staff credentials.");
       }
     } catch {
       setError("An unexpected error occurred during staff authentication.");
@@ -179,8 +179,7 @@ export const HomeLoginSection: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-2 flex items-center justify-between">
-              <span className="text-[11px] font-mono text-slate-500">Demo Key: admin123</span>
+            <div className="pt-2 flex items-center justify-end">
               <button
                 type="submit"
                 disabled={isSubmitting}
@@ -250,8 +249,7 @@ export const HomeLoginSection: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-2 flex items-center justify-between">
-              <span className="text-[11px] font-mono text-slate-500">Demo Key: staff123</span>
+            <div className="pt-2 flex items-center justify-end">
               <button
                 type="submit"
                 disabled={isSubmitting}

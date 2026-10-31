@@ -12,7 +12,6 @@ import {
   Download,
   CheckCircle,
   Flag,
-  LogOut,
   Send,
   X
 } from "lucide-react";
@@ -32,7 +31,6 @@ export const EmployeeView: React.FC<EmployeeViewProps> = ({
   incidents,
   onAttemptBlock,
   onSwitchToAdmin,
-  onLogout,
   staffUser,
 }) => {
   const [deniedModalOpen, setDeniedModalOpen] = useState(false);
@@ -129,17 +127,6 @@ export const EmployeeView: React.FC<EmployeeViewProps> = ({
               <div className="text-xs font-semibold text-[var(--text-primary)]">Perimeter Monitored</div>
             </div>
           </div>
-
-          {onLogout && (
-            <button
-              onClick={onLogout}
-              className="btn-metallic-secondary h-8 px-3 rounded-lg flex items-center space-x-1.5 text-xs font-medium cursor-pointer"
-              title="Log out of staff session"
-            >
-              <LogOut className="h-3.5 w-3.5 text-slate-500" />
-              <span>Log Out</span>
-            </button>
-          )}
         </div>
       </div>
 

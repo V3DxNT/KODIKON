@@ -69,7 +69,7 @@ export async function authenticateAdmin(
 
   return {
     success: false,
-    error: "Invalid administrator credentials. Demo key is 'admin123'.",
+    error: "Invalid administrator credentials. Check your username and password.",
   };
 }
 
@@ -103,6 +103,6 @@ export async function authenticateStaff(
 
   return {
     success: false,
-    error: "Invalid staff credentials. Demo key is 'staff123'.",
+    error: "Invalid staff credentials. Check your identifier and password.",
   };
 }

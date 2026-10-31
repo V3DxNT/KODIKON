@@ -65,7 +65,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] antialiased flex flex-col font-sans selection:bg-blue-500/20 relative overflow-x-hidden">
+      <body
+        suppressHydrationWarning={true}
+        className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] antialiased flex flex-col font-sans selection:bg-blue-500/20 relative overflow-x-hidden"
+      >
         <div aria-hidden="true" className="px-mesh-aurora" />
         <ThemeProvider>
           <AuthProvider>

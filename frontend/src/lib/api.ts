@@ -121,3 +121,19 @@ export async function fetchRawEvents(limit = 200): Promise<EventOut[]> {
   return [];
 }
 
+/**
+ * Reset all incidents, events, and audit logs in the backend database.
+ */
+export async function resetDatabase(): Promise<{ status: string; message: string }> {
+  const res = await fetch(`${API_BASE}/system/reset`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "Reset failed" }));
+    throw new Error(err.detail || `HTTP ${res.status}`);
+  }
+  return await res.json();
+}
+
+

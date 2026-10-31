@@ -199,3 +199,14 @@ def block_incident_attacker(
 def list_audit_logs(session: Session = Depends(get_session)):
     """Fetch audit logs for audit trail view."""
     return session.exec(select(AuditLog).order_by(AuditLog.ts.desc())).all()
+
+@app.post("/system/reset", tags=["system"])
+def reset_database(session: Session = Depends(get_session)):
+    """Reset all events, incidents, and audit logs to clean initial state."""
+    from sqlmodel import delete
+    session.exec(delete(Event))
+    session.exec(delete(Incident))
+    session.exec(delete(AuditLog))
+    session.commit()
+    return {"status": "reset", "message": "All incidents, events, and audit logs cleared"}
+

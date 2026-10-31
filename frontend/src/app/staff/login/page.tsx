@@ -165,7 +165,7 @@ function StaffLoginForm() {
         </div>
 
         {/* Remember me */}
-        <div className="flex items-center justify-between text-xs">
+        <div className="flex items-center text-xs">
           <label className="flex items-center space-x-2 text-slate-600 cursor-pointer">
             <input
               type="checkbox"
@@ -175,7 +175,6 @@ function StaffLoginForm() {
             />
             <span>Remember session</span>
           </label>
-          <span className="text-[11px] font-mono text-slate-500">Key: staff123</span>
         </div>
 
         {/* Submit */}

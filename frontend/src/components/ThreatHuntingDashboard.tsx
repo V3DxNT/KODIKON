@@ -10,6 +10,7 @@ import {
   ChevronDown,
   X,
   Server,
+  Trash2,
 } from "lucide-react";
 import { IncidentDetail, AuditLog } from "@/types/soc";
 import { ProofModal } from "./ProofModal";
@@ -20,6 +21,7 @@ interface ThreatHuntingDashboardProps {
   onApprove: (id: number) => Promise<void>;
   onBlock: (id: number) => Promise<void>;
   onRefresh?: () => Promise<void>;
+  onResetDb?: () => Promise<void>;
 }
 
 export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
@@ -28,6 +30,7 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
   onApprove,
   onBlock,
   onRefresh,
+  onResetDb,
 }) => {
   // Navigation & filter state
   const [activeTab, setActiveTab] = useState<"dashboard" | "events">("dashboard");
@@ -160,7 +163,7 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
 
   // Real-time KPI metrics derived from live incidents and raw events
   const totalEventsCount = useMemo(() => {
-    return incidents.reduce((acc, inc) => acc + (inc.events?.length || 1), 0);
+    return incidents.reduce((acc, inc) => acc + (inc.events?.length || 0), 0);
   }, [incidents]);
 
   const criticalAlertsCount = useMemo(() => {
@@ -180,6 +183,192 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
       return acc + success;
     }, 0);
   }, [incidents]);
+
+  // Extract all individual events with normalized timestamp and node information
+  const allEvents = useMemo(() => {
+    const list: Array<{ ts: string; level: number; event_type: string; host: string; source_ip: string }> = [];
+    incidents.forEach((inc) => {
+      const incLevel = inc.severity === "high" ? 12 : inc.severity === "medium" ? 8 : 4;
+      if (inc.events && inc.events.length > 0) {
+        inc.events.forEach((ev) => {
+          list.push({
+            ts: ev.ts || inc.created_at,
+            level: incLevel,
+            event_type: ev.event_type,
+            host: ev.host || "victim-server",
+            source_ip: ev.source_ip || inc.source_ip || "192.168.56.20",
+          });
+        });
+      } else {
+        list.push({
+          ts: inc.created_at,
+          level: incLevel,
+          event_type: "incident",
+          host: "victim-server",
+          source_ip: inc.source_ip || "192.168.56.20",
+        });
+      }
+    });
+    return list;
+  }, [incidents]);
+
+  // Dynamic 8-slot hourly timeline for area chart
+  const timelineData = useMemo(() => {
+    const now = new Date();
+    const slots: Array<{ label: string; count: number; level12: number; level8: number; level4: number }> = [];
+
+    for (let i = 7; i >= 0; i--) {
+      const d = new Date(now.getTime() - i * 60 * 60 * 1000);
+      const hours = d.getHours().toString().padStart(2, "0");
+      slots.push({
+        label: `${hours}:00`,
+        count: 0,
+        level12: 0,
+        level8: 0,
+        level4: 0,
+      });
+    }
+
+    if (allEvents.length > 0) {
+      allEvents.forEach((ev) => {
+        if (!ev.ts) return;
+        const evDate = new Date(ev.ts);
+        const evHours = evDate.getHours().toString().padStart(2, "0") + ":00";
+        const slot = slots.find((s) => s.label === evHours) || slots[slots.length - 1];
+        if (slot) {
+          slot.count += 1;
+          if (ev.level >= 12) slot.level12 += 1;
+          else if (ev.level >= 8) slot.level8 += 1;
+          else slot.level4 += 1;
+        }
+      });
+    }
+
+    const maxCount = Math.max(...slots.map((s) => s.count), 0);
+    return { slots, maxCount };
+  }, [allEvents]);
+
+  // Chart 1: SVG curve points and paths
+  const chart1Points = useMemo(() => {
+    const max = timelineData.maxCount > 0 ? timelineData.maxCount : 1;
+    return timelineData.slots.map((s, idx) => {
+      const x = Math.round((idx / (timelineData.slots.length - 1)) * 500);
+      const y = timelineData.maxCount > 0 ? Math.round(140 - (s.count / max) * 100) : 140;
+      return { x, y, count: s.count, label: s.label };
+    });
+  }, [timelineData]);
+
+  const { areaBottomPath, waveStrokePath } = useMemo(() => {
+    if (timelineData.maxCount === 0) {
+      return {
+        areaBottomPath: "M0,140 L500,140 L500,140 L0,140 Z",
+        waveStrokePath: "M0,140 L500,140",
+      };
+    }
+    let curve = `M${chart1Points[0].x},${chart1Points[0].y}`;
+    for (let i = 0; i < chart1Points.length - 1; i++) {
+      const p0 = chart1Points[i];
+      const p1 = chart1Points[i + 1];
+      const mx = (p0.x + p1.x) / 2;
+      curve += ` C${mx},${p0.y} ${mx},${p1.y} ${p1.x},${p1.y}`;
+    }
+    return {
+      areaBottomPath: `${curve} L500,140 L0,140 Z`,
+      waveStrokePath: curve,
+    };
+  }, [chart1Points, timelineData.maxCount]);
+
+  // Chart 2: MITRE ATT&CK technique breakdown
+  const mitreTechniques = useMemo(() => {
+    let t1110 = 0; // Brute Force (R1)
+    let t1136 = 0; // Create Account (R2)
+    let t1041 = 0; // C2 Egress Exfiltration (R3)
+    let t1078 = 0; // Valid Accounts (ssh_success)
+
+    incidents.forEach((inc) => {
+      (inc.rule_hits || []).forEach((r) => {
+        if (r === "R1") t1110 += 1;
+        if (r === "R2") t1136 += 1;
+        if (r === "R3") t1041 += 1;
+      });
+
+      (inc.events || []).forEach((ev) => {
+        if (ev.event_type === "ssh_fail") t1110 += 1;
+        else if (ev.event_type === "ssh_success") t1078 += 1;
+        else if (ev.event_type === "user_add") t1136 += 1;
+        else if (ev.event_type === "egress") t1041 += 1;
+      });
+    });
+
+    const items = [
+      { id: "T1110", name: "Password Guessing (T1110)", count: t1110, color: "#1E88E5" },
+      { id: "T1078", name: "SSH Auth Success (T1078)", count: t1078, color: "#1565C0" },
+      { id: "T1136", name: "Create Account (T1136)", count: t1136, color: "#FBC02D" },
+      { id: "T1041", name: "C2 Exfiltration (T1041)", count: t1041, color: "#26A69A" },
+    ];
+    const total = items.reduce((acc, it) => acc + it.count, 0);
+    return { items, total };
+  }, [incidents]);
+
+  // Chart 3: Monitored Nodes / Top Agents breakdown
+  const nodeBreakdown = useMemo(() => {
+    let victim = 0;
+    let attacker = 0;
+    const soc = auditLogs.length;
+
+    incidents.forEach((inc) => {
+      if (inc.events && inc.events.length > 0) {
+        inc.events.forEach((ev) => {
+          if (ev.source_ip === "192.168.56.20" || inc.source_ip === "192.168.56.20") {
+            attacker += 1;
+          }
+          victim += 1;
+        });
+      } else {
+        victim += 1;
+        if (inc.source_ip === "192.168.56.20") attacker += 1;
+      }
+    });
+
+    const items = [
+      { name: "Ubuntu-Victim", ip: "192.168.56.10", count: victim, color: "#3B82F6" },
+      { name: "Attacker-Sandbox", ip: "192.168.56.20", count: attacker, color: "#F59E0B" },
+      { name: "Autonomous-SOC", ip: "192.168.56.1", count: soc, color: "#10B981" },
+    ];
+    const total = items.reduce((acc, it) => acc + it.count, 0);
+    return { items, total };
+  }, [incidents, auditLogs]);
+
+  // Chart 4: Alerts evolution by monitored nodes (dynamic hourly stacked bars)
+  const nodeTimelineBars = useMemo(() => {
+    const slots = timelineData.slots.map((s) => {
+      let victim = 0;
+      let attacker = 0;
+      let soc = 0;
+
+      allEvents.forEach((ev) => {
+        if (!ev.ts) return;
+        const evHour = new Date(ev.ts).getHours().toString().padStart(2, "0") + ":00";
+        if (evHour === s.label) {
+          victim += 1;
+          if (ev.source_ip === "192.168.56.20") attacker += 1;
+        }
+      });
+
+      auditLogs.forEach((a) => {
+        if (!a.ts) return;
+        const aHour = new Date(a.ts).getHours().toString().padStart(2, "0") + ":00";
+        if (aHour === s.label) soc += 1;
+      });
+
+      const total = victim + attacker + soc;
+      return { label: s.label, victim, attacker, soc, total };
+    });
+
+    const maxSlotTotal = Math.max(...slots.map((s) => s.total), 0);
+    return { slots, maxSlotTotal };
+  }, [timelineData.slots, allEvents, auditLogs]);
+
 
   // Report generation handler
   const handleGenerateReport = () => {
@@ -270,6 +459,16 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
 
           {/* Right Status Indicators */}
           <div className="flex items-center space-x-2.5">
+            {onResetDb && (
+              <button
+                onClick={onResetDb}
+                title="Reset Database & Clear All Telemetry"
+                className="h-8 px-2.5 rounded-lg border border-rose-200/90 bg-white hover:bg-rose-50 hover:border-rose-300 text-rose-700 text-xs font-medium shadow-[0_1px_2px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-all flex items-center space-x-1 cursor-pointer"
+              >
+                <Trash2 className="h-3 w-3 text-rose-600" />
+                <span className="hidden sm:inline">Reset DB</span>
+              </button>
+            )}
             {onRefresh && (
               <button
                 onClick={onRefresh}
@@ -435,7 +634,7 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
                     <span>Alerts level evolution</span>
                     {hoveredHour && (
                       <span className="text-[11px] font-mono text-blue-600 font-normal">
-                        ({hoveredHour}: 4,820 events)
+                        ({hoveredHour}: {timelineData.slots.find((s) => s.label === hoveredHour)?.count || 0} events)
                       </span>
                     )}
                   </h3>
@@ -449,19 +648,18 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
                   <div className="md:col-span-10 relative">
                     {/* Y-Axis scale labels */}
                     <div className="absolute left-0 top-0 bottom-6 w-8 flex flex-col justify-between text-[10px] font-mono text-slate-400 select-none">
-                      <span>6,000</span>
-                      <span>3,000</span>
+                      <span>{timelineData.maxCount > 0 ? Math.max(timelineData.maxCount, 5) : 0}</span>
+                      <span>{timelineData.maxCount > 0 ? Math.round(Math.max(timelineData.maxCount, 5) / 2) : 0}</span>
                       <span>0</span>
                     </div>
 
-                    <div className="pl-9 pr-2">
+                    <div className="pl-9 pr-2 relative">
                       <svg
                         viewBox="0 0 500 160"
                         className="w-full h-44 overflow-visible"
                         preserveAspectRatio="none"
                       >
                         <defs>
-                          {/* Multi-layered Gradients matching image */}
                           <linearGradient id="layerBottom" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="0%" stopColor="#1E88E5" stopOpacity="0.95" />
                             <stop offset="100%" stopColor="#1976D2" stopOpacity="0.85" />
@@ -485,167 +683,171 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
                         <line x1="0" y1="75" x2="500" y2="75" stroke="#E2E8F0" strokeDasharray="3 3" />
                         <line x1="0" y1="140" x2="500" y2="140" stroke="#CBD5E1" strokeWidth="1" />
 
-                        {/* Top Accent Yellow Layer */}
-                        <path
-                          d="M0,135 Q30,120 70,80 T150,110 T240,65 T330,115 T420,60 T500,120 L500,140 L0,140 Z"
-                          fill="url(#accentYellow)"
-                        />
-
-                        {/* Pale Sky Top Layer */}
-                        <path
-                          d="M0,136 Q30,122 70,84 T150,113 T240,69 T330,118 T420,64 T500,123 L500,140 L0,140 Z"
-                          fill="url(#layerTop)"
-                        />
-
-                        {/* Middle Sky Blue Layer */}
-                        <path
-                          d="M0,138 Q30,125 70,88 T150,116 T240,73 T330,121 T420,68 T500,126 L500,140 L0,140 Z"
-                          fill="url(#layerMid)"
-                        />
-
-                        {/* Base Solid Blue Layer (The main rolling wave from the image) */}
-                        <path
-                          d="M0,140 Q30,128 70,95 T150,122 T240,82 T330,126 T420,76 T500,130 L500,140 L0,140 Z"
-                          fill="url(#layerBottom)"
-                        />
-
-                        {/* Clean stroke along the main wave crest */}
-                        <path
-                          d="M0,140 Q30,128 70,95 T150,122 T240,82 T330,126 T420,76 T500,130"
-                          fill="none"
-                          stroke="#1565C0"
-                          strokeWidth="2"
-                        />
+                        {timelineData.maxCount > 0 ? (
+                          <>
+                            {/* Layered Waves */}
+                            <path d={areaBottomPath} fill="url(#layerBottom)" opacity="0.9" />
+                            <path d={areaBottomPath} fill="url(#layerMid)" opacity="0.6" />
+                            <path d={waveStrokePath} fill="none" stroke="#1565C0" strokeWidth="2.5" />
+                            {chart1Points.map((pt, i) => (
+                              <circle
+                                key={i}
+                                cx={pt.x}
+                                cy={pt.y}
+                                r={hoveredHour === pt.label ? 4.5 : 2.5}
+                                fill="#1565C0"
+                                stroke="#fff"
+                                strokeWidth="1.5"
+                                className="transition-all"
+                              />
+                            ))}
+                          </>
+                        ) : (
+                          <line x1="0" y1="140" x2="500" y2="140" stroke="#94A3B8" strokeWidth="1.5" strokeDasharray="4 4" />
+                        )}
                       </svg>
+
+                      {timelineData.maxCount === 0 && (
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <span className="text-xs font-mono text-slate-500 bg-slate-50/90 px-3.5 py-1.5 rounded-full border border-slate-200/80 shadow-2xs">
+                            Perimeter Normal &bull; 0 Events in Buffer
+                          </span>
+                        </div>
+                      )}
 
                       {/* X-Axis timestamps */}
                       <div className="flex justify-between text-[9px] font-mono text-slate-400 pt-1 border-t border-slate-200">
-                        {["23:00", "00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00"].map((t) => (
+                        {timelineData.slots.map((s) => (
                           <span
-                            key={t}
-                            onMouseEnter={() => setHoveredHour(t)}
+                            key={s.label}
+                            onMouseEnter={() => setHoveredHour(s.label)}
                             onMouseLeave={() => setHoveredHour(null)}
-                            className="cursor-pointer hover:text-blue-600 transition-colors"
+                            className={`cursor-pointer transition-colors ${
+                              hoveredHour === s.label ? "text-blue-600 font-bold" : "hover:text-blue-600"
+                            }`}
                           >
-                            {t}
+                            {s.label}
                           </span>
                         ))}
                       </div>
                     </div>
                   </div>
 
-                  {/* Right Legend with colored dots */}
-                  <div className="md:col-span-2 flex flex-col space-y-1.5 text-[11px] font-mono text-slate-600 pl-2">
-                    {[
-                      { level: "12", color: "bg-[#1E3A8A]" },
-                      { level: "10", color: "bg-[#1E88E5]" },
-                      { level: "9", color: "bg-[#3B82F6]" },
-                      { level: "8", color: "bg-[#60A5FA]" },
-                      { level: "7", color: "bg-[#93C5FD]" },
-                      { level: "6", color: "bg-[#38BDF8]" },
-                      { level: "5", color: "bg-[#7DD3FC]" },
-                      { level: "4", color: "bg-[#BAE6FD]" },
-                      { level: "3", color: "bg-[#94A3B8]" },
-                    ].map((item) => (
-                      <div key={item.level} className="flex items-center space-x-2">
-                        <span className={`h-2.5 w-2.5 rounded-full ${item.color}`}></span>
-                        <span>{item.level}</span>
+                  {/* Right Legend with dynamic alert severity counts */}
+                  <div className="md:col-span-2 flex flex-col space-y-2 text-[11px] font-mono text-slate-600 pl-2">
+                    <div className="flex items-center justify-between space-x-2">
+                      <div className="flex items-center space-x-1.5">
+                        <span className="h-2.5 w-2.5 rounded-full bg-[#E53935]"></span>
+                        <span>Level 12+</span>
                       </div>
-                    ))}
+                      <span className="font-semibold text-slate-900">{criticalAlertsCount}</span>
+                    </div>
+                    <div className="flex items-center justify-between space-x-2">
+                      <div className="flex items-center space-x-1.5">
+                        <span className="h-2.5 w-2.5 rounded-full bg-[#1E88E5]"></span>
+                        <span>Level 8</span>
+                      </div>
+                      <span className="font-semibold text-slate-900">{incidents.filter(i => i.severity === "medium").length}</span>
+                    </div>
+                    <div className="flex items-center justify-between space-x-2">
+                      <div className="flex items-center space-x-1.5">
+                        <span className="h-2.5 w-2.5 rounded-full bg-[#64748B]"></span>
+                        <span>Level 4</span>
+                      </div>
+                      <span className="font-semibold text-slate-900">{incidents.filter(i => i.severity === "low").length}</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Card 2: MITRE ATT&CK */}
               <div className="lg:col-span-4 bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-4 flex flex-col justify-between">
-                <h3 className="text-sm font-semibold text-slate-800 tracking-tight">
-                  MITRE ATT&CK
-                </h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-slate-800 tracking-tight">
+                    MITRE ATT&CK
+                  </h3>
+                  <span className="text-[11px] font-mono text-slate-500">
+                    {mitreTechniques.total} total hits
+                  </span>
+                </div>
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                   {/* Radial Ring Chart */}
                   <div className="relative w-36 h-36 flex items-center justify-center shrink-0">
                     <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
                       {/* Background track */}
-                      <circle cx="50" cy="50" r="38" fill="none" stroke="#E2E8F0" strokeWidth="10" />
-                      {/* Light soft inner center like image */}
-                      <circle cx="50" cy="50" r="26" fill="#DCEBFA" opacity="0.8" />
-                      {/* Password Guessing / Primary Blue */}
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="38"
-                        fill="none"
-                        stroke="#1E88E5"
-                        strokeWidth="10"
-                        strokeDasharray="160 240"
-                        strokeDashoffset="0"
-                      />
-                      {/* Brute Force Yellow */}
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="38"
-                        fill="none"
-                        stroke="#FBC02D"
-                        strokeWidth="10"
-                        strokeDasharray="35 240"
-                        strokeDashoffset="-165"
-                      />
-                      {/* Valid Accounts Teal */}
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="38"
-                        fill="none"
-                        stroke="#26A69A"
-                        strokeWidth="10"
-                        strokeDasharray="25 240"
-                        strokeDashoffset="-205"
-                      />
+                      <circle cx="50" cy="50" r="38" fill="none" stroke="#F1F5F9" strokeWidth="10" />
+                      {/* Light soft inner center */}
+                      <circle cx="50" cy="50" r="26" fill="#F8FAFC" />
+                      {mitreTechniques.total > 0 && (() => {
+                        let offset = 0;
+                        const circum = 238.76;
+                        return mitreTechniques.items
+                          .filter((it) => it.count > 0)
+                          .map((it) => {
+                            const segLength = (it.count / mitreTechniques.total) * circum;
+                            const curOffset = offset;
+                            offset += segLength;
+                            return (
+                              <circle
+                                key={it.id}
+                                cx="50"
+                                cy="50"
+                                r="38"
+                                fill="none"
+                                stroke={it.color}
+                                strokeWidth="10"
+                                strokeDasharray={`${segLength} ${circum - segLength}`}
+                                strokeDashoffset={-curOffset}
+                              />
+                            );
+                          });
+                      })()}
                     </svg>
+
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+                      <span className="text-lg font-bold text-slate-800 font-sans leading-none">
+                        {mitreTechniques.total}
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-mono mt-0.5">
+                        {mitreTechniques.total === 0 ? "Threats" : "Hits"}
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Legend matching image */}
-                  <div className="flex flex-col space-y-1.5 text-xs text-slate-700">
-                    <div className="flex items-center space-x-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#1E88E5] shrink-0"></span>
-                      <span className="truncate max-w-[130px]" title="Password Guessing">Password Guessing</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#1565C0] shrink-0"></span>
-                      <span className="truncate max-w-[130px]" title="SSH">SSH</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#FBC02D] shrink-0"></span>
-                      <span className="truncate max-w-[130px]" title="Brute Force">Brute Force</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#26A69A] shrink-0"></span>
-                      <span className="truncate max-w-[130px]" title="Valid Accounts">Valid Accounts</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#78909C] shrink-0"></span>
-                      <span className="truncate max-w-[130px]" title="System Binary Proxy...">System Binary Proxy...</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#AB47BC] shrink-0"></span>
-                      <span className="truncate max-w-[130px]" title="Account Access Re...">Account Access Re...</span>
-                    </div>
+                  {/* Legend matching actual techniques */}
+                  <div className="flex flex-col space-y-1.5 text-xs text-slate-700 w-full sm:w-auto">
+                    {mitreTechniques.items.map((it) => {
+                      const pct = mitreTechniques.total > 0 ? Math.round((it.count / mitreTechniques.total) * 100) : 0;
+                      return (
+                        <div key={it.id} className="flex items-center justify-between sm:justify-start space-x-2">
+                          <div className="flex items-center space-x-2 min-w-0">
+                            <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: it.color }}></span>
+                            <span className="truncate max-w-[130px]" title={it.name}>{it.name}</span>
+                          </div>
+                          <span className="font-mono text-[11px] text-slate-500 font-medium">{it.count} ({pct}%)</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
             </div>
 
             {/* =========================================================================
-                ROW 2 CHARTS: Top 5 agents (Donut) & Alerts evolution - Top 5 agents (Stacked Bars)
+                ROW 2 CHARTS: Monitored Nodes (Donut) & Alerts evolution - Monitored Nodes (Stacked Bars)
                 ========================================================================= */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Card 1: Top 5 agents */}
+              {/* Card 1: Monitored Nodes */}
               <div className="lg:col-span-4 bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-4">
-                <h3 className="text-sm font-semibold text-slate-800 tracking-tight">
-                  Top 5 agents
-                </h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-slate-800 tracking-tight">
+                    Monitored Nodes
+                  </h3>
+                  <span className="text-[11px] font-mono text-slate-500">
+                    {nodeBreakdown.total} events
+                  </span>
+                </div>
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                   {/* Segmented Donut Chart */}
@@ -653,147 +855,141 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
                     <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
                       {/* Background track */}
                       <circle cx="50" cy="50" r="36" fill="none" stroke="#F1F5F9" strokeWidth="12" />
-                      {/* macOS (Primary Blue arc, majority) */}
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="36"
-                        fill="none"
-                        stroke="#3B82F6"
-                        strokeWidth="12"
-                        strokeDasharray="170 230"
-                        strokeDashoffset="0"
-                      />
-                      {/* Centos (Navy arc) */}
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="36"
-                        fill="none"
-                        stroke="#1E3A8A"
-                        strokeWidth="12"
-                        strokeDasharray="35 230"
-                        strokeDashoffset="-175"
-                      />
-                      {/* Debian (Yellow arc) */}
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="36"
-                        fill="none"
-                        stroke="#FACC15"
-                        strokeWidth="12"
-                        strokeDasharray="18 230"
-                        strokeDashoffset="-213"
-                      />
+                      {nodeBreakdown.total > 0 && (() => {
+                        let offset = 0;
+                        const circum = 226.19;
+                        return nodeBreakdown.items
+                          .filter((it) => it.count > 0)
+                          .map((it) => {
+                            const segLength = (it.count / nodeBreakdown.total) * circum;
+                            const curOffset = offset;
+                            offset += segLength;
+                            return (
+                              <circle
+                                key={it.name}
+                                cx="50"
+                                cy="50"
+                                r="36"
+                                fill="none"
+                                stroke={it.color}
+                                strokeWidth="12"
+                                strokeDasharray={`${segLength} ${circum - segLength}`}
+                                strokeDashoffset={-curOffset}
+                              />
+                            );
+                          });
+                      })()}
                     </svg>
+
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+                      <span className="text-lg font-bold text-slate-800 font-sans leading-none">
+                        {nodeBreakdown.total}
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-mono mt-0.5">
+                        Events
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Legend matching image */}
-                  <div className="flex flex-col space-y-2 text-xs text-slate-700">
-                    <div className="flex items-center space-x-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#3B82F6]"></span>
-                      <span>macOS</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#1E3A8A]"></span>
-                      <span>Centos</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#CBD5E1]"></span>
-                      <span>RHEL7</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#06B6D4]"></span>
-                      <span>Windows</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#FACC15]"></span>
-                      <span>Debian</span>
-                    </div>
+                  {/* Legend */}
+                  <div className="flex flex-col space-y-2 text-xs text-slate-700 w-full sm:w-auto">
+                    {nodeBreakdown.items.map((node) => {
+                      const pct = nodeBreakdown.total > 0 ? Math.round((node.count / nodeBreakdown.total) * 100) : 0;
+                      return (
+                        <div key={node.name} className="flex items-center justify-between sm:justify-start space-x-2">
+                          <div className="flex items-center space-x-2">
+                            <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: node.color }}></span>
+                            <span className="font-medium text-slate-800">{node.name}</span>
+                          </div>
+                          <span className="font-mono text-[11px] text-slate-500 font-medium">{node.count} ({pct}%)</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
 
-              {/* Card 2: Alerts evolution - Top 5 agents */}
+              {/* Card 2: Alerts evolution - Monitored Nodes */}
               <div className="lg:col-span-8 bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-4 flex flex-col justify-between">
-                <h3 className="text-sm font-semibold text-slate-800 tracking-tight">
-                  Alerts evolution - Top 5 agents
-                </h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-slate-800 tracking-tight">
+                    Alerts evolution &bull; Monitored Nodes
+                  </h3>
+                  <span className="text-[11px] font-mono bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-md border border-slate-200/60">
+                    timestamp per 60 minutes
+                  </span>
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                   <div className="md:col-span-10 relative">
                     {/* Y-Axis scale labels */}
                     <div className="absolute left-0 top-0 bottom-6 w-8 flex flex-col justify-between text-[10px] font-mono text-slate-400 select-none">
-                      <span>6,000</span>
-                      <span>3,000</span>
+                      <span>{nodeTimelineBars.maxSlotTotal > 0 ? Math.max(nodeTimelineBars.maxSlotTotal, 5) : 0}</span>
+                      <span>{nodeTimelineBars.maxSlotTotal > 0 ? Math.round(Math.max(nodeTimelineBars.maxSlotTotal, 5) / 2) : 0}</span>
                       <span>0</span>
                     </div>
 
                     {/* Stacked Vertical Bar Representation */}
-                    <div className="pl-9 pr-2">
+                    <div className="pl-9 pr-2 relative">
                       <div className="h-40 flex items-end justify-between border-b border-slate-200 gap-2 sm:gap-3.5 pt-4">
-                        {[
-                          { mac: 70, centos: 15, rhel: 5, win: 6, deb: 4 },
-                          { mac: 78, centos: 18, rhel: 6, win: 8, deb: 5 },
-                          { mac: 72, centos: 16, rhel: 4, win: 5, deb: 3 },
-                          { mac: 80, centos: 20, rhel: 7, win: 7, deb: 4 },
-                          { mac: 74, centos: 15, rhel: 5, win: 6, deb: 3 },
-                          { mac: 35, centos: 10, rhel: 3, win: 4, deb: 2 },
-                          { mac: 48, centos: 12, rhel: 4, win: 5, deb: 3 },
-                          { mac: 38, centos: 11, rhel: 3, win: 4, deb: 2 },
-                          { mac: 55, centos: 14, rhel: 5, win: 6, deb: 4 },
-                          { mac: 76, centos: 18, rhel: 6, win: 7, deb: 4 },
-                        ].map((bar, idx) => (
-                          <div
-                            key={idx}
-                            className="flex-1 flex flex-col justify-end h-full group cursor-pointer"
-                          >
-                            <div className="w-full flex flex-col rounded-t-xs overflow-hidden transition-all duration-150 group-hover:opacity-90 group-hover:scale-y-[1.02] origin-bottom">
-                              {/* Top: Debian Yellow */}
-                              <div style={{ height: `${bar.deb}px` }} className="w-full bg-[#FACC15]" />
-                              {/* Windows: Cyan */}
-                              <div style={{ height: `${bar.win}px` }} className="w-full bg-[#06B6D4]" />
-                              {/* RHEL: Soft Gray */}
-                              <div style={{ height: `${bar.rhel}px` }} className="w-full bg-[#CBD5E1]" />
-                              {/* Centos: Navy */}
-                              <div style={{ height: `${bar.centos}px` }} className="w-full bg-[#1E3A8A]" />
-                              {/* Base: macOS Bright Blue */}
-                              <div style={{ height: `${bar.mac}px` }} className="w-full bg-[#3B82F6]" />
+                        {nodeTimelineBars.slots.map((bar, idx) => {
+                          const maxScale = Math.max(nodeTimelineBars.maxSlotTotal, 1);
+                          const totalHeightPx = nodeTimelineBars.maxSlotTotal > 0
+                            ? Math.round((bar.total / maxScale) * 110)
+                            : 0;
+                          const victimHeight = bar.total > 0 ? Math.round((bar.victim / bar.total) * totalHeightPx) : 0;
+                          const attackerHeight = bar.total > 0 ? Math.round((bar.attacker / bar.total) * totalHeightPx) : 0;
+                          const socHeight = bar.total > 0 ? Math.max(0, totalHeightPx - victimHeight - attackerHeight) : 0;
+
+                          return (
+                            <div
+                              key={idx}
+                              title={`${bar.label}: ${bar.total} events (Victim: ${bar.victim}, Attacker: ${bar.attacker}, SOC: ${bar.soc})`}
+                              className="flex-1 flex flex-col justify-end h-full group cursor-pointer"
+                            >
+                              {totalHeightPx > 0 ? (
+                                <div className="w-full flex flex-col rounded-t-xs overflow-hidden transition-all duration-150 group-hover:opacity-90 group-hover:scale-y-[1.02] origin-bottom">
+                                  {socHeight > 0 && <div style={{ height: `${socHeight}px` }} className="w-full bg-[#10B981]" />}
+                                  {attackerHeight > 0 && <div style={{ height: `${attackerHeight}px` }} className="w-full bg-[#F59E0B]" />}
+                                  {victimHeight > 0 && <div style={{ height: `${victimHeight}px` }} className="w-full bg-[#3B82F6]" />}
+                                </div>
+                              ) : (
+                                <div className="w-full h-0.5 bg-slate-200 group-hover:bg-blue-300 transition-colors" />
+                              )}
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
 
-                      <div className="flex justify-center pt-2">
-                        <span className="text-[11px] font-mono bg-slate-100 text-slate-600 px-3 py-0.5 rounded-md border border-slate-200/60">
-                          timestamp per 30 minutes
-                        </span>
+                      {nodeTimelineBars.maxSlotTotal === 0 && (
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <span className="text-xs font-mono text-slate-500 bg-slate-50/90 px-3.5 py-1.5 rounded-full border border-slate-200/80 shadow-2xs">
+                            No Node Alert Spikes Recorded
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="flex justify-between text-[9px] font-mono text-slate-400 pt-1 border-t border-slate-200">
+                        {nodeTimelineBars.slots.map((s) => (
+                          <span key={s.label}>{s.label}</span>
+                        ))}
                       </div>
                     </div>
                   </div>
 
                   {/* Legend */}
-                  <div className="md:col-span-2 flex flex-col space-y-1.5 text-xs text-slate-700 pl-2">
+                  <div className="md:col-span-2 flex flex-col space-y-2 text-xs text-slate-700 pl-2">
                     <div className="flex items-center space-x-2">
                       <span className="h-2.5 w-2.5 rounded-full bg-[#3B82F6]"></span>
-                      <span>macOS</span>
+                      <span>Ubuntu-Victim</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#1E3A8A]"></span>
-                      <span>Centos</span>
+                      <span className="h-2.5 w-2.5 rounded-full bg-[#F59E0B]"></span>
+                      <span>Attacker-Sandbox</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#CBD5E1]"></span>
-                      <span>RHEL7</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#06B6D4]"></span>
-                      <span>Windows</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#FACC15]"></span>
-                      <span>Debian</span>
+                      <span className="h-2.5 w-2.5 rounded-full bg-[#10B981]"></span>
+                      <span>Autonomous-SOC</span>
                     </div>
                   </div>
                 </div>

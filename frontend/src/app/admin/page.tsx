@@ -9,11 +9,12 @@ import {
   fetchIncident, 
   approveIncident, 
   blockIncident, 
-  fetchAuditLogs 
+  fetchAuditLogs,
+  resetDatabase
 } from "@/lib/api";
 import { IncidentDetail, AuditLog } from "@/types/soc";
 import { useAuth } from "@/context/AuthContext";
-import { Lock, ArrowRight, SlidersHorizontal, LayoutDashboard, RefreshCw } from "lucide-react";
+import { Lock, ArrowRight, SlidersHorizontal, LayoutDashboard, RefreshCw, Trash2 } from "lucide-react";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -109,6 +110,25 @@ export default function AdminPage() {
     }
   };
 
+  const handleResetDb = async () => {
+    if (!window.confirm("Reset database? This will clear all incidents, events, and audit logs to zero.")) {
+      return;
+    }
+    setIsRefreshing(true);
+    try {
+      await resetDatabase();
+      setIncidents([]);
+      setAuditLogs([]);
+      showToast("Database reset: All telemetry events, incidents, and audit logs cleared");
+      await loadData();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to reset database";
+      showToast(msg);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   // Only show the restriction if explicitly logged in under an employee-only session
   if (role === "employee") {
     return (
@@ -172,6 +192,16 @@ export default function AdminPage() {
 
         <div className="flex items-center space-x-2">
           <button
+            onClick={handleResetDb}
+            disabled={isRefreshing}
+            className="h-8 px-2.5 sm:px-3 rounded-lg border border-rose-200/90 bg-white hover:bg-rose-50 text-xs font-medium text-rose-700 shadow-[0_1px_2px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-all cursor-pointer flex items-center space-x-1.5 disabled:opacity-50"
+            title="Reset Database & Clear All Telemetry"
+          >
+            <Trash2 className="h-3.5 w-3.5 text-rose-600" />
+            <span className="hidden sm:inline">Reset DB</span>
+          </button>
+
+          <button
             onClick={handleRefresh}
             disabled={isRefreshing}
             className="h-8 px-3 rounded-lg border border-slate-200/90 bg-white hover:bg-slate-50 text-xs font-medium text-slate-700 shadow-[0_1px_2px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-all cursor-pointer flex items-center space-x-1.5 disabled:opacity-50"
@@ -210,6 +240,7 @@ export default function AdminPage() {
           onApprove={handleApprove}
           onBlock={handleBlock}
           onRefresh={handleRefresh}
+          onResetDb={handleResetDb}
         />
       ) : (
         <div className="max-w-[1440px] mx-auto p-3 sm:p-6">
