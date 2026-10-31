@@ -20,6 +20,13 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Project X — Autonomous Single-Box SOC",
   description: "Autonomous Security Operations Center for small enterprises. Ingests Linux logs, correlates attacks, explains threats in plain English, and proves containment via MITRE Caldera.",
+  icons: {
+    icon: [
+      { url: "/cybersecurity.png", type: "image/png" },
+    ],
+    shortcut: "/cybersecurity.png",
+    apple: "/cybersecurity.png",
+  },
 };
 
 export default function RootLayout({
