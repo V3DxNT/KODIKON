@@ -67,6 +67,11 @@ export const NavigationWrapper: React.FC = () => {
     router.push("/");
   };
 
+  // Dedicated admin portal provides its own sidebar and header shell
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
+
   return (
     <RoleNavbar
       currentRole={role}
