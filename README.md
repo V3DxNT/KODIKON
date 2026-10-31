@@ -100,36 +100,36 @@ SENTINEL FORGE implements a cleanly decoupled 4-tier microservices architecture 
 
 ```mermaid
 graph TB
-    subgraph Tier1["TIER 1 &bull; ADVERSARY ENVIRONMENT (192.168.56.20)"]
-        HYDRA["Hydra Brute Force Daemon<br/>(T1110 SSH Spray)"]
-        CALDERA_SRV["MITRE Caldera Server v5<br/>(REST API :8888)"]
-        SANDCAT["Sandcat C2 Adversary Agent<br/>(Automated Re-Attack)"]
+    subgraph Tier1["TIER 1 - ADVERSARY ENVIRONMENT (192.168.56.20)"]
+        HYDRA["Hydra Brute Force Daemon<br/>T1110 SSH Spray"]
+        CALDERA_SRV["MITRE Caldera Server v5<br/>REST API :8888"]
+        SANDCAT["Sandcat C2 Adversary Agent<br/>Automated Re-Attack"]
     end
 
-    subgraph Tier2["TIER 2 &bull; MONITORED VICTIM SERVER (192.168.56.10)"]
-        KERNEL["Linux Kernel Telemetry<br/>(/var/log/auth.log)"]
-        AUDITD["auditd Kernel Subsystem<br/>(T1136 useradd Hook)"]
-        UFW_FW["UFW / Netfilter Firewall<br/>(T1041 Egress Drop)"]
-        SHIPPER["Victim Log Shipper<br/>(victim_log_shipper.py)"]
+    subgraph Tier2["TIER 2 - MONITORED VICTIM SERVER (192.168.56.10)"]
+        KERNEL["Linux Kernel Telemetry<br/>/var/log/auth.log"]
+        AUDITD["auditd Kernel Subsystem<br/>T1136 useradd Hook"]
+        UFW_FW["UFW / Netfilter Firewall<br/>T1041 Egress Drop"]
+        SHIPPER["Victim Log Shipper<br/>victim_log_shipper.py"]
     end
 
-    subgraph Tier3["TIER 3 &bull; SENTINEL FORGE CORE BRAIN (192.168.56.1:8000)"]
+    subgraph Tier3["TIER 3 - SENTINEL FORGE CORE BRAIN (192.168.56.1:8000)"]
         INGEST["Ingest Controller<br/>POST /events (Contract #1)"]
-        DB[(SQLite Engine<br/>SQLModel ORM)]
-        NETX["NetworkX Correlator<br/>(10m Temporal Graph Window)"]
-        RULES["Pure Rule Engine<br/>R1 (T1110) &bull; R2 (T1136) &bull; R3 (T1041)"]
+        DB[("SQLite Engine<br/>SQLModel ORM")]
+        NETX["NetworkX Correlator<br/>10m Temporal Graph Window"]
+        RULES["Pure Rule Engine<br/>R1 T1110 · R2 T1136 · R3 T1041"]
         LLM["Plain-English Explainer<br/>GPT-4o-mini + Jinja2 Failover"]
         RBAC["Dual-Custody Gatekeeper<br/>X-Role: admin vs receptionist"]
-        ACTIONS["Paramiko SSH Driver<br/>(Contract #4: ufw deny)"]
-        VERIFY["Caldera Re-Run Client<br/>(Contract #3: /api/v2/operations)"]
+        ACTIONS["Paramiko SSH Driver<br/>Contract #4: ufw deny"]
+        VERIFY["Caldera Re-Run Client<br/>Contract #3: /api/v2/operations"]
         AUDIT["Immutable Audit Ledger<br/>GET /audit"]
     end
 
-    subgraph Tier4["TIER 4 &bull; PRESENTATION LAYER (192.168.56.1:3000)"]
+    subgraph Tier4["TIER 4 - PRESENTATION LAYER (192.168.56.1:3000)"]
         NEXT_DASH["Next.js 16 SOC Dashboard<br/>Void Black Design System"]
-        ADMIN_PORTAL["Admin Command Console<br/>(Dossiers &bull; Correlation Graph &bull; Gate)"]
-        STAFF_PORTAL["Staff Advisory Bulletin<br/>(Plain-English &bull; 403 Restricted)"]
-        PROOF_MODAL["Formal Proof Visualizer<br/>(RC=1 Adversary Neutralization)"]
+        ADMIN_PORTAL["Admin Command Console<br/>Dossiers · Correlation Graph · Gate"]
+        STAFF_PORTAL["Staff Advisory Bulletin<br/>Plain-English · 403 Restricted"]
+        PROOF_MODAL["Formal Proof Visualizer<br/>RC=1 Adversary Neutralization"]
     end
 
     %% Flows
@@ -149,14 +149,14 @@ graph TB
     NEXT_DASH -->|Contract #2: GET /incidents| DB
     ADMIN_PORTAL -->|X-Role: admin POST /approve| RBAC
     ADMIN_PORTAL -->|X-Role: admin POST /block| ACTIONS
-    STAFF_PORTAL -.->|X-Role: employee (403 Gated)| RBAC
+    STAFF_PORTAL -.->|X-Role: employee - 403 Gated| RBAC
 
     ACTIONS -->|Contract #4: sudo ufw deny| UFW_FW
     ACTIONS --> VERIFY
     VERIFY -->|Contract #3: POST /operations| CALDERA_SRV
     CALDERA_SRV --> SANDCAT
     SANDCAT -->|Re-attack Port 22 Reachability| UFW_FW
-    UFW_FW --x|PACKET DROPPED (RC=1)| SANDCAT
+    UFW_FW -->|PACKET DROPPED - RC=1| SANDCAT
     SANDCAT -->|Operation Failed: Confirmed| CALDERA_SRV
     CALDERA_SRV -->|Result: confirmed| VERIFY
     VERIFY --> AUDIT
@@ -261,7 +261,7 @@ sequenceDiagram
     Note over Brain,Attacker: STEP 10: Closed-Loop Verification (The Payoff)
     Brain->>Caldera: POST /api/v2/operations (Re-execute T1110 profile)
     Caldera->>Victim: Sandcat attempts SSH Port 22 connection
-    Victim--xCaldera: PACKET DROPPED BY UFW (Connection Refused / Timeout)
+    Victim-->>Caldera: PACKET DROPPED BY UFW (Connection Refused)
     Caldera-->>Brain: Result: CONFIRMED BLOCKED (RC=1)
     Brain->>Brain: Record Non-Repudiation Proof in Audit Ledger
     Brain-->>Admin: Display Verification Modal (Mathematical Proof Achieved)
@@ -275,8 +275,8 @@ SENTINEL FORGE implements pure, deterministic, side-effect-free detection functi
 
 | Act | Attack Phase | MITRE ATT&CK ID | Raw Telemetry Source | Pure Rule Function | Severity Impact |
 |---|---|---|---|---|---|
-| **Act 1** | Brute-Force Credential Spray | **T1110 (Brute Force)** | `/var/log/auth.log` (`sshd`) | `r1_bruteforce(events)`<br/>$\ge 5 \times \text{ssh\_fail} \land \ge 1 \times \text{ssh\_success}$ | `MEDIUM` |
-| **Act 2** | Persistence & Privilege Escalation | **T1136 (Create Account)** | `/var/log/audit.log` (`auditd`) | `r2_new_user(events)`<br/>$\text{user\_add} \land \text{ssh\_success}$ within 10 min | `HIGH` (when paired with R1) |
+| **Act 1** | Brute-Force Credential Spray | **T1110 (Brute Force)** | `/var/log/auth.log` (`sshd`) | `r1_bruteforce(events)`<br/>`ssh_fail >= 5` and `ssh_success >= 1` | `MEDIUM` |
+| **Act 2** | Persistence & Privilege Escalation | **T1136 (Create Account)** | `/var/log/audit.log` (`auditd`) | `r2_new_user(events)`<br/>`user_add` and `ssh_success` within 10 min | `HIGH` (when paired with R1) |
 | **Act 3** | C2 Channel Exfiltration | **T1041 (Exfiltration Over C2)** | `/var/log/syslog` (`ufw`) | `r3_egress(events)`<br/>Outbound packet to unauthorized external IP | `HIGH` (Immediate Criticality) |
 
 ### Detection Policy Logic Matrix:
@@ -298,8 +298,8 @@ Classical SOAR architectures suffer from an inherent blind spot: **they execute 
 SENTINEL FORGE introduces **adversary-in-the-loop formal verification**:
 
 $$\mathcal{V}(A, T) = \begin{cases}
-\mathbf{VERIFIED\_CONTAINED} & \text{if } \text{CalderaExec}(A, T, 22) \implies \text{ExitCode} \neq 0 \quad (\text{Packet Rejected}) \\
-\mathbf{BREACH\_UNRESOLVED} & \text{if } \text{CalderaExec}(A, T, 22) \implies \text{ExitCode} = 0 \quad (\text{Connection Alive})
+\mathbf{VERIFIED\text{-}CONTAINED} & \text{if } \mathrm{CalderaExec}(A, T, 22) \implies \mathrm{ExitCode} \neq 0 \quad \text{(Packet Dropped)} \\
+\mathbf{BREACH\text{-}UNRESOLVED} & \text{if } \mathrm{CalderaExec}(A, T, 22) \implies \mathrm{ExitCode} = 0 \quad \text{(Connection Alive)}
 \end{cases}$$
 
 ```
