@@ -1,72 +1,76 @@
 "use client";
 
 import React from "react";
-import { Shield, Layers, FileCode, CheckCircle2, ArrowRight, ExternalLink } from "lucide-react";
+import { Layers } from "lucide-react";
 
 export const ArchitectureView: React.FC = () => {
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 space-y-10">
+    <div className="mx-auto max-w-6xl px-6 py-12 sm:px-8 space-y-12">
       {/* Header */}
-      <div className="pb-6 border-b border-white/10">
-        <div className="flex items-center space-x-2">
-          <span className="rounded-full bg-cyan-950 px-2.5 py-0.5 text-xs font-mono text-cyan-300 border border-cyan-800">
-            SYSTEM DESIGN
-          </span>
-          <span className="text-xs text-slate-400 font-mono">MITRE ATT&CK & Enterprise Twin</span>
+      <div className="pb-8 hairline-b">
+        <div className="flex items-center space-x-2 text-xs font-mono text-slate-400">
+          <span className="uppercase tracking-widest text-slate-300">ARCHITECTURE & POSITIONING</span>
+          <span>&bull;</span>
+          <span>Direction C: Reuse & Own</span>
         </div>
-        <h2 className="mt-2 text-2xl sm:text-3xl font-bold text-white tracking-tight">
-          Project X Technical Architecture
+        <h2 className="mt-3 text-3xl font-medium tracking-tight text-white">
+          System Specifications & Contract Model
         </h2>
-        <p className="text-sm text-slate-400 mt-1">
-          How Project X right-sizes enterprise SIEM/SOAR patterns for single-box zero-cost operation.
+        <p className="text-sm text-slate-400 mt-2 max-w-2xl leading-relaxed">
+          How Project X right-sizes enterprise SIEM/SOAR patterns into a single-box zero-cost architecture.
         </p>
       </div>
 
-      {/* Enterprise Twin Comparison Table (Judge-Winning Slide Content) */}
-      <div className="rounded-3xl glass-panel p-6 sm:p-8 border border-white/10">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-cyan-400 font-mono flex items-center space-x-2">
-          <Layers className="h-4 w-4" />
-          <span>Enterprise Twin Mapping (Why Right-Sizing Matters)</span>
-        </h3>
-        <p className="mt-2 text-xs text-slate-300 leading-relaxed">
-          Small businesses with 1 administrator cannot maintain 10-node Wazuh or Shuffle clusters. 
-          Project X re-implements the core patterns cleanly in lightweight Python/FastAPI while reusing the industry-standard MITRE Caldera for verification.
+      {/* Enterprise Twin Comparison Table */}
+      <div className="metallic-surface rounded-2xl p-8 sm:p-10 space-y-6">
+        <div className="flex items-center justify-between pb-4 hairline-b">
+          <h3 className="text-xs font-mono uppercase tracking-widest text-slate-300 flex items-center space-x-2">
+            <Layers className="h-4 w-4 text-slate-400" />
+            <span>Enterprise Twin Mapping (Honest Engineering Positioning)</span>
+          </h3>
+          <span className="text-[11px] font-mono text-slate-500">Zero Copyleft Obligations</span>
+        </div>
+
+        <p className="text-xs text-slate-400 leading-relaxed">
+          Enterprise tools (Wazuh, Shuffle, Splunk) require complex multi-node clusters and high memory footprints. 
+          Project X cleanly reimplements the detect/approve/block patterns in lightweight custom code while directly reusing 
+          MITRE Caldera (Apache-2.0 permissive license) for automated adversarial verification.
         </p>
 
-        <div className="mt-6 overflow-x-auto">
+        <div className="overflow-x-auto pt-2">
           <table className="w-full text-left font-mono text-xs">
             <thead>
-              <tr className="border-b border-white/10 text-slate-400 text-[11px]">
-                <th className="py-2.5 px-3">SOC COMPONENT</th>
-                <th className="py-2.5 px-3">ENTERPRISE STANDARD</th>
-                <th className="py-2.5 px-3">PROJECT X IMPLEMENTATION</th>
-                <th className="py-2.5 px-3">EFFICIENCY BENEFIT</th>
+              <tr className="hairline-b text-slate-500 text-[11px]">
+                <th className="py-3 px-3">COMPONENT</th>
+                <th className="py-3 px-3">ENTERPRISE TWIN</th>
+                <th className="py-3 px-3">PROJECT X IMPLEMENTATION</th>
+                <th className="py-3 px-3">EFFICIENCY GAIN</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 text-slate-300">
-              <tr className="hover:bg-white/5">
-                <td className="py-3 px-3 font-bold text-white">Detection & Ingest</td>
-                <td className="py-3 px-3 text-slate-400">Wazuh / Splunk (GPLv2/Enterprise)</td>
-                <td className="py-3 px-3 text-cyan-300">Custom Log Parser + NetworkX</td>
-                <td className="py-3 px-3 text-emerald-400">&lt; 30MB RAM overhead</td>
+            <tbody className="divide-y divide-white/[0.04] text-slate-300">
+              <tr className="hover:bg-white/[0.02]">
+                <td className="py-3.5 px-3 font-semibold text-white">Detection & Ingestion</td>
+                <td className="py-3.5 px-3 text-slate-400">Wazuh / Splunk (GPLv2/Enterprise)</td>
+                <td className="py-3.5 px-3 text-slate-200">Custom Log Normalizer + NetworkX</td>
+                <td className="py-3.5 px-3 text-slate-400">&lt; 30MB Resident Memory</td>
               </tr>
-              <tr className="hover:bg-white/5">
-                <td className="py-3 px-3 font-bold text-white">Orchestration & Approval</td>
-                <td className="py-3 px-3 text-slate-400">Shuffle SOAR / Tines</td>
-                <td className="py-3 px-3 text-cyan-300">Role-Gated FastAPI Dependency</td>
-                <td className="py-3 px-3 text-emerald-400">Zero webhook latency</td>
+              <tr className="hover:bg-white/[0.02]">
+                <td className="py-3.5 px-3 font-semibold text-white">Response Approval Gate</td>
+                <td className="py-3.5 px-3 text-slate-400">Shuffle SOAR / Tines</td>
+                <td className="py-3.5 px-3 text-slate-200">FastAPI Role Dependency (Dual-Role)</td>
+                <td className="py-3.5 px-3 text-slate-400">Zero Webhook Latency</td>
               </tr>
-              <tr className="hover:bg-white/5">
-                <td className="py-3 px-3 font-bold text-white">Firewall Execution</td>
-                <td className="py-3 px-3 text-slate-400">Palo Alto / Ansible</td>
-                <td className="py-3 px-3 text-cyan-300">Paramiko SSH (sudo ufw deny)</td>
-                <td className="py-3 px-3 text-emerald-400">No heavy agent required</td>
+              <tr className="hover:bg-white/[0.02]">
+                <td className="py-3.5 px-3 font-semibold text-white">Firewall Execution</td>
+                <td className="py-3.5 px-3 text-slate-400">Palo Alto / Ansible</td>
+                <td className="py-3.5 px-3 text-slate-200">Paramiko SSH (sudo ufw deny)</td>
+                <td className="py-3.5 px-3 text-slate-400">Agentless Zero Overhead</td>
               </tr>
-              <tr className="hover:bg-white/5">
-                <td className="py-3 px-3 font-bold text-white">Adversary Verification</td>
-                <td className="py-3 px-3 text-slate-400">Manual Red Team</td>
-                <td className="py-3 px-3 text-cyan-300">MITRE Caldera (Apache 2.0)</td>
-                <td className="py-3 px-3 text-emerald-400">Automated mathematical proof</td>
+              <tr className="hover:bg-white/[0.02]">
+                <td className="py-3.5 px-3 font-semibold text-white">Adversary Verification</td>
+                <td className="py-3.5 px-3 text-slate-400">Manual Red Team Retest</td>
+                <td className="py-3.5 px-3 text-slate-200">MITRE Caldera (Apache 2.0)</td>
+                <td className="py-3.5 px-3 text-emerald-400">Automated Mathematical Proof</td>
               </tr>
             </tbody>
           </table>
@@ -75,35 +79,35 @@ export const ArchitectureView: React.FC = () => {
 
       {/* The 4 Frozen Contracts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="rounded-2xl glass-card p-6 border border-white/10">
-          <div className="text-xs font-mono text-cyan-400">CONTRACT #1 (Role A &rarr; B)</div>
-          <h4 className="mt-1 text-base font-bold text-white">Normalized Event JSON Schema</h4>
-          <p className="mt-2 text-xs text-slate-300 leading-relaxed">
-            Victim log collector normalizes raw lines into typed objects: <code>ts</code>, <code>source_ip</code>, <code>user</code>, <code>host</code>, <code>event_type</code>, and <code>raw_line</code>.
+        <div className="metallic-card rounded-xl p-6 space-y-2">
+          <div className="text-[11px] font-mono text-slate-500 uppercase tracking-widest font-bold">CONTRACT 01</div>
+          <h4 className="text-sm font-semibold text-white">Normalized Event JSON Schema</h4>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            Ingestion contract output by victim VM log collector: <code>ts</code>, <code>source_ip</code>, <code>user</code>, <code>host</code>, <code>event_type</code>, and <code>raw_line</code>.
           </p>
         </div>
 
-        <div className="rounded-2xl glass-card p-6 border border-white/10">
-          <div className="text-xs font-mono text-cyan-400">CONTRACT #2 (Role B &rarr; C)</div>
-          <h4 className="mt-1 text-base font-bold text-white">Incident & Graph Output Schema</h4>
-          <p className="mt-2 text-xs text-slate-300 leading-relaxed">
-            FastAPI serves full incident dossiers with plain-English summary, rule triggers (<code>R1, R2, R3</code>), and related events array consumed by the Next.js UI.
+        <div className="metallic-card rounded-xl p-6 space-y-2">
+          <div className="text-[11px] font-mono text-slate-500 uppercase tracking-widest font-bold">CONTRACT 02</div>
+          <h4 className="text-sm font-semibold text-white">Incident & Graph Output Schema</h4>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            FastAPI exposes complete incident dossier: severity, rule hit triggers (<code>R1, R2, R3</code>), plain-English summary, and chronological events array.
           </p>
         </div>
 
-        <div className="rounded-2xl glass-card p-6 border border-white/10">
-          <div className="text-xs font-mono text-cyan-400">CONTRACT #3 (Role D &rarr; B)</div>
-          <h4 className="mt-1 text-base font-bold text-white">Caldera Verification Client</h4>
-          <p className="mt-2 text-xs text-slate-300 leading-relaxed">
-            REST API triggers adversary profile re-run against victim port 22 and checks for connection failure: returns <code>confirmed</code> or <code>still_reachable</code>.
+        <div className="metallic-card rounded-xl p-6 space-y-2">
+          <div className="text-[11px] font-mono text-slate-500 uppercase tracking-widest font-bold">CONTRACT 03</div>
+          <h4 className="text-sm font-semibold text-white">Caldera Verification Client</h4>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            REST API triggers adversary profile re-run against victim port 22 and returns mathematical proof: <code>confirmed</code> or <code>still_reachable</code>.
           </p>
         </div>
 
-        <div className="rounded-2xl glass-card p-6 border border-white/10">
-          <div className="text-xs font-mono text-cyan-400">CONTRACT #4 (Role A &rarr; B, D)</div>
-          <h4 className="mt-1 text-base font-bold text-white">Victim Isolation & Access</h4>
-          <p className="mt-2 text-xs text-slate-300 leading-relaxed">
-            Ubuntu Server on host-only <code>192.168.56.10</code> with dedicated SSH key restricted to executing <code>sudo ufw deny from &lt;ip&gt;</code>.
+        <div className="metallic-card rounded-xl p-6 space-y-2">
+          <div className="text-[11px] font-mono text-slate-500 uppercase tracking-widest font-bold">CONTRACT 04</div>
+          <h4 className="text-sm font-semibold text-white">Perimeter Access & Permissions</h4>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            Victim Ubuntu Server on host-only <code>192.168.56.10</code> with dedicated SSH key restricted strictly to executing <code>sudo ufw deny</code>.
           </p>
         </div>
       </div>

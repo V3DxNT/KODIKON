@@ -124,11 +124,11 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#05070a] text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="min-h-screen bg-[#08090d] text-slate-100 flex flex-col font-sans selection:bg-white/20 selection:text-white">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-2 rounded-2xl border border-cyan-500/40 bg-[#0b0f19]/95 px-5 py-3 text-xs font-mono text-cyan-300 shadow-[0_0_25px_rgba(6,182,212,0.3)] backdrop-blur-md animate-in slide-in-from-bottom-5">
-          <span className="h-2 w-2 rounded-full bg-cyan-400 animate-ping"></span>
+        <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-2.5 rounded-lg metallic-surface px-5 py-3 text-xs font-mono text-slate-200 border border-white/15 shadow-xl animate-in slide-in-from-bottom-3">
+          <span className="h-1.5 w-1.5 rounded-full bg-slate-300 animate-pulse"></span>
           <span>{toastMessage}</span>
         </div>
       )}
