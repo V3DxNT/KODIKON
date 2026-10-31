@@ -14,6 +14,7 @@ import { IncidentDetail, AuditLog } from "@/types/soc";
 import { EventGraphTimeline } from "./EventGraphTimeline";
 import { ProofModal } from "./ProofModal";
 import { SecurityMetricsDashboard } from "./SecurityMetricsDashboard";
+import { SentinelForgeLogo } from "./SentinelForgeLogo";
 
 interface AdminPortalProps {
   incidents: IncidentDetail[];
@@ -77,20 +78,23 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
       {/* Top Formal Admin Command Bar */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between pb-6 border-b border-[var(--border-hairline)] gap-6">
-        <div>
-          <div className="flex items-center space-x-2 text-xs font-mono text-[var(--text-muted)]">
-            <span className="uppercase tracking-widest text-[var(--text-secondary)] font-semibold">
-              ADMINISTRATIVE CONSOLE
-            </span>
-            <span>&bull;</span>
-            <span className="text-cyan-600 dark:text-cyan-400">Clearance: X-Role: admin</span>
+        <div className="flex items-start space-x-4">
+          <SentinelForgeLogo variant="symbol" size="lg" className="hidden sm:inline-flex mt-1" />
+          <div>
+            <div className="flex items-center space-x-2 text-xs font-mono text-[var(--text-muted)]">
+              <span className="uppercase tracking-widest text-[var(--text-secondary)] font-semibold">
+                SENTINEL FORGE &bull; ADMIN CONSOLE
+              </span>
+              <span>&bull;</span>
+              <span className="text-cyan-600 dark:text-cyan-400">Clearance: X-Role: admin</span>
+            </div>
+            <h2 className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
+              Security Operations Command Center
+            </h2>
+            <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1.5 max-w-2xl leading-relaxed">
+              Correlated perimeter telemetry, human-in-the-loop response authorization, and adversary verification.
+            </p>
           </div>
-          <h2 className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
-            Security Operations Command Center
-          </h2>
-          <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1.5 max-w-2xl leading-relaxed">
-            Correlated perimeter telemetry, human-in-the-loop response authorization, and adversary verification.
-          </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">

@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { IncidentDetail } from "@/types/soc";
 import { AuthUser } from "@/lib/auth-adapter";
+import { SentinelForgeLogo } from "./SentinelForgeLogo";
 
 interface EmployeeViewProps {
   incidents: IncidentDetail[];
@@ -58,7 +59,7 @@ export const EmployeeView: React.FC<EmployeeViewProps> = ({
     if (!activeIncident) return;
     const content = [
       "==================================================",
-      "PROJECT X — ORGANIZATIONAL SECURITY BRIEFING",
+      "SENTINEL FORGE — ORGANIZATIONAL SECURITY BRIEFING",
       "==================================================",
       `Date: ${new Date().toISOString()}`,
       `Advisory Reference: #${activeIncident.id}`,
@@ -79,7 +80,7 @@ export const EmployeeView: React.FC<EmployeeViewProps> = ({
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `ProjectX_Security_Advisory_${activeIncident.id}.txt`;
+    link.download = `SentinelForge_Security_Advisory_${activeIncident.id}.txt`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -98,20 +99,23 @@ export const EmployeeView: React.FC<EmployeeViewProps> = ({
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
       {/* Executive Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 border-b border-[var(--border-hairline)] gap-4">
-        <div>
-          <div className="flex items-center space-x-2 text-xs font-mono text-[var(--text-muted)]">
-            <span className="uppercase tracking-widest text-[var(--text-secondary)] font-semibold">
-              STAFF READ-ONLY FEED
-            </span>
-            <span>&bull;</span>
-            <span className="text-cyan-600 dark:text-cyan-400">Authorization: Level 1 (Operations)</span>
+        <div className="flex items-start space-x-3.5">
+          <SentinelForgeLogo variant="symbol" size="md" className="hidden sm:inline-flex mt-1" />
+          <div>
+            <div className="flex items-center space-x-2 text-xs font-mono text-[var(--text-muted)]">
+              <span className="uppercase tracking-widest text-[var(--text-secondary)] font-semibold">
+                SENTINEL FORGE &bull; STAFF FEED
+              </span>
+              <span>&bull;</span>
+              <span className="text-cyan-600 dark:text-cyan-400">Authorization: Level 1 (Operations)</span>
+            </div>
+            <h2 className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
+              Organizational Security Bulletin
+            </h2>
+            <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1.5 max-w-2xl leading-relaxed">
+              Real-time plain-language operational awareness for office managers, legal, and operational personnel.
+            </p>
           </div>
-          <h2 className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
-            Organizational Security Bulletin
-          </h2>
-          <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1.5 max-w-2xl leading-relaxed">
-            Real-time plain-language operational awareness for office managers, legal, and operational personnel.
-          </p>
         </div>
 
         {/* User Session & Status Pill */}

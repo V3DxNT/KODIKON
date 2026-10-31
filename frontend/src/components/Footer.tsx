@@ -2,7 +2,8 @@
 
 import React from "react";
 import Link from "next/link";
-import { Shield, ArrowUp, CheckCircle2 } from "lucide-react";
+import { ArrowUp, CheckCircle2 } from "lucide-react";
+import { SentinelForgeLogo } from "./SentinelForgeLogo";
 
 export const Footer: React.FC = () => {
   const scrollToTop = () => {
@@ -16,19 +17,8 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 pb-12 border-b border-[var(--border-hairline)]">
           {/* Col 1: Brand & Autonomous SOC Statement (5 cols on lg) */}
           <div className="lg:col-span-5 space-y-4">
-            <Link href="/" className="inline-flex items-center space-x-3 group">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-cyan-500/10 border border-cyan-400/30 group-hover:border-cyan-400/60 transition-all text-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.2)]">
-                <Shield className="h-4 w-4" />
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm font-bold tracking-wider uppercase text-[var(--text-primary)]">
-                  PROJECT <span className="text-cyan-400 font-light">X</span>
-                </span>
-                <span className="text-[var(--text-muted)] text-xs font-mono">/</span>
-                <span className="text-[10px] font-mono tracking-widest text-[var(--text-muted)] uppercase">
-                  Autonomous SOC
-                </span>
-              </div>
+            <Link href="/" className="inline-flex items-center group" title="SENTINEL FORGE — Autonomous SOC">
+              <SentinelForgeLogo variant="horizontal" size="md" />
             </Link>
 
             <p className="text-xs text-[var(--text-secondary)] leading-relaxed max-w-md">
@@ -169,7 +159,7 @@ export const Footer: React.FC = () => {
         {/* Bottom Strip: Copyright & System Identity */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[var(--text-muted)]">
           <div>
-            &copy; 2026 Project X Autonomous SOC. Engineered for High-Assurance Linux Environments.
+            &copy; 2026 SENTINEL FORGE Autonomous SOC. Engineered for High-Assurance Linux Environments.
           </div>
           <div className="flex items-center space-x-4 text-[11px] font-mono">
             <span>Air-Gapped Ready</span>

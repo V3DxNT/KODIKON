@@ -17,7 +17,7 @@ export const ArchitectureView: React.FC = () => {
           System Specifications & Contract Model
         </h2>
         <p className="text-sm text-slate-400 mt-2 max-w-2xl leading-relaxed">
-          How Project X right-sizes enterprise SIEM/SOAR patterns into a single-box zero-cost architecture.
+          How SENTINEL FORGE right-sizes enterprise SIEM/SOAR patterns into a single-box zero-cost architecture.
         </p>
       </div>
 
@@ -33,7 +33,7 @@ export const ArchitectureView: React.FC = () => {
 
         <p className="text-xs text-slate-400 leading-relaxed">
           Enterprise tools (Wazuh, Shuffle, Splunk) require complex multi-node clusters and high memory footprints. 
-          Project X cleanly reimplements the detect/approve/block patterns in lightweight custom code while directly reusing 
+          SENTINEL FORGE cleanly reimplements the detect/approve/block patterns in lightweight custom code while directly reusing 
           MITRE Caldera (Apache-2.0 permissive license) for automated adversarial verification.
         </p>
 
@@ -43,7 +43,7 @@ export const ArchitectureView: React.FC = () => {
               <tr className="hairline-b text-slate-500 text-[11px]">
                 <th className="py-3 px-3">COMPONENT</th>
                 <th className="py-3 px-3">ENTERPRISE TWIN</th>
-                <th className="py-3 px-3">PROJECT X IMPLEMENTATION</th>
+                <th className="py-3 px-3">SENTINEL FORGE ARCHITECTURE</th>
                 <th className="py-3 px-3">EFFICIENCY GAIN</th>
               </tr>
             </thead>

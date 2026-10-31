@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Lock, Shield, KeyRound, AlertCircle, X, ArrowRight, CheckCircle2 } from "lucide-react";
+import { AlertCircle, X, ArrowRight } from "lucide-react";
+import { SentinelForgeLogo } from "./SentinelForgeLogo";
 
 interface AdminLoginModalProps {
   isOpen: boolean;
@@ -57,12 +58,10 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
 
         {/* Modal Header */}
         <div className="flex items-center space-x-3.5">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-500">
-            <Lock className="h-5 w-5" />
-          </div>
+          <SentinelForgeLogo variant="symbol" size="md" />
           <div>
             <div className="text-[11px] font-mono uppercase tracking-widest text-cyan-600 dark:text-cyan-400 font-bold">
-              ELEVATED PRIVILEGES
+              SENTINEL FORGE &bull; ELEVATED PRIVILEGES
             </div>
             <h3 className="text-lg font-bold text-[var(--text-primary)]">
               Security Administrator Login

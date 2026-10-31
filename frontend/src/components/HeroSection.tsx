@@ -5,6 +5,7 @@ import { ArrowRight, Play, Lock, ChevronDown, ArrowUp } from "lucide-react";
 import { Role } from "@/types/soc";
 import { Glass } from "./Glass";
 import { CyberRadarLens } from "./CyberRadarLens";
+import { SentinelForgeLogo } from "./SentinelForgeLogo";
 
 interface HeroSectionProps {
   onEnterPortal: (role: Role) => void;
@@ -53,9 +54,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         {/* Institutional Telemetry Pill */}
         <div className="flex items-center space-x-3 text-xs font-mono text-[var(--text-muted)] mb-6">
           <Glass radius={9999} bezel={12} strength={24} className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[var(--border-subtle)] text-[11px] shadow-sm">
-            <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <SentinelForgeLogo variant="symbol" size="xs" />
             <span className="tracking-widest uppercase font-semibold text-emerald-500 dark:text-emerald-400">
-              SINGLE-BOX SOC FOR LINUX SERVERS
+              SENTINEL FORGE &bull; AUTONOMOUS LINUX SOC
             </span>
             <span className="text-[var(--text-muted)]">&bull;</span>
             <span className="text-[var(--text-secondary)]">MITRE Caldera Verification</span>
@@ -93,7 +94,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </Glass>
 
             <p className="text-base text-[var(--text-secondary)] leading-relaxed max-w-2xl font-normal">
-              Project X monitors Linux servers, intercepts brute-force and backdoor intrusions from raw kernel logs, 
+              SENTINEL FORGE monitors Linux servers, intercepts brute-force and backdoor intrusions from raw kernel logs, 
               explains threats in plain English for operational clarity, gates responses behind human authorization, 
               and uniquely re-executes MITRE ATT&CK adversary profiles to mathematically prove the block held.
             </p>
