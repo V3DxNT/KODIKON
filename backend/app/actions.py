@@ -7,6 +7,7 @@ from app.config import (
     SSH_USER,
     SSH_KEY_PATH,
     SSH_PASSWORD,
+    SIMULATE_ACTIONS,
     CALDERA_URL,
     CALDERA_API_KEY,
     CALDERA_PROFILE_ID,
@@ -25,13 +26,17 @@ def block_ip(
     Connects to the victim VM via SSH and executes: sudo ufw deny from <attacker_ip>.
     If host is unreachable or stub mode is desired, catches exceptions gracefully.
     """
+    if SIMULATE_ACTIONS:
+        logger.info(f"[SIMULATION] Stubbed SSH block for IP {attacker_ip}")
+        return "blocked (simulated)"
+
     host = victim_host or VICTIM_HOST
     user = ssh_user or SSH_USER
     key_path = ssh_key_path or SSH_KEY_PATH
     password = ssh_password or SSH_PASSWORD
 
     # If in test/stub mode (e.g. no host or localhost placeholder)
-    if not host or host in ("127.0.0.1", "localhost", "none", ""):
+    if not host or host in ("127.0.0.1", "localhost", "none", "", "stub"):
         logger.warning(f"[STUB] Simulated SSH block for IP {attacker_ip}")
         return "blocked (simulated)"
 

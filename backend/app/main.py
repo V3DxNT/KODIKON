@@ -11,10 +11,18 @@ from app.ingest import router as ingest_router
 from app.roles import require_admin, get_current_role
 from app.actions import block_ip, verify_block
 
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_db_and_tables()
+    yield
+
 app = FastAPI(
     title="Project X SOC Backend",
     description="Single-box SOC backend: log ingestion, correlation, LLM explanation, role gating, SSH block, and Caldera verification.",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 # Enable CORS for frontend integration (Next.js default port 3000)
@@ -25,10 +33,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-@app.on_event("startup")
-def on_startup():
-    create_db_and_tables()
 
 # Register event ingestion router
 app.include_router(ingest_router)
