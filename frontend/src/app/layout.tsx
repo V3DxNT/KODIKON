@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { NavigationWrapper } from "@/components/NavigationWrapper";
+import { Footer } from "@/components/Footer";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -37,6 +38,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Redaction+35:ital,wght@0,400;0,700;1,400&display=swap"
+        />
         <script
           id="project-x-theme-init"
           dangerouslySetInnerHTML={{
@@ -65,12 +72,7 @@ export default function RootLayout({
           <AuthProvider>
             <NavigationWrapper />
             <main className="flex-1 relative z-10">{children}</main>
-            <footer className="w-full hairline-t bg-[var(--bg-footer)] py-8 text-center text-xs text-slate-500 font-mono transition-colors">
-              <div className="mx-auto max-w-7xl px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <span>Project X &bull; Single-Box SOC Console V2.0</span>
-                <span>MITRE ATT&CK T1110 &bull; T1136 &bull; T1041 &bull; Caldera Verified</span>
-              </div>
-            </footer>
+            <Footer />
           </AuthProvider>
         </ThemeProvider>
       </body>

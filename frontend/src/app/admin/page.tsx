@@ -134,13 +134,13 @@ export default function AdminPage() {
           <div className="pt-2 flex justify-center space-x-3">
             <button
               onClick={() => router.push("/staff")}
-              className="btn-metallic-secondary rounded-lg px-4 py-2.5 text-xs font-medium cursor-pointer"
+              className="btn-metallic-secondary rounded-full px-5 py-2.5 text-xs font-semibold cursor-pointer"
             >
               Return to Staff Feed
             </button>
             <button
               onClick={() => router.push("/login?redirect=/admin")}
-              className="btn-metallic-primary rounded-lg px-5 py-2.5 text-xs font-semibold flex items-center space-x-2 cursor-pointer"
+              className="btn-metallic-primary rounded-full px-6 py-2.5 text-xs font-semibold flex items-center space-x-2 cursor-pointer"
             >
               <span>Authenticate</span>
               <ArrowRight className="h-3.5 w-3.5" />

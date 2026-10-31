@@ -2,7 +2,6 @@
 
 import React from "react";
 import { CheckCircle2, Terminal, X, Lock, Flame } from "lucide-react";
-import { Glass } from "./Glass";
 
 interface ProofModalProps {
   isOpen: boolean;
@@ -21,88 +20,88 @@ export const ProofModal: React.FC<ProofModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
-      <Glass radius={24} blur={24} intensity={0.92} className="relative w-full max-w-xl p-8 sm:p-10 shadow-2xl space-y-6">
+      <div className="relative w-full max-w-xl p-6 sm:p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-card)] shadow-2xl space-y-5">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-6 right-6 rounded-md p-1.5 text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+          className="absolute top-6 right-6 rounded-full p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors cursor-pointer"
         >
           <X className="h-4 w-4" />
         </button>
 
         {/* Header */}
         <div className="flex items-center space-x-3.5">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-500">
             <CheckCircle2 className="h-5 w-5" />
           </div>
           <div>
-            <div className="flex items-center space-x-2 text-xs font-mono text-slate-400">
-              <span className="uppercase tracking-widest text-emerald-400">VERIFICATION CONFIRMED</span>
+            <div className="flex items-center space-x-2 text-xs font-mono text-[var(--text-muted)]">
+              <span className="uppercase tracking-widest text-emerald-600 dark:text-emerald-400 font-bold">VERIFICATION CONFIRMED</span>
               <span>&bull;</span>
               <span>Incident #{incidentId}</span>
             </div>
-            <h3 className="mt-1 text-xl font-medium text-white">
+            <h3 className="mt-0.5 text-xl font-bold text-[var(--text-primary)]">
               Adversary Emulation Proof
             </h3>
           </div>
         </div>
 
-        <p className="text-xs text-slate-400 leading-relaxed">
-          The threat from <span className="font-mono text-slate-200 font-semibold">{attackerIp}</span> has been 
+        <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+          The threat from <span className="font-mono text-[var(--text-primary)] font-bold">{attackerIp}</span> has been 
           actively re-emulated via MITRE Caldera and confirmed denied by Linux firewall policy.
         </p>
 
         {/* 4-Stage Verification Pipeline */}
         <div className="space-y-2.5 font-mono text-xs">
-          <div className="flex items-center justify-between rounded-lg bg-white/[0.02] p-3.5 border border-white/[0.05]">
-            <div className="flex items-center space-x-3">
-              <Lock className="h-3.5 w-3.5 text-slate-400" />
-              <span className="text-slate-300">1. SSH Firewall Rule Enacted</span>
+          <div className="flex items-center justify-between rounded-xl bg-[var(--bg-elevated)] p-3 border border-[var(--border-subtle)]">
+            <div className="flex items-center space-x-2.5">
+              <Lock className="h-3.5 w-3.5 text-cyan-500" />
+              <span className="text-[var(--text-primary)] font-medium">1. SSH Firewall Rule Enacted</span>
             </div>
-            <span className="text-slate-500 text-[11px]">sudo ufw deny from {attackerIp}</span>
+            <span className="text-[var(--text-muted)] text-[11px]">sudo ufw deny from {attackerIp}</span>
           </div>
 
-          <div className="flex items-center justify-between rounded-lg bg-white/[0.02] p-3.5 border border-white/[0.05]">
-            <div className="flex items-center space-x-3">
-              <Terminal className="h-3.5 w-3.5 text-slate-400" />
-              <span className="text-slate-300">2. Caldera API Operation Launched</span>
+          <div className="flex items-center justify-between rounded-xl bg-[var(--bg-elevated)] p-3 border border-[var(--border-subtle)]">
+            <div className="flex items-center space-x-2.5">
+              <Terminal className="h-3.5 w-3.5 text-cyan-500" />
+              <span className="text-[var(--text-primary)] font-medium">2. Caldera API Operation Launched</span>
             </div>
-            <span className="text-slate-500 text-[11px]">POST /api/v2/operations (T1110)</span>
+            <span className="text-[var(--text-muted)] text-[11px]">POST /api/v2/operations (T1110)</span>
           </div>
 
-          <div className="flex items-center justify-between rounded-lg bg-white/[0.02] p-3.5 border border-white/[0.05]">
-            <div className="flex items-center space-x-3">
-              <Flame className="h-3.5 w-3.5 text-slate-400" />
-              <span className="text-slate-300">3. Adversary Re-Attack Executed</span>
+          <div className="flex items-center justify-between rounded-xl bg-[var(--bg-elevated)] p-3 border border-[var(--border-subtle)]">
+            <div className="flex items-center space-x-2.5">
+              <Flame className="h-3.5 w-3.5 text-amber-500" />
+              <span className="text-[var(--text-primary)] font-medium">3. Adversary Re-Attack Executed</span>
             </div>
-            <span className="text-slate-500 text-[11px]">Port 22 Reachability Probe</span>
+            <span className="text-[var(--text-muted)] text-[11px]">Port 22 Reachability Probe</span>
           </div>
 
-          <div className="flex items-center justify-between rounded-lg bg-emerald-950/20 p-3.5 border border-emerald-500/30">
-            <div className="flex items-center space-x-3">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-              <span className="font-medium text-emerald-200">4. Re-Attack Verification</span>
+          <div className="flex items-center justify-between rounded-xl bg-emerald-500/10 p-3 border border-emerald-500/30">
+            <div className="flex items-center space-x-2.5">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+              <span className="font-bold text-emerald-600 dark:text-emerald-400">4. Re-Attack Verification</span>
             </div>
-            <span className="rounded bg-emerald-950 px-2 py-0.5 text-emerald-300 font-bold text-[10px] border border-emerald-800">
+            <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-emerald-700 dark:text-emerald-300 font-bold text-[10px] border border-emerald-500/40">
               CONFIRMED BLOCKED (RC=1)
             </span>
           </div>
         </div>
 
         {/* Pitch Callout */}
-        <div className="rounded-lg bg-white/[0.02] p-4 border border-white/[0.06] text-xs text-slate-400 leading-relaxed">
-          <strong className="text-slate-200">Formal Verification Guarantee:</strong> Traditional security tools execute firewall commands and assume reachability dropped. Project X runs automated adversary re-testing to provide provable non-repudiation.
+        <div className="rounded-xl bg-[var(--bg-elevated)] p-4 border border-[var(--border-subtle)] text-xs text-[var(--text-secondary)] leading-relaxed">
+          <strong className="text-[var(--text-primary)]">Formal Verification Guarantee:</strong> Traditional security tools execute firewall commands and assume reachability dropped. Project X runs automated adversary re-testing to provide provable non-repudiation.
         </div>
 
         <div className="flex justify-end pt-2">
           <button
             onClick={onClose}
-            className="btn-metallic-primary rounded-lg px-5 py-2.5 text-xs font-semibold cursor-pointer"
+            className="btn-metallic-primary rounded-full px-6 py-2.5 text-xs font-semibold cursor-pointer"
           >
             Acknowledge & Close
           </button>
         </div>
-      </Glass>
+      </div>
     </div>
   );
 };
