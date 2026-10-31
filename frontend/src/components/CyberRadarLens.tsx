@@ -49,7 +49,7 @@ const NODES: NodeData[] = [
     ip: "192.168.56.10",
     role: "Production Target",
     status: "secure",
-    details: "Linux kernel target with auditd, sshd, and UFW firewall policy managed by Project X.",
+    details: "Linux kernel target with auditd, sshd, and UFW firewall policy managed by SENTINEL FORGE.",
     badge: "CONTAINED & PROTECTED",
     metrics: [
       { label: "UFW STATUS", value: "ACTIVE (DROP)" },

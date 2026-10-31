@@ -6,6 +6,7 @@ import { Lock, User, ArrowRight, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 import { Glass } from "./Glass";
+import { SentinelForgeLogo } from "./SentinelForgeLogo";
 
 export const HomeLoginSection: React.FC = () => {
   const router = useRouter();
@@ -63,16 +64,19 @@ export const HomeLoginSection: React.FC = () => {
     <section id="login-portal" className="metallic-card rounded-3xl p-8 sm:p-12 space-y-8 border border-white/10 shadow-2xl relative">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-white/5 gap-4">
-        <div>
-          <div className="text-[11px] font-mono uppercase tracking-widest text-cyan-400 font-semibold">
-            RBAC ACCESS PORTAL
+        <div className="flex items-start space-x-3.5">
+          <SentinelForgeLogo variant="symbol" size="md" className="hidden sm:inline-flex mt-1" />
+          <div>
+            <div className="text-[11px] font-mono uppercase tracking-widest text-cyan-600 dark:text-cyan-400 font-bold">
+              SENTINEL FORGE &bull; RBAC ACCESS PORTAL
+            </div>
+            <h3 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] mt-1">
+              Sign In to the Operational Console
+            </h3>
+            <p className="text-xs text-[var(--text-secondary)] mt-1">
+              Choose your clearance level: General Staff awareness or Privileged Security Administrator.
+            </p>
           </div>
-          <h3 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] mt-1">
-            Sign In to the Operational Console
-          </h3>
-          <p className="text-xs text-[var(--text-secondary)] mt-1">
-            Choose your clearance level: General Staff awareness or Privileged Security Administrator.
-          </p>
         </div>
 
         {/* Liquid Glass Portal Switcher Tabs */}

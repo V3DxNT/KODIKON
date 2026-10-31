@@ -4,7 +4,6 @@ import React, { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { 
-  Lock, 
   User, 
   ArrowRight, 
   AlertCircle, 
@@ -15,6 +14,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { Glass } from "@/components/Glass";
+import { SentinelForgeLogo } from "@/components/SentinelForgeLogo";
 
 function LoginForm() {
   const router = useRouter();
@@ -78,15 +78,13 @@ function LoginForm() {
 
       {/* Header */}
       <div className="flex items-center space-x-3.5">
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/[0.05] border border-white/10 text-slate-200">
-          <Lock className="h-5 w-5" />
-        </div>
+        <SentinelForgeLogo variant="symbol" size="md" />
         <div>
-          <div className="flex items-center space-x-2 text-[10px] font-mono uppercase tracking-widest text-slate-400">
+          <div className="flex items-center space-x-2 text-[10px] font-mono uppercase tracking-widest text-cyan-600 dark:text-cyan-400 font-bold">
             <span className="h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse"></span>
-            <span>ELEVATED CLEARANCE</span>
+            <span>SENTINEL FORGE &bull; ELEVATED CLEARANCE</span>
           </div>
-          <h2 className="text-xl font-medium text-white mt-0.5">
+          <h2 className="text-xl font-bold text-[var(--text-primary)] mt-0.5">
             Security Admin Login
           </h2>
         </div>

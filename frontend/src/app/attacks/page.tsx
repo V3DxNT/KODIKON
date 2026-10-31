@@ -85,7 +85,7 @@ export default function AttacksPage() {
             Attack Emulation Laboratory
           </h2>
           <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1.5 max-w-2xl leading-relaxed">
-            Test and validate the Project X detection pipeline by launching the three acts of compromise against the victim VM.
+            Test and validate the SENTINEL FORGE detection pipeline by launching the three acts of compromise against the victim VM.
           </p>
         </div>
 

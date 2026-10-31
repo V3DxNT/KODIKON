@@ -3,6 +3,7 @@
 import React from "react";
 import { Play } from "lucide-react";
 import { Glass } from "./Glass";
+import { SentinelForgeLogo } from "./SentinelForgeLogo";
 
 interface HeroSectionProps {
   onTriggerReplay: () => void;
@@ -20,9 +21,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         {/* Institutional Telemetry Pill */}
         <div className="flex justify-center text-xs font-mono text-[var(--text-muted)] mb-8">
           <Glass radius={9999} bezel={12} strength={24} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 text-xs">
-            <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <SentinelForgeLogo variant="symbol" size="xs" />
             <span className="tracking-widest uppercase font-semibold text-emerald-400">
-              SINGLE-BOX SOC FOR LINUX SERVERS
+              SENTINEL FORGE &bull; AUTONOMOUS LINUX SOC
             </span>
             <span className="text-zinc-600">&bull;</span>
             <span className="text-[var(--text-secondary)]">MITRE Caldera Verification</span>
@@ -36,7 +37,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           </h1>
 
           <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed max-w-2xl mx-auto font-normal">
-            Project X intercepts brute-force and backdoor intrusions from Linux kernel logs, explains threats in plain English for operational clarity, gates responses behind human authorization, and actively re-executes attacks via Caldera to mathematically prove the block held.
+            SENTINEL FORGE intercepts brute-force and backdoor intrusions from Linux kernel logs, explains threats in plain English for operational clarity, gates responses behind human authorization, and actively re-executes attacks via Caldera to mathematically prove the block held.
           </p>
 
           {/* Liquid Glass Autonomous Loop Strip (Centered, Single Continuous Line) */}

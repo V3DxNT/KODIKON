@@ -90,7 +90,7 @@ export const ProofModal: React.FC<ProofModalProps> = ({
 
         {/* Pitch Callout */}
         <div className="rounded-xl bg-[var(--bg-elevated)] p-4 border border-[var(--border-subtle)] text-xs text-[var(--text-secondary)] leading-relaxed">
-          <strong className="text-[var(--text-primary)]">Formal Verification Guarantee:</strong> Traditional security tools execute firewall commands and assume reachability dropped. Project X runs automated adversary re-testing to provide provable non-repudiation.
+          <strong className="text-[var(--text-primary)]">Formal Verification Guarantee:</strong> Traditional security tools execute firewall commands and assume reachability dropped. SENTINEL FORGE runs automated adversary re-testing to provide provable non-repudiation.
         </div>
 
         <div className="flex justify-end pt-2">

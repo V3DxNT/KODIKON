@@ -20,14 +20,15 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Project X — Autonomous Single-Box SOC",
-  description: "Autonomous Security Operations Center for small enterprises. Ingests Linux logs, correlates attacks, explains threats in plain English, and proves containment via MITRE Caldera.",
+  title: "SENTINEL FORGE — Autonomous SOC",
+  description: "Autonomous Security Operations Center for Linux servers. Ingests raw logs, correlates attack graphs, explains threats in plain English, and mathematically proves containment via MITRE Caldera.",
   icons: {
     icon: [
-      { url: "/cybersecurity.png", type: "image/png" },
+      { url: "/sentinel-forge-symbol.svg", type: "image/svg+xml" },
+      { url: "/sentinel-forge-icon.png", type: "image/png" },
     ],
-    shortcut: "/cybersecurity.png",
-    apple: "/cybersecurity.png",
+    shortcut: "/sentinel-forge-icon.png",
+    apple: "/sentinel-forge-icon.png",
   },
 };
 

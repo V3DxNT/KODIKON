@@ -36,6 +36,7 @@ import {
 import { IncidentDetail, AuditLog } from "@/types/soc";
 import { EventGraphTimeline } from "./EventGraphTimeline";
 import { ProofModal } from "./ProofModal";
+import { SentinelForgeLogo } from "./SentinelForgeLogo";
 import { useAuth } from "@/context/AuthContext";
 import { Glass } from "./Glass";
 
@@ -259,19 +260,9 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
       <aside className="w-64 shrink-0 bg-[var(--bg-surface)] border-r border-[var(--border-hairline)] flex flex-col justify-between select-none z-10">
         <div>
           {/* Brand Header */}
-          <div className="h-16 flex items-center px-6 border-b border-[var(--border-hairline)]">
-            <Link href="/" className="flex items-center space-x-2.5 group">
-              <div className="h-9 w-9 rounded-xl bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center text-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.25)] group-hover:border-cyan-400/60 transition-all">
-                <Shield className="h-5 w-5 fill-cyan-400/20 stroke-[2.2]" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-base font-bold tracking-tight text-[var(--text-primary)] flex items-center gap-1.5">
-                  SecureOps
-                </span>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400 -mt-0.5 font-semibold">
-                  PROJECT X SOC
-                </span>
-              </div>
+          <div className="h-16 flex items-center px-5 border-b border-[var(--border-hairline)]">
+            <Link href="/" className="flex items-center space-x-2 group cursor-pointer" title="SENTINEL FORGE">
+              <SentinelForgeLogo variant="horizontal" size="sm" />
             </Link>
           </div>
 

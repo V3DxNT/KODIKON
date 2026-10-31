@@ -2,10 +2,11 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Shield, Lock, User, LogOut, ArrowRight, UserCheck } from "lucide-react";
+import { Lock, User, LogOut, ArrowRight, UserCheck } from "lucide-react";
 import { Role } from "@/types/soc";
 import { ThemeToggle } from "./ThemeToggle";
 import { Glass } from "./Glass";
+import { SentinelForgeLogo } from "./SentinelForgeLogo";
 
 interface RoleNavbarProps {
   currentRole: Role | null;
@@ -46,20 +47,10 @@ export const RoleNavbar: React.FC<RoleNavbarProps> = ({
         {/* Brand */}
         <Link 
           href="/"
-          className="flex items-center space-x-3.5 group select-none shrink-0"
+          className="group flex items-center shrink-0 cursor-pointer"
+          title="SENTINEL FORGE — Autonomous SOC"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/10 border border-cyan-400/35 group-hover:border-cyan-400/70 transition-all text-cyan-400 shadow-[0_0_16px_rgba(6,182,212,0.25)] shrink-0">
-            <Shield className="h-5 w-5" />
-          </div>
-          <div className="flex items-center space-x-2.5 shrink-0">
-            <span className="text-base sm:text-lg font-bold tracking-wider uppercase text-[var(--text-primary)]">
-              PROJECT <span className="text-cyan-400 font-light">X</span>
-            </span>
-            <span className="text-zinc-500 text-sm font-mono hidden sm:inline">/</span>
-            <span className="text-xs font-mono tracking-widest text-[var(--text-muted)] uppercase hidden sm:inline">
-              Autonomous SOC
-            </span>
-          </div>
+          <SentinelForgeLogo variant="horizontal" size="sm" />
         </Link>
 
         {/* Floating Capsule Navigation Links - hidden on home page per user design */}
