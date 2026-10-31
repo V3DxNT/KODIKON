@@ -17,6 +17,7 @@ import { IncidentDetail, AuditLog } from "@/types/soc";
 import { EventGraphTimeline } from "./EventGraphTimeline";
 import { ProofModal } from "./ProofModal";
 import { SecurityMetricsDashboard } from "./SecurityMetricsDashboard";
+import { Glass } from "./Glass";
 
 interface AdminPortalProps {
   incidents: IncidentDetail[];
@@ -89,14 +90,16 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <button
-            onClick={onTriggerReplay}
-            disabled={isReplaying}
-            className="btn-metallic-secondary flex items-center space-x-2 rounded-lg px-4 py-2.5 text-xs font-mono text-slate-300 cursor-pointer disabled:opacity-50"
-          >
-            <Play className={`h-3.5 w-3.5 text-slate-400 ${isReplaying ? "animate-spin" : ""}`} />
-            <span>{isReplaying ? "Simulating Attack Telemetry..." : "Replay Inbound Attack"}</span>
-          </button>
+          <Glass radius={12} blur={16} intensity={0.75}>
+            <button
+              onClick={onTriggerReplay}
+              disabled={isReplaying}
+              className="flex items-center space-x-2 px-4 py-2.5 text-xs font-mono text-[var(--text-primary)] hover:text-white cursor-pointer disabled:opacity-50 transition-colors"
+            >
+              <Play className={`h-3.5 w-3.5 text-slate-400 ${isReplaying ? "animate-spin text-cyan-400" : ""}`} />
+              <span>{isReplaying ? "Simulating Attack Telemetry..." : "Replay Inbound Attack"}</span>
+            </button>
+          </Glass>
         </div>
       </div>
 
@@ -108,27 +111,41 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
             <span className="text-xs font-mono tracking-wider uppercase text-slate-400">
               INCIDENT REGISTER ({filteredIncidents.length})
             </span>
-            {/* Filter pills */}
-            <div className="flex items-center space-x-1 text-[11px] font-mono">
-              <button
-                onClick={() => setFilterSeverity("all")}
-                className={`px-2 py-0.5 rounded transition-colors ${filterSeverity === "all" ? "bg-white/10 text-white" : "text-slate-500 hover:text-slate-300"}`}
-              >
-                ALL
-              </button>
-              <button
-                onClick={() => setFilterSeverity("high")}
-                className={`px-2 py-0.5 rounded transition-colors ${filterSeverity === "high" ? "bg-white/10 text-rose-300" : "text-slate-500 hover:text-slate-300"}`}
-              >
-                HIGH
-              </button>
-              <button
-                onClick={() => setFilterSeverity("medium")}
-                className={`px-2 py-0.5 rounded transition-colors ${filterSeverity === "medium" ? "bg-white/10 text-amber-300" : "text-slate-500 hover:text-slate-300"}`}
-              >
-                MED
-              </button>
-            </div>
+            {/* Filter pills in Glass capsule */}
+            <Glass radius={9999} blur={16} intensity={0.7} className="p-1">
+              <div className="flex items-center space-x-1 text-[11px] font-mono">
+                <button
+                  onClick={() => setFilterSeverity("all")}
+                  className={`px-2.5 py-0.5 rounded-full transition-all ${
+                    filterSeverity === "all"
+                      ? "bg-white/15 text-white font-semibold shadow-sm"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  ALL
+                </button>
+                <button
+                  onClick={() => setFilterSeverity("high")}
+                  className={`px-2.5 py-0.5 rounded-full transition-all ${
+                    filterSeverity === "high"
+                      ? "bg-rose-500/20 text-rose-300 font-semibold border border-rose-500/30"
+                      : "text-slate-400 hover:text-rose-300"
+                  }`}
+                >
+                  HIGH
+                </button>
+                <button
+                  onClick={() => setFilterSeverity("medium")}
+                  className={`px-2.5 py-0.5 rounded-full transition-all ${
+                    filterSeverity === "medium"
+                      ? "bg-amber-500/20 text-amber-300 font-semibold border border-amber-500/30"
+                      : "text-slate-400 hover:text-amber-300"
+                  }`}
+                >
+                  MED
+                </button>
+              </div>
+            </Glass>
           </div>
 
           <div className="space-y-3">
@@ -197,58 +214,62 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
         {currentIncident ? (
           <div className="lg:col-span-8 space-y-8">
             {/* Sub-tab Navigation */}
-            <div className="flex items-center justify-between hairline-b pb-4">
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => setActiveSubTab("dossier")}
-                  className={`px-3.5 py-1.5 rounded-md text-xs font-medium transition-all ${
-                    activeSubTab === "dossier"
-                      ? "bg-white/10 text-white border border-white/10"
-                      : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  Incident Dossier & Response
-                </button>
-                <button
-                  onClick={() => setActiveSubTab("analytics")}
-                  className={`px-3.5 py-1.5 rounded-md text-xs font-medium transition-all ${
-                    activeSubTab === "analytics"
-                      ? "bg-white/10 text-white border border-white/10"
-                      : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  Analytics & Metrics
-                </button>
-                <button
-                  onClick={() => setActiveSubTab("telemetry")}
-                  className={`px-3.5 py-1.5 rounded-md text-xs font-medium transition-all ${
-                    activeSubTab === "telemetry"
-                      ? "bg-white/10 text-white border border-white/10"
-                      : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  Raw Telemetry ({currentIncident.events.length})
-                </button>
-                <button
-                  onClick={() => setActiveSubTab("infrastructure")}
-                  className={`px-3.5 py-1.5 rounded-md text-xs font-medium transition-all ${
-                    activeSubTab === "infrastructure"
-                      ? "bg-white/10 text-white border border-white/10"
-                      : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  Host Diagnostics
-                </button>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between hairline-b pb-4 gap-3">
+              <div className="overflow-x-auto pb-1 sm:pb-0">
+                <Glass radius={9999} blur={20} intensity={0.75} className="p-1 inline-flex items-center space-x-1">
+                  <button
+                    onClick={() => setActiveSubTab("dossier")}
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      activeSubTab === "dossier"
+                        ? "bg-white/15 text-white font-semibold shadow-sm"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    Incident Dossier
+                  </button>
+                  <button
+                    onClick={() => setActiveSubTab("analytics")}
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      activeSubTab === "analytics"
+                        ? "bg-white/15 text-white font-semibold shadow-sm"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    Analytics & Metrics
+                  </button>
+                  <button
+                    onClick={() => setActiveSubTab("telemetry")}
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      activeSubTab === "telemetry"
+                        ? "bg-white/15 text-white font-semibold shadow-sm"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    Raw Telemetry ({currentIncident.events.length})
+                  </button>
+                  <button
+                    onClick={() => setActiveSubTab("infrastructure")}
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      activeSubTab === "infrastructure"
+                        ? "bg-white/15 text-white font-semibold shadow-sm"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    Host Diagnostics
+                  </button>
+                </Glass>
               </div>
 
               {currentIncident.status === "verified" && (
-                <button
-                  onClick={() => setProofModalOpen(true)}
-                  className="btn-metallic-secondary flex items-center space-x-1.5 rounded-md px-3.5 py-1.5 text-xs font-medium text-emerald-300 cursor-pointer"
-                >
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                  <span>View Caldera Proof</span>
-                </button>
+                <Glass radius={9999} blur={16} intensity={0.8} className="p-1 shrink-0">
+                  <button
+                    onClick={() => setProofModalOpen(true)}
+                    className="flex items-center space-x-1.5 rounded-full px-3.5 py-1 text-xs font-medium text-emerald-300 hover:text-emerald-200 cursor-pointer"
+                  >
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                    <span>View Caldera Proof</span>
+                  </button>
+                </Glass>
               )}
             </div>
 

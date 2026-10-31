@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Lock, User, ArrowRight, AlertCircle, Eye, EyeOff, Info } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
+import { Glass } from "./Glass";
+
 export const HomeLoginSection: React.FC = () => {
   const router = useRouter();
   const { loginAsAdmin, loginAsStaff } = useAuth();
@@ -58,36 +60,36 @@ export const HomeLoginSection: React.FC = () => {
   };
 
   return (
-    <section id="login-portal" className="metallic-surface rounded-2xl p-8 sm:p-12 space-y-8 border border-card shadow-2xl transition-colors">
+    <section id="login-portal" className="metallic-card rounded-3xl p-8 sm:p-12 space-y-8 border border-white/10 shadow-2xl relative">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 hairline-b gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-white/5 gap-4">
         <div>
-          <div className="text-xs font-mono uppercase tracking-widest text-slate-400">
+          <div className="text-[11px] font-mono uppercase tracking-widest text-cyan-400 font-semibold">
             RBAC ACCESS PORTAL
           </div>
-          <h3 className="text-xl sm:text-2xl font-medium text-white mt-1">
+          <h3 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] mt-1">
             Sign In to the Operational Console
           </h3>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-[var(--text-secondary)] mt-1">
             Choose your clearance level: General Staff awareness or Privileged Security Administrator.
           </p>
         </div>
 
-        {/* Portal Switcher Tabs */}
-        <div className="flex items-center rounded-lg bg-[var(--bg-card)] p-1 border border-subtle shrink-0">
+        {/* Liquid Glass Portal Switcher Tabs */}
+        <Glass radius={9999} bezel={12} strength={30} className="flex items-center p-1 rounded-full border border-white/10 shrink-0">
           <button
             type="button"
             onClick={() => {
               setActivePortal("admin");
               setError(null);
             }}
-            className={`flex items-center space-x-1.5 rounded-md px-3.5 py-1.5 text-xs font-medium transition-all cursor-pointer ${
+            className={`flex items-center space-x-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
               activePortal === "admin"
-                ? "bg-active-pill text-active-pill-text shadow-sm border border-subtle"
-                : "text-muted-pill hover:text-active-pill-text"
+                ? "bg-white text-black dark:bg-white dark:text-zinc-950 shadow-md"
+                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             }`}
           >
-            <Lock className="h-3 w-3" />
+            <Lock className="h-3.5 w-3.5" />
             <span>Admin Portal</span>
           </button>
           <button
@@ -96,16 +98,16 @@ export const HomeLoginSection: React.FC = () => {
               setActivePortal("staff");
               setError(null);
             }}
-            className={`flex items-center space-x-1.5 rounded-md px-3.5 py-1.5 text-xs font-medium transition-all cursor-pointer ${
+            className={`flex items-center space-x-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
               activePortal === "staff"
-                ? "bg-active-pill text-active-pill-text shadow-sm border border-subtle"
-                : "text-muted-pill hover:text-active-pill-text"
+                ? "bg-white text-black dark:bg-white dark:text-zinc-950 shadow-md"
+                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             }`}
           >
-            <User className="h-3 w-3" />
+            <User className="h-3.5 w-3.5" />
             <span>Staff Portal</span>
           </button>
-        </div>
+        </Glass>
       </div>
 
       {/* Error alert */}

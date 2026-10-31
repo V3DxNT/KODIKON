@@ -2,6 +2,7 @@
 
 import React from "react";
 import { CheckCircle2, Terminal, X, Lock, Flame } from "lucide-react";
+import { Glass } from "./Glass";
 
 interface ProofModalProps {
   isOpen: boolean;
@@ -19,8 +20,8 @@ export const ProofModal: React.FC<ProofModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
-      <div className="relative w-full max-w-xl metallic-surface rounded-2xl p-8 sm:p-10 border border-white/15 shadow-2xl space-y-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
+      <Glass radius={24} blur={24} intensity={0.92} className="relative w-full max-w-xl p-8 sm:p-10 shadow-2xl space-y-6">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -101,7 +102,7 @@ export const ProofModal: React.FC<ProofModalProps> = ({
             Acknowledge & Close
           </button>
         </div>
-      </div>
+      </Glass>
     </div>
   );
 };

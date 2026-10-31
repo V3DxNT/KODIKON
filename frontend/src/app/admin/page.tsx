@@ -15,6 +15,7 @@ import { IncidentDetail, AuditLog } from "@/types/soc";
 import { useAuth } from "@/context/AuthContext";
 import mockData from "@/mocks/incident.json";
 import { Lock, ArrowRight, ShieldAlert } from "lucide-react";
+import { Glass } from "@/components/Glass";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -115,9 +116,9 @@ export default function AdminPage() {
   if (role !== "admin") {
     return (
       <div className="min-h-[75vh] flex items-center justify-center px-4 py-16">
-        <div className="max-w-md w-full metallic-surface rounded-2xl p-8 sm:p-10 border border-white/15 text-center space-y-6">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-white/[0.04] border border-white/10 text-slate-300">
-            <Lock className="h-6 w-6" />
+        <Glass radius={24} blur={24} intensity={0.85} className="max-w-md w-full p-8 sm:p-10 text-center space-y-6">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-white/[0.04] border border-white/10 text-slate-300 shadow-inner">
+            <Lock className="h-6 w-6 text-cyan-300" />
           </div>
           <div>
             <div className="text-[11px] font-mono uppercase tracking-widest text-slate-400">
@@ -145,7 +146,7 @@ export default function AdminPage() {
               <ArrowRight className="h-3.5 w-3.5" />
             </button>
           </div>
-        </div>
+        </Glass>
       </div>
     );
   }
@@ -153,9 +154,11 @@ export default function AdminPage() {
   return (
     <div>
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-2.5 rounded-lg metallic-surface px-5 py-3 text-xs font-mono text-slate-200 border border-white/15 shadow-xl animate-in slide-in-from-bottom-3">
-          <span className="h-1.5 w-1.5 rounded-full bg-slate-300 animate-pulse"></span>
-          <span>{toastMessage}</span>
+        <div className="fixed bottom-6 right-6 z-50">
+          <Glass radius={12} blur={20} intensity={0.9} className="flex items-center space-x-2.5 px-5 py-3 text-xs font-mono text-slate-200 shadow-xl animate-in slide-in-from-bottom-3">
+            <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span>{toastMessage}</span>
+          </Glass>
         </div>
       )}
 

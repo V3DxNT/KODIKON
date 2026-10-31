@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { IncidentDetail } from "@/types/soc";
 import { AuthUser } from "@/lib/auth-adapter";
+import { Glass } from "./Glass";
 
 interface EmployeeViewProps {
   incidents: IncidentDetail[];
@@ -146,21 +147,25 @@ export const EmployeeView: React.FC<EmployeeViewProps> = ({
         </div>
 
         <div className="flex items-center space-x-2.5">
-          <button
-            onClick={() => setReportModalOpen(true)}
-            className="btn-metallic-secondary flex items-center space-x-1.5 rounded-lg px-3 py-1.5 text-xs cursor-pointer"
-          >
-            <Flag className="h-3 w-3 text-amber-400" />
-            <span>Report Suspicious Event</span>
-          </button>
+          <Glass radius={10} blur={16} intensity={0.75}>
+            <button
+              onClick={() => setReportModalOpen(true)}
+              className="flex items-center space-x-1.5 px-3 py-1.5 text-xs text-slate-200 hover:text-white cursor-pointer transition-colors"
+            >
+              <Flag className="h-3 w-3 text-amber-400" />
+              <span>Report Suspicious Event</span>
+            </button>
+          </Glass>
 
-          <button
-            onClick={handleDownloadAdvisory}
-            className="btn-metallic-secondary flex items-center space-x-1.5 rounded-lg px-3 py-1.5 text-xs cursor-pointer"
-          >
-            <Download className="h-3 w-3 text-slate-400" />
-            <span>Export Advisory (.txt)</span>
-          </button>
+          <Glass radius={10} blur={16} intensity={0.75}>
+            <button
+              onClick={handleDownloadAdvisory}
+              className="flex items-center space-x-1.5 px-3 py-1.5 text-xs text-slate-200 hover:text-white cursor-pointer transition-colors"
+            >
+              <Download className="h-3 w-3 text-slate-400" />
+              <span>Export Advisory (.txt)</span>
+            </button>
+          </Glass>
         </div>
       </div>
 
@@ -276,8 +281,8 @@ export const EmployeeView: React.FC<EmployeeViewProps> = ({
 
       {/* Formal 403 Forbidden Modal */}
       {deniedModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
-          <div className="w-full max-w-md metallic-surface rounded-2xl p-8 border border-white/10 space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in">
+          <Glass radius={24} blur={24} intensity={0.9} className="w-full max-w-md p-8 space-y-4 shadow-2xl">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400">
               <UserX className="h-5 w-5" />
             </div>
@@ -310,14 +315,14 @@ export const EmployeeView: React.FC<EmployeeViewProps> = ({
                 Authenticate Admin
               </button>
             </div>
-          </div>
+          </Glass>
         </div>
       )}
 
       {/* Staff Report Suspicious Event Modal */}
       {reportModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
-          <div className="w-full max-w-md metallic-surface rounded-2xl p-8 border border-card space-y-5 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in">
+          <Glass radius={24} blur={24} intensity={0.9} className="w-full max-w-md p-8 space-y-5 relative shadow-2xl">
             <button
               onClick={() => setReportModalOpen(false)}
               className="absolute top-6 right-6 text-slate-400 hover:text-white"
@@ -387,7 +392,7 @@ export const EmployeeView: React.FC<EmployeeViewProps> = ({
                 </div>
               </form>
             )}
-          </div>
+          </Glass>
         </div>
       )}
     </div>

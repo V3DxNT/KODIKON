@@ -15,6 +15,7 @@ import {
   ArrowLeft 
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { Glass } from "@/components/Glass";
 
 function LoginForm() {
   const router = useRouter();
@@ -64,7 +65,7 @@ function LoginForm() {
   };
 
   return (
-    <div className="mx-auto max-w-md w-full metallic-surface rounded-2xl p-8 sm:p-10 border border-card shadow-2xl space-y-6">
+    <Glass radius={24} blur={24} intensity={0.9} className="mx-auto max-w-md w-full p-8 sm:p-10 shadow-2xl space-y-6">
       {/* Return link */}
       <div>
         <Link
@@ -204,7 +205,7 @@ function LoginForm() {
           <span>Staff Login &rarr;</span>
         </Link>
       </div>
-    </div>
+    </Glass>
   );
 }
 

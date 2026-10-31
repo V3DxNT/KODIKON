@@ -52,11 +52,12 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] antialiased flex flex-col font-sans selection:bg-slate-500/20">
+      <body className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] antialiased flex flex-col font-sans selection:bg-cyan-500/20 relative overflow-x-hidden">
+        <div aria-hidden="true" className="px-mesh-aurora" />
         <ThemeProvider>
           <AuthProvider>
             <NavigationWrapper />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1 relative z-10">{children}</main>
             <footer className="w-full hairline-t bg-[var(--bg-footer)] py-8 text-center text-xs text-slate-500 font-mono transition-colors">
               <div className="mx-auto max-w-7xl px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
                 <span>Project X &bull; Single-Box SOC Console V2.0</span>

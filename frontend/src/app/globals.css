@@ -61,6 +61,15 @@
     --pill-active-bg: rgba(255, 255, 255, 0.12);
     --pill-active-text: #ffffff;
     --pill-muted-text: #94a3b8;
+
+    /* Liquid Glass tokens (Prism reference) - high opacity for zero bleed-through */
+    --glass-tint: rgba(12, 15, 24, 0.90);
+    --glass-frost: rgba(12, 15, 24, 0.94);
+    --glass-rim-top: rgba(255, 255, 255, 0.25);
+    --glass-rim-bottom: rgba(0, 0, 0, 0.4);
+    --glass-rim-sides: rgba(255, 255, 255, 0.08);
+    --glass-shadow-sm: rgba(0, 0, 0, 0.4);
+    --glass-shadow-lg: rgba(0, 0, 0, 0.6);
   }
 
   /* Light Theme (Complementary Titanium Slate) */
@@ -117,6 +126,15 @@
     --pill-active-bg: #ffffff;
     --pill-active-text: #0f172a;
     --pill-muted-text: #64748b;
+
+    /* Liquid Glass tokens (Prism reference) - high opacity for zero bleed-through */
+    --glass-tint: rgba(255, 255, 255, 0.92);
+    --glass-frost: rgba(255, 255, 255, 0.95);
+    --glass-rim-top: rgba(255, 255, 255, 0.95);
+    --glass-rim-bottom: rgba(15, 23, 42, 0.1);
+    --glass-rim-sides: rgba(255, 255, 255, 0.6);
+    --glass-shadow-sm: rgba(15, 23, 42, 0.06);
+    --glass-shadow-lg: rgba(15, 23, 42, 0.15);
   }
 
   html {
@@ -399,3 +417,106 @@
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
 }
+
+/* =========================================================================
+   PRISM LIQUID GLASS ENGINE (Apple HIG Control Layer)
+   ========================================================================= */
+
+.px-liquid-glass {
+  position: relative;
+  isolation: isolate;
+  background: var(--glass-frost);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 -1px 0 var(--glass-rim-bottom),
+    inset 1px 0 0 var(--glass-rim-sides),
+    inset -1px 0 0 var(--glass-rim-sides),
+    0 1px 2px var(--glass-shadow-sm),
+    0 14px 36px -10px var(--glass-shadow-lg);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.px-liquid-glass[data-refract] {
+  background: var(--glass-tint);
+}
+
+.px-liquid-glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 255, 255, 0) 36%,
+    rgba(255, 255, 255, 0) 70%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+  mix-blend-mode: soft-light;
+  z-index: 1;
+}
+
+.px-liquid-glass > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* =========================================================================
+   CYBER AURORA DRIFTING MESH BACKDROP
+   ========================================================================= */
+
+.px-mesh-aurora {
+  position: fixed;
+  inset: -20vmax;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.45;
+  filter: blur(80px);
+  will-change: transform;
+  overflow: hidden;
+}
+
+.dark .px-mesh-aurora,
+[data-theme="dark"] .px-mesh-aurora {
+  background:
+    radial-gradient(circle 35vmax at 20% 25%, rgba(14, 165, 233, 0.25), transparent 70%),
+    radial-gradient(circle 30vmax at 80% 20%, rgba(99, 102, 241, 0.2), transparent 70%),
+    radial-gradient(circle 35vmax at 50% 65%, rgba(16, 185, 129, 0.15), transparent 70%),
+    radial-gradient(circle 40vmax at 25% 85%, rgba(30, 58, 138, 0.3), transparent 75%),
+    radial-gradient(circle 25vmax at 75% 75%, rgba(6, 182, 212, 0.2), transparent 70%);
+  animation: cyberMeshDrift 28s ease-in-out infinite alternate;
+}
+
+.light .px-mesh-aurora,
+[data-theme="light"] .px-mesh-aurora {
+  opacity: 0.35;
+  background:
+    radial-gradient(circle 35vmax at 20% 25%, rgba(56, 189, 248, 0.22), transparent 70%),
+    radial-gradient(circle 30vmax at 80% 20%, rgba(129, 140, 248, 0.2), transparent 70%),
+    radial-gradient(circle 35vmax at 50% 65%, rgba(52, 211, 153, 0.18), transparent 70%),
+    radial-gradient(circle 40vmax at 25% 85%, rgba(199, 210, 254, 0.3), transparent 75%),
+    radial-gradient(circle 25vmax at 75% 75%, rgba(186, 230, 253, 0.25), transparent 70%);
+  animation: cyberMeshDrift 28s ease-in-out infinite alternate;
+}
+
+@keyframes cyberMeshDrift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(-3%, 4%, 0) scale(1.04) rotate(2deg);
+  }
+  100% {
+    transform: translate3d(4%, -3%, 0) scale(0.98) rotate(-1.5deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .px-mesh-aurora {
+    animation: none !important;
+  }
+}
+

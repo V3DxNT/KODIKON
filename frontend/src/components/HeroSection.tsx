@@ -1,8 +1,10 @@
 "use client";
 
 import React from "react";
-import { Terminal, ArrowRight, Shield, Play, Lock, ChevronDown, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Play, Lock, ChevronDown, Radio, ShieldCheck } from "lucide-react";
 import { Role } from "@/types/soc";
+import { Glass } from "./Glass";
+import { CyberRadarLens } from "./CyberRadarLens";
 
 interface HeroSectionProps {
   onEnterPortal: (role: Role) => void;
@@ -11,7 +13,6 @@ interface HeroSectionProps {
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
-  onEnterPortal,
   onTriggerReplay,
   isReplaying,
 }) => {
@@ -21,95 +22,106 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   };
 
   return (
-    <div className="relative pt-16 pb-20 overflow-hidden">
-      {/* Subtle Ambient Radial Lighting */}
-      <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-[400px] w-[900px] bg-gradient-to-b from-white/[0.035] to-transparent rounded-full blur-3xl"></div>
-
-      <div className="mx-auto max-w-7xl px-6 sm:px-8">
-        {/* Formal Institutional Pill */}
-        <div className="flex items-center space-x-3 text-xs font-mono text-slate-400">
-          <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
-          <span className="tracking-widest uppercase text-slate-300">
-            SINGLE-BOX SOC FOR LINUX SERVERS
-          </span>
-          <span className="text-slate-600">&bull;</span>
-          <span className="text-slate-400">MITRE Caldera Verification</span>
+    <div className="relative pt-10 sm:pt-16 pb-20 overflow-hidden">
+      <div className="mx-auto max-w-7xl px-4 sm:px-8">
+        {/* Institutional Telemetry Pill */}
+        <div className="flex items-center space-x-3 text-xs font-mono text-[var(--text-muted)] mb-6">
+          <Glass radius={9999} bezel={12} strength={24} className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 text-[11px]">
+            <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span className="tracking-widest uppercase font-semibold text-emerald-400">
+              SINGLE-BOX SOC FOR LINUX SERVERS
+            </span>
+            <span className="text-zinc-600">&bull;</span>
+            <span className="text-[var(--text-secondary)]">MITRE Caldera Verification</span>
+          </Glass>
         </div>
 
-        {/* Spacious Title & Visual Loop Hook */}
-        <div className="mt-8 max-w-4xl space-y-6">
-          <h1 className="text-4xl sm:text-6xl font-medium tracking-tight text-white leading-[1.15]">
-            Autonomous Server Defense with Mathematical Proof.
-          </h1>
+        {/* Hero Grid: Title Left + Cyber Radar 3D Stage Right */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          <div className="lg:col-span-7 space-y-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[var(--text-primary)] leading-[1.12]">
+              Autonomous Server Defense with <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400">Mathematical Proof</span>.
+            </h1>
 
-          {/* Visual Hook Pipeline Strip */}
-          <div className="rounded-xl bg-white/[0.02] p-4 border border-white/[0.06] flex flex-wrap items-center gap-2 text-xs font-mono text-slate-300">
-            <span className="text-slate-500">THE LOOP:</span>
-            <span className="text-slate-200">Detect Attack</span>
-            <span className="text-slate-600">&rarr;</span>
-            <span className="text-slate-200">Plain English LLM</span>
-            <span className="text-slate-600">&rarr;</span>
-            <span className="text-slate-200">Human Approval</span>
-            <span className="text-slate-600">&rarr;</span>
-            <span className="text-slate-200">SSH Firewall Block</span>
-            <span className="text-slate-600">&rarr;</span>
-            <span className="text-emerald-400 font-bold">Caldera Re-Run Proof</span>
+            {/* Liquid Glass Autonomous Loop Strip */}
+            <Glass
+              radius={16}
+              bezel={14}
+              strength={28}
+              className="rounded-2xl p-4 border border-white/10 flex flex-wrap items-center gap-2 text-xs font-mono"
+            >
+              <span className="text-cyan-400 font-bold">THE LOOP:</span>
+              <span className="text-[var(--text-primary)]">Detect Attack</span>
+              <span className="text-zinc-500">&rarr;</span>
+              <span className="text-[var(--text-primary)]">Plain English LLM</span>
+              <span className="text-zinc-500">&rarr;</span>
+              <span className="text-[var(--text-primary)]">Human Approval</span>
+              <span className="text-zinc-500">&rarr;</span>
+              <span className="text-[var(--text-primary)]">SSH Firewall Block</span>
+              <span className="text-zinc-500">&rarr;</span>
+              <span className="text-emerald-400 font-bold">Caldera Re-Run Proof</span>
+            </Glass>
+
+            <p className="text-base text-[var(--text-secondary)] leading-relaxed max-w-2xl font-normal">
+              Project X monitors Linux servers, intercepts brute-force and backdoor intrusions from raw kernel logs, 
+              explains threats in plain English for operational clarity, gates responses behind human authorization, 
+              and uniquely re-executes MITRE ATT&CK adversary profiles to mathematically prove the block held.
+            </p>
+
+            {/* Action CTAs */}
+            <div className="pt-2 flex flex-wrap items-center gap-3">
+              <button
+                onClick={() => scrollTo("login-portal")}
+                className="btn-metallic-primary flex items-center space-x-2.5 rounded-full px-6 py-3.5 text-xs font-semibold tracking-wide uppercase transition-all cursor-pointer shadow-lg hover:shadow-cyan-500/20"
+              >
+                <Lock className="h-4 w-4" />
+                <span>Sign In to Portal</span>
+                <ArrowRight className="h-3.5 w-3.5 opacity-60" />
+              </button>
+
+              <button
+                onClick={() => scrollTo("topology")}
+                className="btn-metallic-secondary flex items-center space-x-2 rounded-full px-5 py-3.5 text-xs font-medium tracking-wide transition-all cursor-pointer"
+              >
+                <span>Explore Architecture</span>
+                <ChevronDown className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+              </button>
+
+              <button
+                onClick={onTriggerReplay}
+                disabled={isReplaying}
+                className="btn-metallic-secondary flex items-center space-x-2 rounded-full px-5 py-3.5 text-xs font-mono text-[var(--text-primary)] transition-all cursor-pointer disabled:opacity-50"
+              >
+                <Play className={`h-3 w-3 text-cyan-400 ${isReplaying ? "animate-spin" : ""}`} />
+                <span>{isReplaying ? "Simulating Attack..." : "Simulate Inbound Threat"}</span>
+              </button>
+            </div>
           </div>
 
-          <p className="text-base text-slate-400 leading-relaxed max-w-3xl font-normal">
-            Project X watches your Linux server, intercepts brute-force and backdoor intrusions from raw kernel logs, 
-            explains the threat in plain English for non-technical leadership, gates responses behind dual-custody human authorization, 
-            and uniquely re-executes MITRE ATT&CK adversary profiles to prove the block held.
-          </p>
-
-          {/* Action CTAs */}
-          <div className="pt-4 flex flex-wrap items-center gap-4">
-            <button
-              onClick={() => scrollTo("login-portal")}
-              className="btn-metallic-primary flex items-center space-x-2.5 rounded-lg px-6 py-3.5 text-xs font-semibold tracking-wide uppercase transition-all cursor-pointer"
-            >
-              <Lock className="h-4 w-4" />
-              <span>Sign In to Portal</span>
-              <ArrowRight className="h-3.5 w-3.5 opacity-60" />
-            </button>
-
-            <button
-              onClick={() => scrollTo("topology")}
-              className="btn-metallic-secondary flex items-center space-x-2 rounded-lg px-5 py-3.5 text-xs font-medium tracking-wide transition-all cursor-pointer"
-            >
-              <span>Explore Visual Architecture</span>
-              <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
-            </button>
-
-            <button
-              onClick={onTriggerReplay}
-              disabled={isReplaying}
-              className="btn-metallic-secondary flex items-center space-x-2 rounded-lg px-5 py-3.5 text-xs font-mono text-slate-300 transition-all cursor-pointer disabled:opacity-50"
-            >
-              <Play className={`h-3 w-3 text-slate-400 ${isReplaying ? "animate-spin" : ""}`} />
-              <span>{isReplaying ? "Simulating Attack..." : "Simulate Inbound Threat"}</span>
-            </button>
+          {/* 3D Cyber Threat Radar Lens Stage */}
+          <div className="lg:col-span-5">
+            <CyberRadarLens />
           </div>
         </div>
 
-        {/* 3 Core Value Metric Pills */}
-        <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="metallic-card rounded-xl p-5 space-y-1">
-            <div className="text-[10px] font-mono text-slate-500 uppercase font-bold">COST STRUCTURE</div>
-            <div className="text-xl font-mono font-medium text-white">$0 Software Cost</div>
-            <p className="text-xs text-slate-400">Uses permissively licensed MITRE Caldera (Apache 2.0) and lightweight team-authored Python.</p>
+        {/* 3 Core Value Metric Cards (Apple HIG Card Treatment) */}
+        <div className="mt-14 grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="metallic-card rounded-2xl p-6 space-y-2 border border-white/10 hover:border-cyan-400/30 transition-all">
+            <div className="text-[10px] font-mono text-cyan-400 uppercase font-bold tracking-wider">COST STRUCTURE</div>
+            <div className="text-2xl font-mono font-medium text-[var(--text-primary)]">$0 Software Cost</div>
+            <p className="text-xs text-[var(--text-secondary)] leading-relaxed">Uses permissively licensed MITRE Caldera (Apache 2.0) and lightweight autonomous Python orchestration.</p>
           </div>
 
-          <div className="metallic-card rounded-xl p-5 space-y-1 border-t-white/30">
-            <div className="text-[10px] font-mono text-slate-400 uppercase font-bold">OPERATIONAL VELOCITY</div>
-            <div className="text-xl font-mono font-medium text-white">&lt; 45s Mean Containment</div>
-            <p className="text-xs text-slate-400">From raw log hit to verified firewall quarantine, gated by a 1-click human response gate.</p>
+          <div className="metallic-card rounded-2xl p-6 space-y-2 border border-white/10 hover:border-cyan-400/30 transition-all border-t-cyan-400/40">
+            <div className="text-[10px] font-mono text-emerald-400 uppercase font-bold tracking-wider">OPERATIONAL VELOCITY</div>
+            <div className="text-2xl font-mono font-medium text-[var(--text-primary)]">&lt; 45s Mean Quarantine</div>
+            <p className="text-xs text-[var(--text-secondary)] leading-relaxed">From raw log hit to verified firewall quarantine, gated by a 1-click dual-custody human response gate.</p>
           </div>
 
-          <div className="metallic-card rounded-xl p-5 space-y-1">
-            <div className="text-[10px] font-mono text-slate-500 uppercase font-bold">NON-REPUDIATION</div>
-            <div className="text-xl font-mono font-medium text-white">Mathematical Proof</div>
-            <p className="text-xs text-slate-400">Does not guess whether firewall rules succeeded; actively re-emulates the attack to prove isolation.</p>
+          <div className="metallic-card rounded-2xl p-6 space-y-2 border border-white/10 hover:border-cyan-400/30 transition-all">
+            <div className="text-[10px] font-mono text-indigo-400 uppercase font-bold tracking-wider">NON-REPUDIATION</div>
+            <div className="text-2xl font-mono font-medium text-[var(--text-primary)]">Mathematical Proof</div>
+            <p className="text-xs text-[var(--text-secondary)] leading-relaxed">Does not guess whether firewall rules succeeded; actively re-emulates the attack to prove isolation.</p>
           </div>
         </div>
       </div>

@@ -17,6 +17,7 @@ import {
   Clock
 } from "lucide-react";
 import { triggerReplaySimulation } from "@/lib/api";
+import { Glass } from "@/components/Glass";
 
 export default function AttacksPage() {
   const [isExecuting, setIsExecuting] = useState(false);
@@ -74,9 +75,11 @@ export default function AttacksPage() {
   return (
     <div className="mx-auto max-w-6xl px-6 py-12 sm:px-8 space-y-10">
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-2.5 rounded-lg metallic-surface px-5 py-3 text-xs font-mono text-slate-200 border border-white/15 shadow-xl animate-in slide-in-from-bottom-3">
-          <span className="h-1.5 w-1.5 rounded-full bg-slate-300 animate-pulse"></span>
-          <span>{toastMessage}</span>
+        <div className="fixed bottom-6 right-6 z-50">
+          <Glass radius={12} blur={20} intensity={0.9} className="flex items-center space-x-2.5 px-5 py-3 text-xs font-mono text-slate-200 shadow-xl animate-in slide-in-from-bottom-3">
+            <span className="h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse"></span>
+            <span>{toastMessage}</span>
+          </Glass>
         </div>
       )}
 
@@ -96,14 +99,16 @@ export default function AttacksPage() {
           </p>
         </div>
 
-        <button
-          onClick={handleRunFullChain}
-          disabled={isExecuting}
-          className="btn-metallic-primary flex items-center space-x-2 rounded-lg px-5 py-3 text-xs font-semibold cursor-pointer disabled:opacity-50 shrink-0"
-        >
-          <Play className={`h-3.5 w-3.5 ${isExecuting ? "animate-spin" : ""}`} />
-          <span>{isExecuting ? "Executing Sequence..." : "Run Full 3-Act Attack"}</span>
-        </button>
+        <Glass radius={12} blur={16} intensity={0.85} className="shrink-0">
+          <button
+            onClick={handleRunFullChain}
+            disabled={isExecuting}
+            className="flex items-center space-x-2 px-5 py-3 text-xs font-semibold text-rose-300 hover:text-white cursor-pointer disabled:opacity-50 transition-colors"
+          >
+            <Play className={`h-3.5 w-3.5 ${isExecuting ? "animate-spin text-rose-400" : "text-rose-400"}`} />
+            <span>{isExecuting ? "Executing Sequence..." : "Run Full 3-Act Attack"}</span>
+          </button>
+        </Glass>
       </div>
 
       {/* 3-Act Attack Cards Grid */}

@@ -30,7 +30,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
 
   if (!isClient) {
     return (
-      <div className={`flex items-center p-0.5 rounded-lg border border-subtle bg-surface-subtle ${className}`}>
+      <div className={`flex items-center p-0.5 rounded-lg border border-subtle bg-surface-subtle shrink-0 ${className}`}>
         <div className="h-6 w-7 rounded-md"></div>
         <div className="h-6 w-7 rounded-md"></div>
         <div className="h-6 w-7 rounded-md"></div>
@@ -42,7 +42,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
     <div
       role="group"
       aria-label="Color theme selector"
-      className={`flex items-center p-0.5 rounded-lg border border-subtle bg-surface-subtle transition-colors ${className}`}
+      className={`flex items-center p-0.5 rounded-lg border border-subtle bg-surface-subtle transition-colors shrink-0 ${className}`}
     >
       {options.map((opt) => {
         const Icon = opt.icon;

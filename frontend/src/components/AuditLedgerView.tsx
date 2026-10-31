@@ -3,6 +3,7 @@
 import React from "react";
 import { CheckCircle2, Download, ShieldCheck } from "lucide-react";
 import { AuditLog } from "@/types/soc";
+import { Glass } from "./Glass";
 
 interface AuditLedgerViewProps {
   logs: AuditLog[];
@@ -38,13 +39,15 @@ export const AuditLedgerView: React.FC<AuditLedgerViewProps> = ({ logs }) => {
           </p>
         </div>
 
-        <button
-          onClick={handleExportJSON}
-          className="btn-metallic-secondary flex items-center space-x-2 rounded-lg px-4 py-2.5 text-xs font-medium cursor-pointer shrink-0"
-        >
-          <Download className="h-3.5 w-3.5 text-slate-400" />
-          <span>Export Audit Trail (JSON)</span>
-        </button>
+        <Glass radius={12} blur={16} intensity={0.8} className="shrink-0">
+          <button
+            onClick={handleExportJSON}
+            className="flex items-center space-x-2 px-4 py-2.5 text-xs font-medium text-[var(--text-primary)] hover:text-white cursor-pointer transition-colors"
+          >
+            <Download className="h-3.5 w-3.5 text-slate-400" />
+            <span>Export Audit Trail (JSON)</span>
+          </button>
+        </Glass>
       </div>
 
       {/* Ledger Table */}
