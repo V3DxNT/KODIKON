@@ -13,12 +13,14 @@ import {
   Server,
   Play
 } from "lucide-react";
-import { IncidentDetail } from "@/types/soc";
+import { IncidentDetail, AuditLog } from "@/types/soc";
 import { EventGraphTimeline } from "./EventGraphTimeline";
 import { ProofModal } from "./ProofModal";
+import { SecurityMetricsDashboard } from "./SecurityMetricsDashboard";
 
 interface AdminPortalProps {
   incidents: IncidentDetail[];
+  auditLogs: AuditLog[];
   onApprove: (id: number) => Promise<void>;
   onBlock: (id: number) => Promise<void>;
   onTriggerReplay: () => Promise<void>;
@@ -27,13 +29,14 @@ interface AdminPortalProps {
 
 export const AdminPortal: React.FC<AdminPortalProps> = ({
   incidents,
+  auditLogs,
   onApprove,
   onBlock,
   onTriggerReplay,
   isReplaying,
 }) => {
   const [selectedIncidentId, setSelectedIncidentId] = useState<number>(incidents[0]?.id || 101);
-  const [activeSubTab, setActiveSubTab] = useState<"dossier" | "telemetry" | "infrastructure">("dossier");
+  const [activeSubTab, setActiveSubTab] = useState<"dossier" | "telemetry" | "infrastructure" | "analytics">("dossier");
   const [isApproving, setIsApproving] = useState(false);
   const [isBlocking, setIsBlocking] = useState(false);
   const [proofModalOpen, setProofModalOpen] = useState(false);
@@ -205,6 +208,16 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   }`}
                 >
                   Incident Dossier & Response
+                </button>
+                <button
+                  onClick={() => setActiveSubTab("analytics")}
+                  className={`px-3.5 py-1.5 rounded-md text-xs font-medium transition-all ${
+                    activeSubTab === "analytics"
+                      ? "bg-white/10 text-white border border-white/10"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  Analytics & Metrics
                 </button>
                 <button
                   onClick={() => setActiveSubTab("telemetry")}
@@ -412,6 +425,11 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   </div>
                 </div>
               </div>
+            )}
+
+            {/* TAB: SECURITY ANALYTICS & METRICS DASHBOARD */}
+            {activeSubTab === "analytics" && (
+              <SecurityMetricsDashboard incidents={incidents} auditLogs={auditLogs} />
             )}
           </div>
         ) : (

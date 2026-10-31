@@ -10,6 +10,7 @@ interface RoleNavbarProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   isBackendConnected: boolean;
+  onRequestAdminLogin?: () => void;
 }
 
 export const RoleNavbar: React.FC<RoleNavbarProps> = ({
@@ -18,7 +19,16 @@ export const RoleNavbar: React.FC<RoleNavbarProps> = ({
   activeTab,
   onTabChange,
   isBackendConnected,
+  onRequestAdminLogin,
 }) => {
+  const handleAdminClick = () => {
+    if (currentRole === "employee" && onRequestAdminLogin) {
+      onRequestAdminLogin();
+    } else {
+      onRoleChange("admin");
+    }
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full hairline-b bg-[#08090d]/90 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 sm:px-8">
@@ -45,43 +55,54 @@ export const RoleNavbar: React.FC<RoleNavbarProps> = ({
         <nav className="hidden md:flex items-center space-x-1">
           <button
             onClick={() => onTabChange("overview")}
-            className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-all ${
+            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
               activeTab === "overview"
-                ? "bg-white/[0.06] text-white border border-white/10"
+                ? "bg-white/[0.08] text-white border border-white/10"
                 : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.02]"
             }`}
           >
             Overview
           </button>
           <button
-            onClick={() => onTabChange("portal")}
-            className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-all ${
-              activeTab === "portal"
-                ? "bg-white/[0.06] text-white border border-white/10"
+            onClick={() => onTabChange("staff")}
+            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+              activeTab === "staff"
+                ? "bg-white/[0.08] text-white border border-white/10"
                 : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.02]"
             }`}
           >
-            {currentRole === "admin" ? "Incident Command Center" : "Staff Security Feed"}
+            Staff Feed
+          </button>
+          <button
+            onClick={() => onTabChange("admin")}
+            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all flex items-center space-x-1.5 ${
+              activeTab === "admin"
+                ? "bg-white/[0.08] text-white border border-white/10"
+                : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.02]"
+            }`}
+          >
+            <Lock className="h-3 w-3 text-slate-400" />
+            <span>Admin Console</span>
+          </button>
+          <button
+            onClick={() => onTabChange("attacks")}
+            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all flex items-center space-x-1.5 ${
+              activeTab === "attacks"
+                ? "bg-white/[0.08] text-white border border-white/10"
+                : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.02]"
+            }`}
+          >
+            <span>Attack Lab</span>
           </button>
           <button
             onClick={() => onTabChange("audit")}
-            className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-all ${
+            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
               activeTab === "audit"
-                ? "bg-white/[0.06] text-white border border-white/10"
+                ? "bg-white/[0.08] text-white border border-white/10"
                 : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.02]"
             }`}
           >
             Audit Trail
-          </button>
-          <button
-            onClick={() => onTabChange("architecture")}
-            className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-all ${
-              activeTab === "architecture"
-                ? "bg-white/[0.06] text-white border border-white/10"
-                : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.02]"
-            }`}
-          >
-            System Architecture
           </button>
         </nav>
 
@@ -107,7 +128,7 @@ export const RoleNavbar: React.FC<RoleNavbarProps> = ({
               <span>Staff</span>
             </button>
             <button
-              onClick={() => onRoleChange("admin")}
+              onClick={handleAdminClick}
               className={`flex items-center space-x-1.5 rounded-md px-3 py-1 text-xs font-medium transition-all ${
                 currentRole === "admin"
                   ? "bg-white/10 text-white shadow-sm border border-white/10"
