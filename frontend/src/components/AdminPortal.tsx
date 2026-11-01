@@ -38,6 +38,7 @@ import { ProofModal } from "./ProofModal";
 import { SentinelForgeLogo } from "./SentinelForgeLogo";
 import { ThreatHuntingDashboard } from "./ThreatHuntingDashboard";
 import { useAuth } from "@/context/AuthContext";
+import { formatUtcDateTime } from "@/lib/date-utils";
 
 interface AdminPortalProps {
   incidents: IncidentDetail[];
@@ -1078,8 +1079,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                               : "Open"}
                           </span>
                         </td>
-                        <td className="py-3.5 px-4 text-[var(--text-muted)] font-mono text-[11px]">
-                          {inc.created_at ? new Date(inc.created_at).toLocaleString() : "2024-10-28 23:42"}
+                        <td className="py-3.5 px-4 text-[var(--text-muted)] font-mono text-[11px]" suppressHydrationWarning>
+                          {inc.created_at ? formatUtcDateTime(inc.created_at) : "2024-10-28 23:42:00 UTC"}
                         </td>
                         <td className="py-3.5 px-4 text-right relative">
                           <button

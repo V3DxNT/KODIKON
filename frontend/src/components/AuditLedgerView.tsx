@@ -3,6 +3,7 @@
 import React from "react";
 import { CheckCircle2, Download, FileSpreadsheet } from "lucide-react";
 import { AuditLog } from "@/types/soc";
+import { formatUtcDateTime } from "@/lib/date-utils";
 
 interface AuditLedgerViewProps {
   logs: AuditLog[];
@@ -77,14 +78,8 @@ export const AuditLedgerView: React.FC<AuditLedgerViewProps> = ({ logs }) => {
                 return (
                   <tr key={log.id} className="hover:bg-[var(--bg-elevated)] transition-colors">
                     <td className="py-4 px-4 text-[var(--text-muted)] font-bold">#{log.id}</td>
-                    <td className="py-4 px-4 text-[var(--text-muted)]">
-                      {new Date(log.ts).toLocaleString([], {
-                        month: "short",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                      })}
+                    <td className="py-4 px-4 text-[var(--text-muted)] font-mono text-xs whitespace-nowrap" suppressHydrationWarning>
+                      {formatUtcDateTime(log.ts)}
                     </td>
                     <td className="py-4 px-4">
                       <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-[var(--text-primary)]">

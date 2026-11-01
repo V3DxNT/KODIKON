@@ -26,7 +26,7 @@ const DEMO_ADMIN: AuthUser = {
   role: "admin",
   department: "Security Operations",
   clearanceLevel: "Level 4 (System Admin)",
-  lastLogin: new Date().toISOString(),
+  lastLogin: "2026-11-01T00:00:00.000Z",
 };
 
 const DEMO_STAFF: AuthUser = {
@@ -37,7 +37,7 @@ const DEMO_STAFF: AuthUser = {
   role: "employee",
   department: "Clinical Front Desk",
   clearanceLevel: "Level 1 (General Staff)",
-  lastLogin: new Date().toISOString(),
+  lastLogin: "2026-11-01T00:00:00.000Z",
 };
 
 export async function authenticateAdmin(
@@ -62,7 +62,7 @@ export async function authenticateAdmin(
         email: cleanIdent.includes("@") ? cleanIdent : `${cleanIdent}@secops.local`,
         name: cleanIdent.includes("admin") ? "Sarah Chen" : cleanIdent,
         displayName: cleanIdent.includes("admin") ? "Sarah Chen (SecOps)" : `${cleanIdent} (SecOps)`,
-        lastLogin: new Date().toISOString(),
+        lastLogin: "2026-11-01T00:00:00.000Z",
       },
     };
   }
@@ -96,7 +96,7 @@ export async function authenticateStaff(
         email: cleanIdent.includes("@") ? cleanIdent : `${cleanIdent}@secops.local`,
         name: cleanIdent.includes("staff") ? "Marcus Vance" : cleanIdent,
         displayName: cleanIdent.includes("staff") ? "Marcus Vance (Front Desk)" : `${cleanIdent} (Staff)`,
-        lastLogin: new Date().toISOString(),
+        lastLogin: "2026-11-01T00:00:00.000Z",
       },
     };
   }

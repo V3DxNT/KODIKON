@@ -12,6 +12,7 @@ import {
   ShieldAlert
 } from "lucide-react";
 import { EventOut, IncidentDetail } from "@/types/soc";
+import { formatUtcTime } from "@/lib/date-utils";
 
 interface EventGraphTimelineProps {
   incident: IncidentDetail;
@@ -143,8 +144,8 @@ export const EventGraphTimeline: React.FC<EventGraphTimelineProps> = ({ incident
                   </div>
                 </div>
 
-                <div className="text-right shrink-0 ml-4 font-mono text-[11px] text-slate-500">
-                  {new Date(ev.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                <div className="text-right shrink-0 ml-4 font-mono text-[11px] text-slate-500" suppressHydrationWarning>
+                  {formatUtcTime(ev.ts)}
                 </div>
               </div>
             );
@@ -157,7 +158,7 @@ export const EventGraphTimeline: React.FC<EventGraphTimelineProps> = ({ incident
         <div className="rounded-xl bg-black/80 p-5 border border-white/10 font-mono text-xs space-y-3">
           <div className="flex items-center justify-between text-slate-500 pb-2 hairline-b">
             <span className="text-slate-300 font-semibold">TELEMETRY LINE INSPECTOR &bull; EVENT #{selectedEvent.id}</span>
-            <span>{selectedEvent.ts}</span>
+            <span suppressHydrationWarning>{selectedEvent.ts}</span>
           </div>
           <div className="text-slate-300 break-all leading-relaxed bg-[#0c0e14] p-3.5 rounded-lg border border-white/5">
             <span className="text-slate-500">$ grep -F &quot;{selectedEvent.source_ip}&quot; /var/log/auth.log</span>

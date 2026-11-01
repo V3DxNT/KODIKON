@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { IncidentDetail, AuditLog } from "@/types/soc";
 import { ProofModal } from "./ProofModal";
+import { formatUtcDateTime, getUtcHourSlot, DETERMINISTIC_HOURLY_SLOTS } from "@/lib/date-utils";
 
 interface ThreatHuntingDashboardProps {
   incidents: IncidentDetail[];
@@ -108,7 +109,7 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
             list.push({
               id: `ev-${ev.id}`,
               incidentId: inc.id,
-              time: ev.ts ? new Date(ev.ts).toLocaleString() : new Date(inc.created_at).toLocaleString(),
+              time: formatUtcDateTime(ev.ts || inc.created_at),
               agentId: "001",
               agentName: "Ubuntu-Victim",
               techniques: evTechnique,
@@ -125,7 +126,7 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
           list.push({
             id: `inc-${inc.id}`,
             incidentId: inc.id,
-            time: inc.created_at ? new Date(inc.created_at).toLocaleString() : "Just now",
+            time: formatUtcDateTime(inc.created_at),
             agentId: "001",
             agentName: "Ubuntu-Victim",
             techniques: techniqueStr,
@@ -212,28 +213,21 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
     return list;
   }, [incidents]);
 
-  // Dynamic 8-slot hourly timeline for area chart
+  // Dynamic 8-slot hourly timeline for area chart using deterministic slots
   const timelineData = useMemo(() => {
-    const now = new Date();
-    const slots: Array<{ label: string; count: number; level12: number; level8: number; level4: number }> = [];
-
-    for (let i = 7; i >= 0; i--) {
-      const d = new Date(now.getTime() - i * 60 * 60 * 1000);
-      const hours = d.getHours().toString().padStart(2, "0");
-      slots.push({
-        label: `${hours}:00`,
+    const slots: Array<{ label: string; count: number; level12: number; level8: number; level4: number }> =
+      DETERMINISTIC_HOURLY_SLOTS.map((label) => ({
+        label,
         count: 0,
         level12: 0,
         level8: 0,
         level4: 0,
-      });
-    }
+      }));
 
     if (allEvents.length > 0) {
       allEvents.forEach((ev) => {
         if (!ev.ts) return;
-        const evDate = new Date(ev.ts);
-        const evHours = evDate.getHours().toString().padStart(2, "0") + ":00";
+        const evHours = getUtcHourSlot(ev.ts);
         const slot = slots.find((s) => s.label === evHours) || slots[slots.length - 1];
         if (slot) {
           slot.count += 1;
@@ -348,7 +342,7 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
 
       allEvents.forEach((ev) => {
         if (!ev.ts) return;
-        const evHour = new Date(ev.ts).getHours().toString().padStart(2, "0") + ":00";
+        const evHour = getUtcHourSlot(ev.ts);
         if (evHour === s.label) {
           victim += 1;
           if (ev.source_ip === "192.168.56.20") attacker += 1;
@@ -357,7 +351,7 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
 
       auditLogs.forEach((a) => {
         if (!a.ts) return;
-        const aHour = new Date(a.ts).getHours().toString().padStart(2, "0") + ":00";
+        const aHour = getUtcHourSlot(a.ts);
         if (aHour === s.label) soc += 1;
       });
 
@@ -720,6 +714,7 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
                         {timelineData.slots.map((s) => (
                           <span
                             key={s.label}
+                            suppressHydrationWarning
                             onMouseEnter={() => setHoveredHour(s.label)}
                             onMouseLeave={() => setHoveredHour(null)}
                             className={`cursor-pointer transition-colors ${
@@ -971,7 +966,7 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
 
                       <div className="flex justify-between text-[9px] font-mono text-slate-400 pt-1 border-t border-slate-200">
                         {nodeTimelineBars.slots.map((s) => (
-                          <span key={s.label}>{s.label}</span>
+                          <span key={s.label} suppressHydrationWarning>{s.label}</span>
                         ))}
                       </div>
                     </div>
@@ -1066,7 +1061,7 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
                                 isExpanded ? "bg-slate-50/50" : ""
                               }`}
                             >
-                              <td className="py-3 px-4 font-mono text-[11px] text-slate-600 whitespace-nowrap">
+                              <td className="py-3 px-4 font-mono text-[11px] text-slate-600 whitespace-nowrap" suppressHydrationWarning>
                                 <span className="text-slate-400 font-bold mr-1.5">&gt;</span>
                                 {alert.time}
                               </td>

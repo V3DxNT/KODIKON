@@ -18,6 +18,7 @@ import {
 import { IncidentDetail } from "@/types/soc";
 import { AuthUser } from "@/lib/auth-adapter";
 import { SentinelForgeLogo } from "./SentinelForgeLogo";
+import { formatUtcHourMinute } from "@/lib/date-utils";
 
 interface EmployeeViewProps {
   incidents: IncidentDetail[];
@@ -50,7 +51,7 @@ export const EmployeeView: React.FC<EmployeeViewProps> = ({
 
   const handleAcknowledge = () => {
     setAcknowledged(true);
-    setAckTimestamp(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+    setAckTimestamp(formatUtcHourMinute(new Date()));
   };
 
   const handleDownloadAdvisory = () => {
@@ -174,14 +175,14 @@ export const EmployeeView: React.FC<EmployeeViewProps> = ({
             </div>
 
             <div className="flex items-center space-x-4 text-xs font-mono text-[var(--text-muted)]">
-              <div className="flex items-center space-x-1.5">
+              <div className="flex items-center space-x-1.5" suppressHydrationWarning>
                 <Clock className="h-3.5 w-3.5" />
-                <span>{new Date(activeIncident.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} UTC</span>
+                <span suppressHydrationWarning>{formatUtcHourMinute(activeIncident.created_at)}</span>
               </div>
               {acknowledged && (
-                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/30 text-[10px] font-semibold">
+                <span suppressHydrationWarning className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/30 text-[10px] font-semibold">
                   <CheckCircle className="h-3 w-3" />
-                  <span>Acknowledged {ackTimestamp}</span>
+                  <span suppressHydrationWarning>Acknowledged {ackTimestamp}</span>
                 </span>
               )}
             </div>
