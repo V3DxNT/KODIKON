@@ -419,69 +419,79 @@
   font-weight: 800;
 }
 
-.light .text-white:not([data-preserve-color]):not(.preserve-dark *):not(.btn-metallic-primary *):not([class*="bg-rose-950"] *):not([class*="bg-emerald-950"] *):not([class*="bg-amber-950"] *),
-[data-theme="light"] .text-white:not([data-preserve-color]):not(.preserve-dark *):not(.btn-metallic-primary *):not([class*="bg-rose-950"] *):not([class*="bg-emerald-950"] *):not([class*="bg-amber-950"] *) {
+.light .text-white:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not(.btn-metallic-primary):not(.btn-metallic-primary *):not([class*="bg-slate-900"]):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"]):not([class*="bg-slate-950"] *):not([class*="bg-black"]):not([class*="bg-black"] *):not([class*="bg-rose-950"] *):not([class*="bg-emerald-950"] *):not([class*="bg-amber-950"] *),
+[data-theme="light"] .text-white:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not(.btn-metallic-primary):not(.btn-metallic-primary *):not([class*="bg-slate-900"]):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"]):not([class*="bg-slate-950"] *):not([class*="bg-black"]):not([class*="bg-black"] *):not([class*="bg-rose-950"] *):not([class*="bg-emerald-950"] *):not([class*="bg-amber-950"] *) {
   color: #000000 !important;
 }
 
-.light .text-slate-100:not([data-preserve-color]):not(.preserve-dark *):not(.btn-metallic-primary *),
-[data-theme="light"] .text-slate-100:not([data-preserve-color]):not(.preserve-dark *):not(.btn-metallic-primary *) {
-  color: #000000 !important;
-  font-weight: 700;
-}
-
-.light .text-slate-200:not([data-preserve-color]):not(.preserve-dark *):not(.btn-metallic-primary *),
-[data-theme="light"] .text-slate-200:not([data-preserve-color]):not(.preserve-dark *):not(.btn-metallic-primary *) {
+.light .text-slate-100:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not(.btn-metallic-primary):not(.btn-metallic-primary *):not([class*="bg-slate-900"]):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"]):not([class*="bg-slate-950"] *):not([class*="bg-black"]):not([class*="bg-black"] *),
+[data-theme="light"] .text-slate-100:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not(.btn-metallic-primary):not(.btn-metallic-primary *):not([class*="bg-slate-900"]):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"]):not([class*="bg-slate-950"] *):not([class*="bg-black"]):not([class*="bg-black"] *) {
   color: #000000 !important;
   font-weight: 700;
 }
 
-.light .text-slate-300:not([data-preserve-color]):not(.preserve-dark *):not(.btn-metallic-primary *),
-[data-theme="light"] .text-slate-300:not([data-preserve-color]):not(.preserve-dark *):not(.btn-metallic-primary *) {
+.light .text-slate-200:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not(.btn-metallic-primary):not(.btn-metallic-primary *):not([class*="bg-slate-900"]):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"]):not([class*="bg-slate-950"] *):not([class*="bg-black"]):not([class*="bg-black"] *),
+[data-theme="light"] .text-slate-200:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not(.btn-metallic-primary):not(.btn-metallic-primary *):not([class*="bg-slate-900"]):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"]):not([class*="bg-slate-950"] *):not([class*="bg-black"]):not([class*="bg-black"] *) {
+  color: #000000 !important;
+  font-weight: 700;
+}
+
+.light .text-slate-300:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not(.btn-metallic-primary):not(.btn-metallic-primary *):not([class*="bg-slate-900"]):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"]):not([class*="bg-slate-950"] *):not([class*="bg-black"]):not([class*="bg-black"] *),
+[data-theme="light"] .text-slate-300:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not(.btn-metallic-primary):not(.btn-metallic-primary *):not([class*="bg-slate-900"]):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"]):not([class*="bg-slate-950"] *):not([class*="bg-black"]):not([class*="bg-black"] *) {
   color: #0f172a !important;
   font-weight: 600;
 }
 
-.light .text-slate-400:not([data-preserve-color]):not(.preserve-dark *),
-[data-theme="light"] .text-slate-400:not([data-preserve-color]):not(.preserve-dark *) {
+.light .text-slate-400:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"] *):not([class*="bg-black"] *),
+[data-theme="light"] .text-slate-400:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"] *):not([class*="bg-black"] *) {
   color: #0f172a !important;
   font-weight: 600;
 }
 
-.light .text-slate-500:not([data-preserve-color]):not(.preserve-dark *),
-[data-theme="light"] .text-slate-500:not([data-preserve-color]):not(.preserve-dark *) {
+.light .text-slate-500:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"] *):not([class*="bg-black"] *),
+[data-theme="light"] .text-slate-500:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"] *):not([class*="bg-black"] *) {
   color: #1e293b !important;
   font-weight: 600;
 }
 
-.light .text-slate-600:not([data-preserve-color]):not(.preserve-dark *),
-[data-theme="light"] .text-slate-600:not([data-preserve-color]):not(.preserve-dark *) {
+.light .text-slate-600:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"] *):not([class*="bg-black"] *),
+[data-theme="light"] .text-slate-600:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"] *):not([class*="bg-black"] *) {
   color: #0f172a !important;
   font-weight: 600;
 }
 
-.light .text-gray-400:not([data-preserve-color]):not(.preserve-dark *),
-[data-theme="light"] .text-gray-400:not([data-preserve-color]):not(.preserve-dark *) {
+.light .text-gray-400:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"] *):not([class*="bg-black"] *),
+[data-theme="light"] .text-gray-400:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"] *):not([class*="bg-black"] *) {
   color: #0f172a !important;
   font-weight: 600;
 }
 
-.light .text-gray-500:not([data-preserve-color]):not(.preserve-dark *),
-[data-theme="light"] .text-gray-500:not([data-preserve-color]):not(.preserve-dark *) {
+.light .text-gray-500:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"] *):not([class*="bg-black"] *),
+[data-theme="light"] .text-gray-500:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"] *):not([class*="bg-black"] *) {
   color: #1e293b !important;
   font-weight: 600;
 }
 
-.light .text-zinc-400:not([data-preserve-color]):not(.preserve-dark *),
-[data-theme="light"] .text-zinc-400:not([data-preserve-color]):not(.preserve-dark *) {
+.light .text-zinc-400:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"] *):not([class*="bg-black"] *),
+[data-theme="light"] .text-zinc-400:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"] *):not([class*="bg-black"] *) {
   color: #0f172a !important;
   font-weight: 600;
 }
 
-.light .text-zinc-500:not([data-preserve-color]):not(.preserve-dark *),
-[data-theme="light"] .text-zinc-500:not([data-preserve-color]):not(.preserve-dark *) {
+.light .text-zinc-500:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"] *):not([class*="bg-black"] *),
+[data-theme="light"] .text-zinc-500:not([data-preserve-color]):not(.preserve-dark):not(.preserve-dark *):not([class*="bg-slate-900"] *):not([class*="bg-slate-950"] *):not([class*="bg-black"] *) {
   color: #1e293b !important;
   font-weight: 600;
+}
+
+/* Explicit rule for high-contrast dark terminals and telemetry payloads */
+.terminal-payload-box,
+.terminal-payload-box pre,
+.terminal-payload-box code,
+.preserve-dark pre,
+.preserve-dark code {
+  color: #f8fafc !important;
+  background-color: #0b0f19 !important;
 }
 
 /* In light mode, unpreserved dark boxes become crisp, solid light surfaces */

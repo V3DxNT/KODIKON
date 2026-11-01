@@ -96,7 +96,9 @@ export const ProofModal: React.FC<ProofModalProps> = ({
         <div className="flex justify-end pt-2">
           <button
             onClick={onClose}
-            className="h-9 px-4 rounded-lg bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white text-xs font-medium shadow-[0_1px_2px_rgba(15,23,42,0.08),inset_0_1px_0_rgba(255,255,255,0.15)] border border-slate-900 active:scale-[0.98] transition-all cursor-pointer"
+            className="btn-metallic-primary h-9 px-4 text-xs"
+            data-preserve-color
+            style={{ color: "#ffffff", backgroundColor: "#0f172a" }}
           >
             Acknowledge &amp; Close
           </button>

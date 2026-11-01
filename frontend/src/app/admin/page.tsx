@@ -157,10 +157,12 @@ export default function AdminPage() {
             </button>
             <button
               onClick={() => router.push("/login?redirect=/admin")}
-              className="h-8 px-3.5 rounded-lg bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white text-xs font-medium flex items-center space-x-2 cursor-pointer shadow-[0_1px_2px_rgba(15,23,42,0.08),inset_0_1px_0_rgba(255,255,255,0.15)] active:scale-[0.98] transition-all"
+              className="btn-metallic-primary h-8 px-3.5 text-xs flex items-center space-x-2"
+              data-preserve-color
+              style={{ color: "#ffffff", backgroundColor: "#0f172a" }}
             >
-              <span>Authenticate Admin</span>
-              <ArrowRight className="h-3.5 w-3.5" />
+              <span style={{ color: "#ffffff" }}>Authenticate Admin</span>
+              <ArrowRight className="h-3.5 w-3.5" style={{ color: "#ffffff" }} />
             </button>
           </div>
         </div>

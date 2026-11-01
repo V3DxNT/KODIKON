@@ -11,6 +11,9 @@ import {
   X,
   Server,
   Trash2,
+  Copy,
+  Check,
+  ShieldAlert,
 } from "lucide-react";
 import { IncidentDetail, AuditLog } from "@/types/soc";
 import { ProofModal } from "./ProofModal";
@@ -39,6 +42,7 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
   const [selectedMonth, setSelectedMonth] = useState("Live");
   const [selectedYear, setSelectedYear] = useState("2026");
   const [expandedAlertId, setExpandedAlertId] = useState<string | null>(null);
+  const [copiedAlertId, setCopiedAlertId] = useState<string | null>(null);
   const [exploreAgentOpen, setExploreAgentOpen] = useState(false);
   const [proofModalData, setProofModalData] = useState<{
     isOpen: boolean;
@@ -1146,9 +1150,57 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
                                       </div>
                                     </div>
 
-                                    <pre className="p-3 bg-slate-900 text-slate-100 rounded-xl text-[11px] font-mono overflow-x-auto leading-relaxed border border-slate-800">
-                                      {alert.raw}
-                                    </pre>
+                                    {/* High-Contrast Kernel Telemetry Terminal Box */}
+                                    <div className="terminal-payload-box preserve-dark rounded-xl overflow-hidden border border-slate-800 bg-[#0b0f19] shadow-inner" data-preserve-color>
+                                      {/* Terminal Window Header Bar */}
+                                      <div className="flex items-center justify-between px-3.5 py-2 bg-[#060911] border-b border-slate-800/80 text-[10px] font-mono text-slate-400">
+                                        <div className="flex items-center space-x-2">
+                                          <div className="flex space-x-1.5">
+                                            <span className="w-2.5 h-2.5 rounded-full bg-[#ef4444] inline-block shadow-xs"></span>
+                                            <span className="w-2.5 h-2.5 rounded-full bg-[#eab308] inline-block shadow-xs"></span>
+                                            <span className="w-2.5 h-2.5 rounded-full bg-[#22c55e] inline-block shadow-xs"></span>
+                                          </div>
+                                          <span className="text-slate-300 font-semibold pl-1.5">KERNEL AUDIT STREAM &bull; /var/log/auth.log</span>
+                                        </div>
+                                        <div className="flex items-center space-x-3">
+                                          <span className="text-emerald-400 font-semibold text-[10px] tracking-wide">&bull; LIVE TELEMETRY</span>
+                                          <button
+                                            onClick={() => {
+                                              if (typeof navigator !== "undefined" && navigator.clipboard) {
+                                                navigator.clipboard.writeText(alert.raw);
+                                                setCopiedAlertId(alert.id);
+                                                setTimeout(() => setCopiedAlertId(null), 2000);
+                                              }
+                                            }}
+                                            className="inline-flex items-center space-x-1 px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white transition-colors cursor-pointer text-[10px] border border-slate-700"
+                                            title="Copy raw telemetry line"
+                                          >
+                                            {copiedAlertId === alert.id ? (
+                                              <>
+                                                <Check className="h-3 w-3 text-emerald-400" />
+                                                <span className="text-emerald-400 font-medium">Copied</span>
+                                              </>
+                                            ) : (
+                                              <>
+                                                <Copy className="h-3 w-3" />
+                                                <span>Copy</span>
+                                              </>
+                                            )}
+                                          </button>
+                                        </div>
+                                      </div>
+
+                                      {/* Raw Payload Stream - Explicitly Bright White / Cyan for Zero Contrast Loss */}
+                                      <pre 
+                                        className="p-3.5 text-[11px] font-mono overflow-x-auto leading-relaxed select-text" 
+                                        style={{ color: "#f8fafc", backgroundColor: "#0b0f19" }}
+                                      >
+                                        <code>
+                                          <span style={{ color: "#38bdf8", fontWeight: 600 }}>$ auditd[kernel]:</span>{" "}
+                                          <span style={{ color: "#f8fafc", fontWeight: 500 }}>{alert.raw}</span>
+                                        </code>
+                                      </pre>
+                                    </div>
 
                                     <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
                                       <p className="text-xs text-slate-500 max-w-2xl leading-relaxed">
@@ -1158,15 +1210,18 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
                                       <div className="flex items-center space-x-2">
                                         <button
                                           onClick={() => void handleApproveAction(alert.incidentId)}
-                                          className="h-8 px-3.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700 text-xs font-medium shadow-[0_1px_2px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-all cursor-pointer inline-flex items-center space-x-1.5"
+                                          className="btn-metallic-secondary h-8 px-3.5 text-xs inline-flex items-center space-x-1.5"
                                         >
                                           <span>Authorize Response</span>
                                         </button>
                                         <button
                                           onClick={() => void handleBlockAction(alert.sourceIp, alert.incidentId)}
-                                          className="h-8 px-3.5 rounded-lg bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white text-xs font-medium shadow-[0_1px_2px_rgba(15,23,42,0.08),inset_0_1px_0_rgba(255,255,255,0.15)] border border-slate-900 active:scale-[0.98] transition-all cursor-pointer inline-flex items-center space-x-1.5"
+                                          className="btn-metallic-primary h-8 px-3.5 text-xs inline-flex items-center space-x-1.5"
+                                          data-preserve-color
+                                          style={{ color: "#ffffff", backgroundColor: "#0f172a" }}
                                         >
-                                          <span>Block &amp; Verify via Caldera</span>
+                                          <ShieldAlert className="h-3.5 w-3.5 text-rose-400" />
+                                          <span style={{ color: "#ffffff" }}>Block &amp; Verify via Caldera</span>
                                         </button>
                                       </div>
                                     </div>
@@ -1307,7 +1362,9 @@ export const ThreatHuntingDashboard: React.FC<ThreatHuntingDashboardProps> = ({
             <div className="flex justify-end pt-2">
               <button
                 onClick={() => setExploreAgentOpen(false)}
-                className="h-8 px-4 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium shadow-[0_1px_2px_rgba(15,23,42,0.08),inset_0_1px_0_rgba(255,255,255,0.15)] border border-slate-900 active:scale-[0.98] transition-all cursor-pointer"
+                className="btn-metallic-primary h-8 px-4 text-xs"
+                data-preserve-color
+                style={{ color: "#ffffff", backgroundColor: "#0f172a" }}
               >
                 Close Inventory
               </button>

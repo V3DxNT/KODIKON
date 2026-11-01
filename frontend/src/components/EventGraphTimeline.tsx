@@ -155,14 +155,14 @@ export const EventGraphTimeline: React.FC<EventGraphTimelineProps> = ({ incident
 
       {/* Raw Event Inspector */}
       {selectedEvent && (
-        <div className="rounded-xl bg-black/80 p-5 border border-white/10 font-mono text-xs space-y-3">
-          <div className="flex items-center justify-between text-slate-500 pb-2 hairline-b">
+        <div className="terminal-payload-box preserve-dark rounded-xl bg-[#0b0f19] p-5 border border-slate-800 font-mono text-xs space-y-3" data-preserve-color>
+          <div className="flex items-center justify-between text-slate-400 pb-2 border-b border-slate-800/80">
             <span className="text-slate-300 font-semibold">TELEMETRY LINE INSPECTOR &bull; EVENT #{selectedEvent.id}</span>
-            <span suppressHydrationWarning>{selectedEvent.ts}</span>
+            <span suppressHydrationWarning className="text-slate-400">{selectedEvent.ts}</span>
           </div>
-          <div className="text-slate-300 break-all leading-relaxed bg-[#0c0e14] p-3.5 rounded-lg border border-white/5">
-            <span className="text-slate-500">$ grep -F &quot;{selectedEvent.source_ip}&quot; /var/log/auth.log</span>
-            <div className="mt-1 text-slate-200">{selectedEvent.raw_line}</div>
+          <div className="break-all leading-relaxed bg-[#060911] p-3.5 rounded-lg border border-slate-800" style={{ color: "#f8fafc" }}>
+            <span className="text-cyan-400">$ grep -F &quot;{selectedEvent.source_ip}&quot; /var/log/auth.log</span>
+            <div className="mt-1 font-mono" style={{ color: "#f8fafc" }}>{selectedEvent.raw_line}</div>
           </div>
         </div>
       )}
